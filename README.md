@@ -1,1 +1,143 @@
 # TypeSupport
+
+A CSharp library that makes it easier to work with Types dynamically by providing extensions and tools that makes your life easier. Additionally, it includes a flexible Object factory for creating and initializing all kinds of types.
+
+## Description
+
+The best way to understand what TypeSupport can do is to see it in action! It is used as the foundation for many other packages.
+
+## Installation
+Install TypeSupport from the Package Manager Console:
+```
+PM> Install-Package TypeSupport
+```
+
+## Usage
+
+### Type Support
+
+Getting started - create a TypeSupport from a type
+```csharp
+using TypeSupport;
+
+var type = typeof(MyObject);
+var typeSupport = new TypeSupport(type);
+```
+
+or do it using the extensions (we will use this syntax going forward):
+```csharp
+using TypeSupport;
+
+var type = typeof(MyObject);
+var typeSupport = type.TypeSupport();
+```
+
+get information about an array:
+```csharp
+var type = typeof(int[]);
+var typeSupport = type.TypeSupport();
+
+var isArray = typeSupport.IsArray; // true
+var elementType = typeSupport.ElementType; // int
+```
+
+get information about a Dictionary:
+```csharp
+var type = typeof(Dictionary<int, string>);
+var typeSupport = type.TypeSupport();
+
+var isArray = typeSupport.IsDictionary; // true
+var elementTypes = typeSupport.GenericArgumentTypes; // System.Int32, System.String
+```
+
+get info about an interface:
+```csharp
+var type = typeof(IVehicle);
+var typeSupport = type.TypeSupport();
+
+var isArray = typeSupport.IsInterface; // true
+var classesThatImplementICustomInterface = typeSupport.KnownConcreteTypes;
+// [] = Car, Truck, Van, Motorcycle
+```
+
+get info about a class:
+```csharp
+[Description("A car object")]
+public class Car : IVehicle
+{
+  public string Name { get; set; }
+  public Car() { }
+}
+var type = typeof(Car);
+var typeSupport = type.TypeSupport();
+
+var isArray = typeSupport.HasEmptyConstructor; // true
+var attributes = typeSupport.Attributes;
+// [] = DescriptionAttribute
+```
+
+working with enums:
+```csharp
+public enum Colors : byte
+{
+  Red = 1,
+  Green = 2,
+  Blue = 3
+}
+var type = typeof(Colors);
+var typeSupport = type.TypeSupport();
+
+var isEnum = typeSupport.IsEnum; // true
+var enumValues = typeSupport.EnumValues;
+// [] = <1, Red>, <2, Green>, <3, blue>
+var enumType = typeSupport.EnumType; // System.Byte
+```
+
+working with Tuples:
+```csharp
+var tupleType = typeof(Tuple<int, string, double>);
+var valueTupleType = typeof((IVehicle, string));
+var tupleTypeSupport = type.TypeSupport();
+var valueTupleTypeSupport = valueTupleType.TypeSupport();
+
+var isTuple = tupleTypeSupport.IsTuple; // true
+var isValueTuple = valueTupleTypeSupport.IsValueTuple; // true
+var tupleGenericArguments = tupleTypeSupport.GenericArgumentTypes; // System.Int32, System.String, System.Double
+var valueTupleGenericArguments = valueTupleTypeSupport.GenericArgumentTypes; // IVehicle, System.String
+// there's lots more you can do, such as getting the value from a Tuple instance:
+
+var car = new Car();
+var description = "My cool car";
+var myTuple = (car, description);
+var items = myTuple.GetValueTupleItemObjects();
+// [] = Car, "My cool car"
+```
+
+### Object factory
+
+Create new objects of any type:
+
+```csharp
+var factory = new ObjectFactory();
+var listInstance = factory.CreateEmptyObject<IList<int>>(); // List<int>() 0 elements
+var dictionaryInstance = factory.CreateEmptyObject<IDictionary<int, string>>(); // Dictionary<int, string>() 0 elements
+var emptyByteArray = factory.CreateEmptyObject<byte[]>(); // byte[0] empty byte array
+var byteArray = factory.CreateEmptyObject<byte[]>(length: 64); // byte[64]
+var tupleInstance = factory.CreateEmptyObject<(int, string)>(); // tupleInstance.Item1 = 0, tupleInstance.item2 = null
+var myComplexObject = factory.CreateEmptyObject<MyComplexObject>();
+```
+
+Create objects without parameterless constructors:
+```csharp
+public class CustomObject
+{
+  public int Id { get; }
+  public CustomObject(int id)
+  {
+    Id = id;
+  }
+}
+var factory = new ObjectFactory();
+var myObj = factory.CreateEmptyObject<CustomObject>(); // CustomObject
+```
+
