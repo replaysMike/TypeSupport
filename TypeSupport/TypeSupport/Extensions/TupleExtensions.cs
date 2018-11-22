@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace TypeSupport
+namespace TypeSupport.Extensions
 {
     /// <summary>
     /// Type extensions for Tuples and ValueTuples

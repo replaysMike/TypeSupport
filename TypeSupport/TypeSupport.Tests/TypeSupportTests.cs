@@ -12,26 +12,26 @@ namespace TypeSupport.Tests
         [Test]
         public void TypeSupportAndType_Should_BeEqual()
         {
-            Assert.AreEqual(new TypeLoader(typeof(bool)), typeof(bool));
+            Assert.AreEqual(new ExtendedType(typeof(bool)), typeof(bool));
         }
 
         [Test]
         public void TypeSupportAndTypeSupport_Should_BeEqual()
         {
-            Assert.AreEqual(new TypeLoader(typeof(bool)), new TypeLoader(typeof(bool)));
+            Assert.AreEqual(new ExtendedType(typeof(bool)), new ExtendedType(typeof(bool)));
         }
 
         [Test]
         public void TypeSupportAndTypeSupport_ShouldNot_BeEqual()
         {
-            Assert.AreNotEqual(new TypeLoader(typeof(bool)), new TypeLoader(typeof(int)));
+            Assert.AreNotEqual(new ExtendedType(typeof(bool)), new ExtendedType(typeof(int)));
         }
 
         [Test]
         public void Should_Create_TypeSupport()
         {
             var type = typeof(object);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(type, typeSupport);
@@ -41,7 +41,7 @@ namespace TypeSupport.Tests
         public void Should_Create_TypeSupportIntegral()
         {
             var type = typeof(int);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(type, typeSupport);
@@ -51,7 +51,7 @@ namespace TypeSupport.Tests
         public void Should_Create_TypeSupportCustomObject()
         {
             var type = typeof(BasicObject);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(type, typeSupport);
@@ -61,7 +61,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_Interface()
         {
             var type = typeof(IInterfaceWithImplementations);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsInterface);
@@ -71,7 +71,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_TypeWithConcreteClasses()
         {
             var type = typeof(IInterfaceWithImplementations);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(4, typeSupport.KnownConcreteTypes.Count);
@@ -81,7 +81,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_TypeWithoutConcreteClasses()
         {
             var type = typeof(IInterfaceWithoutImplementations);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(0, typeSupport.KnownConcreteTypes.Count);
@@ -91,7 +91,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_NoEmptyConstuctor()
         {
             var type = typeof(BasicObject);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(false, typeSupport.HasEmptyConstructor);
@@ -101,7 +101,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_HasEmptyConstuctor()
         {
             var type = typeof(BasicObjectWithConstructor);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.HasEmptyConstructor);
@@ -111,7 +111,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_Tuple()
         {
             var type = typeof(Tuple<int, double>);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsTuple);
@@ -124,7 +124,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_ValueTuple()
         {
             var type = typeof((int, double));
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsValueTuple);
@@ -137,7 +137,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_GenericCollection()
         {
             var type = typeof(ICollection<int>);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsCollection);
@@ -149,7 +149,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_GenericDictionary()
         {
             var type = typeof(IDictionary<int, double>);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsDictionary);
@@ -162,7 +162,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_Enum()
         {
             var type = typeof(DayOfWeek);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsEnum);
@@ -173,7 +173,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_NullableInt()
         {
             var type = typeof(int?);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsNullable);
@@ -184,7 +184,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_Array()
         {
             var type = typeof(byte[]);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsArray);
@@ -195,7 +195,7 @@ namespace TypeSupport.Tests
         public void Should_Discover_EnumerableTypes()
         {
             var type = typeof(List<int>);
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsEnumerable);

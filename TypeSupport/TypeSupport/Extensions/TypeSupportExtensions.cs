@@ -3,18 +3,18 @@
 namespace TypeSupport.Extensions
 {
     /// <summary>
-    /// Extensions for TypeSupport
+    /// Extensions for Type Support
     /// </summary>
     public static class TypeSupportExtensions
     {
         /// <summary>
-        /// Get the Type Support for a Type
+        /// Get the extended type for a Type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static TypeLoader TypeSupport(this Type type)
+        public static ExtendedType GetExtendedType(this Type type)
         {
-            return new TypeLoader(type);
+            return new ExtendedType(type);
         }
     }
 }

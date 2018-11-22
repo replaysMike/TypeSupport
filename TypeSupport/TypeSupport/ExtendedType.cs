@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using TypeSupport.Extensions;
 
 namespace TypeSupport
@@ -11,7 +10,7 @@ namespace TypeSupport
     /// <summary>
     /// Helper class for getting information about a <see cref="Type"/>
     /// </summary>
-    public class TypeLoader : IEquatable<TypeLoader>, IEquatable<Type>
+    public class ExtendedType : IEquatable<ExtendedType>, IEquatable<Type>
     {
         /// <summary>
         /// The type TypeSupport was created from
@@ -152,7 +151,7 @@ namespace TypeSupport
         /// Create a new type support
         /// </summary>
         /// <param name="type">The type to analyze</param>
-        public TypeLoader(Type type)
+        public ExtendedType(Type type)
         {
             Type = type ?? throw new ArgumentNullException();
             InspectType();
@@ -262,7 +261,7 @@ namespace TypeSupport
         {
             if (!type.IsInterface)
                 throw new TypeSupportException(type, $"The type {type.Name} is not an interface. Only interface types can be analyzed.");
-            var typeAssembly = Assembly.GetAssembly(type);
+            var typeAssembly = System.Reflection.Assembly.GetAssembly(type);
 
             if (type.IsGenericType)
             {
@@ -345,7 +344,7 @@ namespace TypeSupport
 
         public override bool Equals(object obj)
         {
-            var objTyped = (TypeLoader)obj;
+            var objTyped = (ExtendedType)obj;
             return objTyped.Type.Equals(Type);
         }
 
@@ -359,7 +358,7 @@ namespace TypeSupport
             return $"{Type.Name} ({UnderlyingType.Name})";
         }
 
-        public bool Equals(TypeLoader other)
+        public bool Equals(ExtendedType other)
         {
             return other.Type.Equals(Type);
         }
@@ -373,9 +372,9 @@ namespace TypeSupport
     /// <summary>
     /// Helper class for getting information about a <see cref="Type"/>
     /// </summary>
-    public class TypeLoader<T> : TypeLoader
+    public class ExtendedType<T> : ExtendedType
     {
-        public TypeLoader() : base(typeof(T))
+        public ExtendedType() : base(typeof(T))
         {
         }
     }

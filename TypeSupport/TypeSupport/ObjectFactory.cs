@@ -56,7 +56,7 @@ namespace TypeSupport
             if (typeRegistry?.ContainsFactoryType(type) == true)
                 return typeRegistry.GetFactory(type).Invoke();
 
-            var typeSupport = new TypeLoader(type);
+            var typeSupport = new ExtendedType(type);
             // if we are asked to create an instance of an interface, try to initialize using a valid concrete type
             if (typeSupport.IsInterface && !typeSupport.IsEnumerable)
             {
@@ -65,7 +65,7 @@ namespace TypeSupport
                 if (concreteType == null)
                     throw new TypeSupportException(type, $"Unable to locate a concrete type for '{typeSupport.Type.FullName}'! Cannot create instance.");
 
-                typeSupport = new TypeLoader(concreteType);
+                typeSupport = new ExtendedType(concreteType);
             }
 
             if (typeSupport.IsArray)
@@ -97,7 +97,7 @@ namespace TypeSupport
                 // create a generic type and create an instance
                 // to accomplish this, we need to create a new generic type using the type arguments from the interface
                 // and the concrete class definition. voodoo!
-                var originalTypeSupport = new TypeLoader(type);
+                var originalTypeSupport = new ExtendedType(type);
                 var genericArguments = originalTypeSupport.Type.GetGenericArguments();
                 var newType = typeSupport.Type.MakeGenericType(genericArguments);
                 object newObject = null;
