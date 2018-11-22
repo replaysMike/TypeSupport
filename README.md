@@ -138,6 +138,26 @@ public class CustomObject
   }
 }
 var factory = new ObjectFactory();
-var myObj = factory.CreateEmptyObject<CustomObject>(); // CustomObject
+var myObj = factory.CreateEmptyObject<CustomObject>(); // myObj.GetType() == typeof(CustomObject)
+```
+
+You can instruct the Object factory on how to map abstract interfaces when creating instances:
+```csharp
+var typeRegistry = TypeRegistry.Configure((config) => {
+  config.AddMapping<IVehicle, Car>();
+});
+
+var factory = new ObjectFactory(typeRegistry);
+var car = factory.CreateEmptyObject<IVehicle>(); // car.GetType() == typeof(Car)
+```
+
+You can also register custom factories:
+```csharp
+var typeRegistry = TypeRegistry.Configure((config) => {
+  config.AddFactory<IVehicle, Car>(() => new Car(Color.Red));
+});
+
+var factory = new ObjectFactory(typeRegistry);
+var car = factory.CreateEmptyObject<IVehicle>(); // car.GetType() == typeof(Car)
 ```
 
