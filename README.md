@@ -21,7 +21,7 @@ Getting started - create a TypeSupport from a type
 using TypeSupport;
 
 var type = typeof(MyObject);
-var typeSupport = new TypeSupport(type);
+var typeSupport = new TypeLoader(type);
 ```
 
 or do it using the extensions (we will use this syntax going forward):
