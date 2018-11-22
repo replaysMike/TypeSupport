@@ -76,7 +76,11 @@ namespace TypeSupport.Extensions
             if (property != null)
             {
                 if (property.SetMethod != null)
-                    property.SetValue(obj, valueToSet);
+                {
+                    var indexParameters = property.GetIndexParameters();
+                    if (!indexParameters.Any())
+                        property.SetValue(obj, valueToSet);
+                }
                 else
                 {
                     // if this is an auto-property with a backing field, set it
@@ -119,7 +123,11 @@ namespace TypeSupport.Extensions
             try
             {
                 if (property.SetMethod != null)
-                    property.SetValue(obj, valueToSet);
+                {
+                    var indexParameters = property.GetIndexParameters();
+                    if (!indexParameters.Any())
+                        property.SetValue(obj, valueToSet);
+                }
                 else
                 {
                     // if this is an auto-property with a backing field, set it

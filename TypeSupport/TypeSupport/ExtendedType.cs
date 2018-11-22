@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using TypeSupport.Extensions;
 
 namespace TypeSupport
@@ -12,11 +13,6 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedType : IEquatable<ExtendedType>, IEquatable<Type>
     {
-        /// <summary>
-        /// The type TypeSupport was created from
-        /// </summary>
-        public Type Type { get; }
-
         /// <summary>
         /// True if type has an empty constructor defined
         /// </summary>
@@ -98,6 +94,11 @@ namespace TypeSupport
         public bool IsInterface { get; private set; }
 
         /// <summary>
+        /// True if the type contains an indexer
+        /// </summary>
+        public bool HasIndexer { get; private set; }
+
+        /// <summary>
         /// For enum types the list of valid values of the Enum
         /// </summary>
         public ICollection<KeyValuePair<object, string>> EnumValues { get; private set; }
@@ -118,6 +119,21 @@ namespace TypeSupport
         public ICollection<Type> GenericArgumentTypes { get; private set; }
 
         /// <summary>
+        /// A list of the type's properties
+        /// </summary>
+        public ICollection<PropertyInfo> Properties { get; private set; }
+
+        /// <summary>
+        /// A list of the type's fields
+        /// </summary>
+        public ICollection<FieldInfo> Fields { get; private set; }
+
+        /// <summary>
+        /// The type TypeSupport was created from
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
         /// For interface types the concrete type that implements it, <seealso cref="SetConcreteTypeFromInstance(object)"/>
         /// </summary>
         public Type ConcreteType { get; private set; }
@@ -136,6 +152,16 @@ namespace TypeSupport
         /// The declared value type of an enum (one of the following numeric types: sbyte,byte,ushort,short,uint,int,ulong,long)
         /// </summary>
         public Type EnumType { get; private set; }
+
+        /// <summary>
+        /// The declared type of an indexer key
+        /// </summary>
+        public Type IndexerType { get; private set; }
+
+        /// <summary>
+        /// The declared return type of an indexer key
+        /// </summary>
+        public Type IndexerReturnType { get; private set; }
 
         /// <summary>
         /// The underlying type of the Type
@@ -169,11 +195,21 @@ namespace TypeSupport
 
         private void InspectType()
         {
-            var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
+            Properties = Type.GetProperties();
+            Fields = Type.GetFields();
             Attributes = new List<Type>();
             GenericArgumentTypes = new List<Type>();
-            ConcreteType = Type;
+            KnownConcreteTypes = new List<Type>();
+            EnumValues = new List<KeyValuePair<object, string>>();
+
+            // attributes
+            if (Type.CustomAttributes.Any())
+                Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
+
+            var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
             HasEmptyConstructor = Type.IsValueType || emptyConstructorDefined != null;
+
+            ConcreteType = Type;
             IsAbstract = Type.IsAbstract;
             UnderlyingType = Type.UnderlyingSystemType;
             if (Type == typeof(string))
@@ -242,14 +278,23 @@ namespace TypeSupport
             if (typeof(Delegate).IsAssignableFrom(Type))
                 IsDelegate = true;
 
+            HasIndexer = Properties.Select(x => x.GetIndexParameters())
+                .Where(x => x.Length > 0)
+                .Any();
+
+            if (HasIndexer)
+            {
+                // c# only allows a single indexer
+                var indexerProperty = Properties.Where(x => x.GetIndexParameters().Length > 0).ToList();
+                var indexParameters = indexerProperty.FirstOrDefault().GetIndexParameters().FirstOrDefault();
+                IndexerType = indexParameters.ParameterType;
+                IndexerReturnType = indexerProperty.FirstOrDefault().PropertyType;
+            }
+
             // nullable
             var nullableBaseType = GetNullableBaseType(Type);
             NullableBaseType = nullableBaseType ?? Type;
             IsNullable = nullableBaseType != null;
-
-            // attributes
-            if (Type.CustomAttributes.Any())
-                Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
         }
 
         /// <summary>
