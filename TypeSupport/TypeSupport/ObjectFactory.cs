@@ -12,6 +12,15 @@ namespace TypeSupport
     public class ObjectFactory
     {
         /// <summary>
+        /// Get the type registry
+        /// </summary>
+        public TypeRegistry TypeRegistry { get; }
+        public ObjectFactory(TypeRegistry typeRegistry)
+        {
+            TypeRegistry = typeRegistry;
+        }
+
+        /// <summary>
         /// Create a new, empty object of a given type
         /// </summary>
         /// <param name="type">The type of object to construct</param>
@@ -102,7 +111,7 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName, Func<object> initializer = null, int length = 0)
         {
-            return CreateEmptyObject(assemblyQualifiedFullName, null, initializer, length);
+            return CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, initializer, length);
         }
 
         /// <summary>
@@ -127,7 +136,7 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(Type type, Func<object> initializer = null, int length = 0)
         {
-            return CreateEmptyObject(type, null, initializer, length);
+            return CreateEmptyObject(type, TypeRegistry, initializer, length);
         }
 
         /// <summary>
