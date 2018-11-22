@@ -1,6 +1,6 @@
 # TypeSupport
 
-A CSharp library that makes it easier to work with Types dynamically by providing extensions and tools that makes your life easier. Additionally, it includes a flexible Object factory for creating and initializing all kinds of types.
+A CSharp library that makes it easier to work with Types dynamically. TypeSupport includes a flexible Object factory for creating and initializing all kinds of types.
 
 ## Description
 
@@ -21,7 +21,7 @@ Getting started - create a TypeSupport from a type
 using TypeSupport;
 
 var type = typeof(MyObject);
-var typeSupport = new TypeLoader(type);
+var typeSupport = new ExtendedType(type);
 ```
 
 or do it using the extensions (we will use this syntax going forward):
@@ -29,13 +29,13 @@ or do it using the extensions (we will use this syntax going forward):
 using TypeSupport;
 
 var type = typeof(MyObject);
-var typeSupport = type.TypeSupport();
+var typeSupport = type.GetExtendedType();
 ```
 
 get information about an array:
 ```csharp
 var type = typeof(int[]);
-var typeSupport = type.TypeSupport();
+var typeSupport = type.GetExtendedType();
 
 var isArray = typeSupport.IsArray; // true
 var elementType = typeSupport.ElementType; // int
@@ -44,7 +44,7 @@ var elementType = typeSupport.ElementType; // int
 get information about a Dictionary:
 ```csharp
 var type = typeof(Dictionary<int, string>);
-var typeSupport = type.TypeSupport();
+var typeSupport = type.GetExtendedType();
 
 var isArray = typeSupport.IsDictionary; // true
 var elementTypes = typeSupport.GenericArgumentTypes; // System.Int32, System.String
@@ -53,7 +53,7 @@ var elementTypes = typeSupport.GenericArgumentTypes; // System.Int32, System.Str
 get info about an interface:
 ```csharp
 var type = typeof(IVehicle);
-var typeSupport = type.TypeSupport();
+var typeSupport = type.GetExtendedType();
 
 var isArray = typeSupport.IsInterface; // true
 var classesThatImplementICustomInterface = typeSupport.KnownConcreteTypes;
@@ -69,7 +69,7 @@ public class Car : IVehicle
   public Car() { }
 }
 var type = typeof(Car);
-var typeSupport = type.TypeSupport();
+var typeSupport = type.GetExtendedType();
 
 var isArray = typeSupport.HasEmptyConstructor; // true
 var attributes = typeSupport.Attributes;
@@ -85,7 +85,7 @@ public enum Colors : byte
   Blue = 3
 }
 var type = typeof(Colors);
-var typeSupport = type.TypeSupport();
+var typeSupport = type.GetExtendedType();
 
 var isEnum = typeSupport.IsEnum; // true
 var enumValues = typeSupport.EnumValues;
@@ -97,8 +97,8 @@ working with Tuples:
 ```csharp
 var tupleType = typeof(Tuple<int, string, double>);
 var valueTupleType = typeof((IVehicle, string));
-var tupleTypeSupport = type.TypeSupport();
-var valueTupleTypeSupport = valueTupleType.TypeSupport();
+var tupleTypeSupport = type.GetExtendedType();
+var valueTupleTypeSupport = valueTupleType.GetExtendedType();
 
 var isTuple = tupleTypeSupport.IsTuple; // true
 var isValueTuple = valueTupleTypeSupport.IsValueTuple; // true
