@@ -15,6 +15,19 @@ namespace TypeSupport
         /// Get the type registry
         /// </summary>
         public TypeRegistry TypeRegistry { get; }
+
+        /// <summary>
+        /// Create a factory for creating any type of object
+        /// </summary>
+        public ObjectFactory()
+        {
+
+        }
+
+        /// <summary>
+        /// Create a factory for creating any type of object
+        /// </summary>
+        /// <param name="typeRegistry">A type registry for custom mappings</param>
         public ObjectFactory(TypeRegistry typeRegistry)
         {
             TypeRegistry = typeRegistry;
