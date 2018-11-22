@@ -136,6 +136,8 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry, Func<object> initializer = null, int length = 0)
         {
+            if (string.IsNullOrEmpty(assemblyQualifiedFullName))
+                throw new ArgumentNullException(nameof(assemblyQualifiedFullName));
             var type = Type.GetType(assemblyQualifiedFullName);
             return CreateEmptyObject(type, typeRegistry, initializer, length);
         }
@@ -161,7 +163,9 @@ namespace TypeSupport
         /// <returns></returns>
         public T CreateEmptyObject<T>(Func<T> initializer = null, int length = 0)
         {
-            Func<object> init = () => initializer();
+            Func<object> init = null;
+            if (initializer != null)
+                init = () => initializer();
             return (T)CreateEmptyObject(typeof(T), init, length);
         }
 
