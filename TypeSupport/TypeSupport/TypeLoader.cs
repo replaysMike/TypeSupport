@@ -11,7 +11,7 @@ namespace TypeSupport
     /// <summary>
     /// Helper class for getting information about a <see cref="Type"/>
     /// </summary>
-    public class TypeSupport : IEquatable<TypeSupport>, IEquatable<Type>
+    public class TypeLoader : IEquatable<TypeLoader>, IEquatable<Type>
     {
         /// <summary>
         /// The type TypeSupport was created from
@@ -152,7 +152,7 @@ namespace TypeSupport
         /// Create a new type support
         /// </summary>
         /// <param name="type">The type to analyze</param>
-        public TypeSupport(Type type)
+        public TypeLoader(Type type)
         {
             Type = type ?? throw new ArgumentNullException();
             InspectType();
@@ -345,8 +345,13 @@ namespace TypeSupport
 
         public override bool Equals(object obj)
         {
-            var objTyped = (TypeSupport)obj;
+            var objTyped = (TypeLoader)obj;
             return objTyped.Type.Equals(Type);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override string ToString()
@@ -354,7 +359,7 @@ namespace TypeSupport
             return $"{Type.Name} ({UnderlyingType.Name})";
         }
 
-        public bool Equals(TypeSupport other)
+        public bool Equals(TypeLoader other)
         {
             return other.Type.Equals(Type);
         }
@@ -368,9 +373,9 @@ namespace TypeSupport
     /// <summary>
     /// Helper class for getting information about a <see cref="Type"/>
     /// </summary>
-    public class TypeSupport<T> : TypeSupport
+    public class TypeLoader<T> : TypeLoader
     {
-        public TypeSupport() : base(typeof(T))
+        public TypeLoader() : base(typeof(T))
         {
         }
     }

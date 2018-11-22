@@ -12,9 +12,9 @@ namespace TypeSupport.Extensions
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static TypeSupport TypeSupport(this Type type)
+        public static TypeLoader TypeSupport(this Type type)
         {
-            return new TypeSupport(type);
+            return new TypeLoader(type);
         }
     }
 }
