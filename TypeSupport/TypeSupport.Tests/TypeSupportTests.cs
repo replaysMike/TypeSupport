@@ -178,7 +178,7 @@ namespace TypeSupport.Tests
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsCollection);
             Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
-            Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
+            Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.First());
         }
 
         [Test]

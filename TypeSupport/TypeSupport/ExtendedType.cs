@@ -262,6 +262,7 @@ namespace TypeSupport
             }
 
             if (!Type.IsGenericType
+                && !Type.IsArray
                 && (
                     typeof(ICollection).IsAssignableFrom(Type)
                     || typeof(IList).IsAssignableFrom(Type)
@@ -271,6 +272,7 @@ namespace TypeSupport
             {
                 IsCollection = true;
                 ElementType = typeof(object);
+                GenericArgumentTypes.Add(typeof(object));
             }
 
             if (Type.IsGenericType
@@ -291,6 +293,13 @@ namespace TypeSupport
                     ElementNullableBaseType = GetNullableBaseType(ElementType);
             }
 
+            if (typeof(IDictionary).IsAssignableFrom(Type))
+            {
+                IsDictionary = true;
+                GenericArgumentTypes.Add(typeof(object));
+                GenericArgumentTypes.Add(typeof(object));
+                ElementType = typeof(object);
+            }
             if (Type.IsGenericType && (Type.GetGenericTypeDefinition() == typeof(Dictionary<,>) || Type.GetGenericTypeDefinition() == typeof(IDictionary<,>)))
                 IsDictionary = true;
             if (typeof(Delegate).IsAssignableFrom(Type))
