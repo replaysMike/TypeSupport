@@ -261,9 +261,27 @@ namespace TypeSupport
                 }
             }
 
+            if (!Type.IsGenericType
+                && (
+                    typeof(ICollection).IsAssignableFrom(Type)
+                    || typeof(IList).IsAssignableFrom(Type)
+                    || typeof(IList).IsAssignableFrom(Type)
+                )
+            )
+            {
+                IsCollection = true;
+                ElementType = typeof(object);
+            }
+
             if (Type.IsGenericType
-                && (typeof(ICollection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
-                || typeof(Collection<>).IsAssignableFrom(Type.GetGenericTypeDefinition()))
+                && (
+                    typeof(ICollection).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                    || typeof(IList) == Type
+                    || typeof(IList).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                    || typeof(IList<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                    || typeof(ICollection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                    || typeof(Collection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                )
             )
             {
                 IsCollection = true;

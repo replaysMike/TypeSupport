@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TypeSupport.Tests.TestObjects;
@@ -134,9 +135,44 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_GenericIList()
+        {
+            var type = typeof(IList<int>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsCollection);
+            Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
+            Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
+        }
+
+        [Test]
+        public void Should_Discover_IList()
+        {
+            var type = typeof(IList);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsCollection);
+            Assert.AreEqual(typeof(object), typeSupport.ElementType);
+        }
+
+        [Test]
         public void Should_Discover_GenericCollection()
         {
             var type = typeof(ICollection<int>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsCollection);
+            Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
+            Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
+        }
+
+        [Test]
+        public void Should_Discover_Collection()
+        {
+            var type = typeof(ICollection);
             var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
@@ -156,6 +192,19 @@ namespace TypeSupport.Tests
             Assert.AreEqual(2, typeSupport.GenericArgumentTypes.Count);
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
             Assert.AreEqual(typeof(double), typeSupport.GenericArgumentTypes.Skip(1).First());
+        }
+
+        [Test]
+        public void Should_Discover_Dictionary()
+        {
+            var type = typeof(IDictionary);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(2, typeSupport.GenericArgumentTypes.Count);
+            Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.First());
+            Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.Skip(1).First());
         }
 
         [Test]
