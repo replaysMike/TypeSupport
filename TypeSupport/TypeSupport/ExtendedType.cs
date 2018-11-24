@@ -129,6 +129,11 @@ namespace TypeSupport
         public ICollection<FieldInfo> Fields { get; private set; }
 
         /// <summary>
+        /// List of implemented interfaces
+        /// </summary>
+        public ICollection<Type> Interfaces { get; private set; }
+
+        /// <summary>
         /// The type TypeSupport was created from
         /// </summary>
         public Type Type { get; }
@@ -231,7 +236,7 @@ namespace TypeSupport
             IsInterface = Type.IsInterface;
             if (IsInterface)
                 KnownConcreteTypes = GetConcreteTypes(Type);
-
+            Interfaces = Type.GetInterfaces();
             IsEnum = Type.IsEnum;
             if (IsEnum)
             {
@@ -296,8 +301,6 @@ namespace TypeSupport
             if (typeof(IDictionary).IsAssignableFrom(Type))
             {
                 IsDictionary = true;
-                GenericArgumentTypes.Add(typeof(object));
-                GenericArgumentTypes.Add(typeof(object));
                 ElementType = typeof(object);
             }
             if (Type.IsGenericType && (Type.GetGenericTypeDefinition() == typeof(Dictionary<,>) || Type.GetGenericTypeDefinition() == typeof(IDictionary<,>)))

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -10,35 +9,6 @@ namespace TypeSupport.Extensions
     /// </summary>
     public static class ObjectExtensions
     {
-        /// <summary>
-        /// Get all of the properties of an object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static ICollection<PropertyInfo> GetProperties(this object obj)
-        {
-            var t = obj.GetType();
-            return t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        }
-
-        /// <summary>
-        /// Get all of the fields of an object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
-        /// <returns></returns>
-        public static ICollection<FieldInfo> GetFields(this object obj, bool includeAutoPropertyBackingFields = false)
-        {
-            var t = obj.GetType();
-            var allFields = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            if (!includeAutoPropertyBackingFields)
-            {
-                var allFieldsExcludingAutoPropertyFields = allFields.Where(x => !x.Name.Contains("k__BackingField")).ToList();
-                return allFieldsExcludingAutoPropertyFields;
-            }
-            return allFields;
-        }
-
         /// <summary>
         /// Get a property from an object instance
         /// </summary>

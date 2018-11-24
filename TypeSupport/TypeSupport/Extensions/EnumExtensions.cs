@@ -54,7 +54,7 @@ namespace TypeSupport.Extensions
         /// </summary>
         /// <param name="enumValue"></param>
         /// <returns></returns>
-        public static long AsByte(this Enum enumValue) => Convert.ToByte(enumValue);
+        public static byte AsByte(this Enum enumValue) => Convert.ToByte(enumValue);
 
         /// <summary>
         /// Convert an Enum to SByte
@@ -62,6 +62,37 @@ namespace TypeSupport.Extensions
         /// <param name="enumValue"></param>
         /// <returns></returns>
         public static sbyte AsSByte(this Enum enumValue) => Convert.ToSByte(enumValue);
+
+        public static bool BitwiseHasFlag<T>(this T flag, T value)
+            where T : struct
+        {
+            return (Convert.ToInt64(flag) & Convert.ToInt64(value)) == Convert.ToInt64(value);
+        }
+
+        public static bool BitwiseHasFlag(this Enum flag, Enum value)
+        {
+            return ((flag.AsLong() & value.AsLong()) == value.AsLong());
+        }
+
+        public static bool BitwiseHasFlag(this Enum flag, byte value)
+        {
+            return ((flag.AsByte() & value) == value);
+        }
+
+        public static bool BitwiseHasFlag(this Enum flag, short value)
+        {
+            return ((flag.AsShort() & value) == value);
+        }
+
+        public static bool BitwiseHasFlag(this Enum flag, int value)
+        {
+            return ((flag.AsInt() & value) == value);
+        }
+
+        public static bool BitwiseHasFlag(this Enum flag, long value)
+        {
+            return ((flag.AsLong() & value) == value);
+        }
 
         /// <summary>
         /// Convert a Bitmask/Enum flags to a List of Enum values

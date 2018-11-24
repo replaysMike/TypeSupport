@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TypeSupport.Tests.TestObjects;
+using TypeSupport.Extensions;
 
 namespace TypeSupport.Tests
 {
@@ -202,9 +203,8 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsDictionary);
-            Assert.AreEqual(2, typeSupport.GenericArgumentTypes.Count);
+            Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
             Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.First());
-            Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.Skip(1).First());
         }
 
         [Test]
@@ -249,6 +249,38 @@ namespace TypeSupport.Tests
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsEnumerable);
             Assert.AreEqual(typeof(int), typeSupport.ElementType);
+        }
+
+        [Test]
+        public void Should_Discover_AutoProperties()
+        {
+            var type = typeof(BasicObject);
+            var properties = type.GetProperties(PropertyOptions.All);
+
+            Assert.AreEqual(1, properties.Where(x => x.IsAutoProperty).Count());
+            Assert.AreEqual(true, properties.First().IsAutoProperty);
+            Assert.AreEqual(false, string.IsNullOrEmpty(properties.First().BackingFieldName));
+        }
+
+        [Test]
+        public void Should_Discover_AutoPropertyFields()
+        {
+            var type = typeof(BasicObject);
+            var fields = type.GetFields(FieldOptions.BackingFields);
+
+            Assert.AreEqual(1, fields.Count);
+            Assert.AreEqual(true, fields.First().IsBackingField);
+            Assert.AreEqual(false, string.IsNullOrEmpty(fields.First().BackedPropertyName));
+        }
+
+        [Test]
+        public void Should_Succeeed_EnumBitwiseFlagSupport()
+        {
+            var options = PropertyOptions.HasGetter | PropertyOptions.HasSetter;
+            Assert.IsTrue(options.BitwiseHasFlag<PropertyOptions>(PropertyOptions.HasSetter));
+            Assert.IsTrue(options.BitwiseHasFlag<PropertyOptions>(PropertyOptions.HasGetter));
+            Assert.IsFalse(options.BitwiseHasFlag<PropertyOptions>(PropertyOptions.Private));
+            Assert.IsFalse(options.BitwiseHasFlag<PropertyOptions>(PropertyOptions.Public));
         }
     }
 }

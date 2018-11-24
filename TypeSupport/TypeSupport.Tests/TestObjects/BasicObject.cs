@@ -2,7 +2,16 @@
 {
     public class BasicObject
     {
+        private int _test;
         public int Id { get; set; }
+
+        public int Test
+        {
+            get
+            {
+                return _test;
+            }
+        }
 
         public BasicObject(int id)
         {
