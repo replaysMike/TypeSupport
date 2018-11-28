@@ -28,5 +28,13 @@ namespace TypeSupport.Extensions
         /// All auto-property backing fields
         /// </summary>
         BackingFields = 8,
+        /// <summary>
+        /// All constant fields
+        /// </summary>
+        Constants = 16,
+        /// <summary>
+        /// All writable fields (all fields except constants)
+        /// </summary>
+        AllWritable = 32
     }
 }

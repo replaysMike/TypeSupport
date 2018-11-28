@@ -274,6 +274,43 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_AnonymousTypes()
+        {
+            var anonymous = new { Test1 = 1, Test2 = "string" };
+            var type = anonymous.GetType();
+            var typeSupport = new ExtendedType(type);
+
+            Assert.AreEqual(true, typeSupport.IsAnonymous);
+        }
+
+        [Test]
+        public void Should_Discover_ReadOnlyFields()
+        {
+            var type = typeof(ReadOnlyObject);
+            var fields = type.GetFields(FieldOptions.All);
+
+            Assert.AreEqual(1, fields.Count);
+        }
+
+        [Test]
+        public void Should_Discover_InheritedFields()
+        {
+            var type = typeof(InheritedObject);
+            var fields = type.GetFields(FieldOptions.All);
+
+            Assert.AreEqual(4, fields.Count);
+        }
+
+        [Test]
+        public void Should_Discover_InheritedProperties()
+        {
+            var type = typeof(InheritedObject);
+            var properties = type.GetProperties(PropertyOptions.All);
+
+            Assert.AreEqual(2, properties.Count);
+        }
+
+        [Test]
         public void Should_Succeeed_EnumBitwiseFlagSupport()
         {
             var options = PropertyOptions.HasGetter | PropertyOptions.HasSetter;

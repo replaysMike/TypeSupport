@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -17,7 +18,13 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static ICollection<ExtendedProperty> GetProperties(this Type type, PropertyOptions options)
         {
-            var allProperties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            if (type == null)
+                return new List<ExtendedProperty>();
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            var allProperties = type.GetProperties(flags);
+            var allFields = type.GetProperties(flags)
+                .Select(x => (ExtendedProperty)x)
+                .Concat(GetProperties(type.BaseType, options));
             IEnumerable<PropertyInfo> returnProperties = allProperties;
 
             if (options.HasFlag(PropertyOptions.Public))
@@ -43,18 +50,52 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static ICollection<ExtendedField> GetFields(this Type type, FieldOptions options)
         {
-            var allFields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            IEnumerable<FieldInfo> returnFields = allFields;
+            if (type == null)
+                return new List<ExtendedField>();
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+            var allFields = type.GetFields(flags)
+                .Select(x => (ExtendedField)x)
+                .Concat(GetFields(type.BaseType, options));
+            IEnumerable<ExtendedField> returnFields = allFields;
+
+            if (options.HasFlag(FieldOptions.AllWritable))
+            {
+                returnFields = returnFields.Where(x => !x.FieldInfo.IsLiteral);
+            }
 
             if (options.HasFlag(FieldOptions.Public))
-                returnFields = returnFields.Where(x => x.IsPublic);
+                returnFields = returnFields.Where(x => x.FieldInfo.IsPublic);
             if (options.HasFlag(FieldOptions.Private))
-                returnFields = returnFields.Where(x => x.IsPrivate);
+                returnFields = returnFields.Where(x => x.FieldInfo.IsPrivate);
             if (options.HasFlag(FieldOptions.Static))
-                returnFields = returnFields.Where(x => x.IsStatic);
+                returnFields = returnFields.Where(x => x.FieldInfo.IsStatic);
             if (options.HasFlag(FieldOptions.BackingFields))
                 returnFields = allFields.Where(x => x.Name.Contains("k__BackingField"));
+            if (options.HasFlag(FieldOptions.Constants))
+                returnFields = returnFields.Where(x => x.FieldInfo.IsLiteral);
             return returnFields.Select(x => (ExtendedField)x).ToList();
+        }
+
+        /// <summary>
+        /// Get an extended property object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static ExtendedProperty GetExtendedProperty(this Type type, string name)
+        {
+            return type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+
+        /// <summary>
+        /// Get an extended field object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static ExtendedField GetExtendedField(this Type type, string name)
+        {
+            return type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         }
     }
 }

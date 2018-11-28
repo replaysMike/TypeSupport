@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -9,6 +10,27 @@ namespace TypeSupport.Extensions
     /// </summary>
     public static class ObjectExtensions
     {
+        /// <summary>
+        /// Get all of the properties of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static ICollection<ExtendedProperty> GetProperties(this object obj, PropertyOptions options)
+        {
+            return obj.GetType().GetProperties(options);
+        }
+
+        /// <summary>
+        /// Get all of the fields of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <returns></returns>
+        public static ICollection<ExtendedField> GetFields(this object obj, FieldOptions options)
+        {
+            return obj.GetType().GetFields(options);
+        }
+
         /// <summary>
         /// Get a property from an object instance
         /// </summary>
@@ -87,8 +109,7 @@ namespace TypeSupport.Extensions
         /// <param name="obj"></param>
         /// <param name="property"></param>
         /// <param name="valueToSet"></param>
-        /// <param name="path"></param>
-        public static void SetPropertyValue(this object obj, PropertyInfo property, object valueToSet, string path)
+        public static void SetPropertyValue(this object obj, PropertyInfo property, object valueToSet)
         {
             try
             {
@@ -118,12 +139,46 @@ namespace TypeSupport.Extensions
         /// <param name="obj"></param>
         /// <param name="field"></param>
         /// <param name="valueToSet"></param>
-        /// <param name="path"></param>
-        public static void SetFieldValue(this object obj, FieldInfo field, object valueToSet, string path)
+        public static void SetFieldValue(this object obj, FieldInfo field, object valueToSet)
         {
             try
             {
                 field.SetValue(obj, valueToSet);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a property on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="property"></param>
+        public static object GetPropertyValue(this object obj, ExtendedProperty property)
+        {
+            try
+            {
+                return property.PropertyInfo.GetValue(obj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a field on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="field"></param>
+        /// <param name="valueToSet"></param>
+        public static object GetFieldValue(this object obj, ExtendedField field)
+        {
+            try
+            {
+                return field.FieldInfo.GetValue(obj);
             }
             catch (Exception ex)
             {

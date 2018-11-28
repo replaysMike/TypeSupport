@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using TypeSupport.Extensions;
 
 namespace TypeSupport
@@ -97,6 +98,11 @@ namespace TypeSupport
         /// True if the type contains an indexer
         /// </summary>
         public bool HasIndexer { get; private set; }
+
+        /// <summary>
+        /// True if the type is an anonymous type
+        /// </summary>
+        public bool IsAnonymous { get; private set; }
 
         /// <summary>
         /// For enum types the list of valid values of the Enum
@@ -325,6 +331,12 @@ namespace TypeSupport
             var nullableBaseType = GetNullableBaseType(Type);
             NullableBaseType = nullableBaseType ?? Type;
             IsNullable = nullableBaseType != null;
+
+            // anonymous
+            IsAnonymous = Attribute.IsDefined(Type, typeof(CompilerGeneratedAttribute), false)
+                && Type.IsGenericType && Type.Name.Contains("AnonymousType")
+                && (Type.Name.StartsWith("<>") || Type.Name.StartsWith("VB$"))
+                && (Type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
         }
 
         /// <summary>

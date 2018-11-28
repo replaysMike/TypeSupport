@@ -9,8 +9,9 @@
     <PackageReleaseNotes>TypeSupport provides tools to give you more information about .Net types and factories for working with objects, collections, enums and more.</PackageReleaseNotes>
     <Company>Refactor Software</Company>
     <Authors>Michael Brown</Authors>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <Version>1.0.4</Version>
+    <FileVersion>1.0.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

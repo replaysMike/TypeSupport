@@ -36,7 +36,7 @@ namespace TypeSupport
         /// <summary>
         /// Gets a collection that contains this member's custom attributes
         /// </summary>
-        IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.CustomAttributes;
+        public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.CustomAttributes;
 
         /// <summary>
         /// True if an auto-backed property
@@ -90,14 +90,14 @@ namespace TypeSupport
             }
         }
 
-        public static explicit operator ExtendedProperty(PropertyInfo propertyInfo)
+        public static implicit operator ExtendedProperty(PropertyInfo propertyInfo)
         {
             if (propertyInfo == null)
                 return null;
             return new ExtendedProperty(propertyInfo);
         }
 
-        public static explicit operator PropertyInfo(ExtendedProperty extendedProperty)
+        public static implicit operator PropertyInfo(ExtendedProperty extendedProperty)
         {
             if (extendedProperty == null)
                 return null;

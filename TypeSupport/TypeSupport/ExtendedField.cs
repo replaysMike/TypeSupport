@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using TypeSupport.Extensions;
 
 namespace TypeSupport
 {
@@ -34,7 +35,7 @@ namespace TypeSupport
         /// <summary>
         /// Gets a collection that contains this member's custom attributes
         /// </summary>
-        IEnumerable<CustomAttributeData> CustomAttributes => _fieldInfo.CustomAttributes;
+        public IEnumerable<CustomAttributeData> CustomAttributes => _fieldInfo.CustomAttributes;
 
         /// <summary>
         /// True if this field backs an auto-property
@@ -45,6 +46,11 @@ namespace TypeSupport
         /// For backing fields, the property name it stores data for
         /// </summary>
         public string BackedPropertyName { get; private set; }
+
+        /// <summary>
+        /// For backing fields, the property it stores data for
+        /// </summary>
+        public ExtendedProperty BackedProperty { get; private set; }
 
         /// <summary>
         /// Create an extended field
@@ -59,18 +65,19 @@ namespace TypeSupport
                 IsBackingField = true;
                 var i = fieldInfo.Name.IndexOf("<");
                 var end = fieldInfo.Name.IndexOf(">", i + 1);
-                BackedPropertyName = fieldInfo.Name.Substring(i + 1, end - (i + 1)); 
+                BackedPropertyName = fieldInfo.Name.Substring(i + 1, end - (i + 1));
+                BackedProperty = ReflectedType.GetExtendedProperty(BackedPropertyName);
             }
         }
 
-        public static explicit operator ExtendedField(FieldInfo fieldInfo)
+        public static implicit operator ExtendedField(FieldInfo fieldInfo)
         {
             if (fieldInfo == null)
                 return null;
             return new ExtendedField(fieldInfo);
         }
 
-        public static explicit operator FieldInfo(ExtendedField extendedField)
+        public static implicit operator FieldInfo(ExtendedField extendedField)
         {
             if (extendedField == null)
                 return null;
