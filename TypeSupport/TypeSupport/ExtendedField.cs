@@ -60,7 +60,7 @@ namespace TypeSupport
         public ExtendedField(FieldInfo fieldInfo)
         {
             _fieldInfo = fieldInfo;
-            if (fieldInfo.Name.Contains("k__BackingField"))
+            if (fieldInfo.Name.Contains("k__BackingField") || fieldInfo.Name.StartsWith("<"))
             {
                 IsBackingField = true;
                 var i = fieldInfo.Name.IndexOf("<");

@@ -274,6 +274,16 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_AutoPropertyFieldsOnAnonymousTypes()
+        {
+            var obj1 = new { Field1 = "Test" };
+            var fields = obj1.GetFields(FieldOptions.BackingFields);
+            Assert.AreEqual(1, fields.Count);
+            Assert.AreEqual(true, fields.First().IsBackingField);
+            Assert.AreEqual(false, string.IsNullOrEmpty(fields.First().BackedPropertyName));
+        }
+
+        [Test]
         public void Should_Discover_AnonymousTypes()
         {
             var anonymous = new { Test1 = 1, Test2 = "string" };

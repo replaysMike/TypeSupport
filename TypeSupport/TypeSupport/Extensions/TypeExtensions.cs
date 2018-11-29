@@ -70,7 +70,7 @@ namespace TypeSupport.Extensions
             if (options.HasFlag(FieldOptions.Static))
                 returnFields = returnFields.Where(x => x.FieldInfo.IsStatic);
             if (options.HasFlag(FieldOptions.BackingFields))
-                returnFields = allFields.Where(x => x.Name.Contains("k__BackingField"));
+                returnFields = allFields.Where(x => x.IsBackingField);
             if (options.HasFlag(FieldOptions.Constants))
                 returnFields = returnFields.Where(x => x.FieldInfo.IsLiteral);
             return returnFields.Select(x => (ExtendedField)x).ToList();
