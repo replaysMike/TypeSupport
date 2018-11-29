@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using TypeSupport.Extensions;
 
 namespace TypeSupport
 {
@@ -84,7 +86,36 @@ namespace TypeSupport
             else if (typeSupport.IsEnumerable && !typeSupport.IsImmutable)
             {
                 var genericType = typeSupport.Type.GetGenericArguments().FirstOrDefault();
-                if (genericType != null)
+                // test specifically for ICollection and List
+                var isGenericCollection = typeSupport.Type.IsGenericType
+                            && typeSupport.Type.GetGenericTypeDefinition() == typeof(ICollection<>);
+                var isGenericList = typeSupport.Type.IsGenericType
+                            && typeSupport.Type.GetGenericTypeDefinition() == typeof(List<>);
+                var isGenericIList = typeSupport.Type.IsGenericType
+                           && typeSupport.Type.GetGenericTypeDefinition() == typeof(IList<>);
+                if (!isGenericList && !isGenericIList && !isGenericCollection)
+                {
+                    var constructors = typeSupport.Type.GetConstructors(ConstructorOptions.All);
+                    if (typeSupport.HasEmptyConstructor)
+                    {
+                        var newList = Activator.CreateInstance(typeSupport.Type);
+                        return newList;
+                    }
+                    else if (typeSupport.Constructors.Any())
+                    {
+                        // special handling is required here as custom collections can't be properly
+                        // initialized using FormatterServices.GetUninitializedObject()
+                        var constructor = typeSupport.Constructors.First();
+                        var parameters = constructor.GetParameters();
+                        var param = new List<object>();
+                        // initialize using defaults for constructor parameters
+                        foreach (var p in parameters)
+                            param.Add(CreateEmptyObject(p.ParameterType));
+                        var newList = Activator.CreateInstance(typeSupport.Type, param.ToArray());
+                        return newList;
+                    }
+                }
+                else if (genericType != null)
                 {
                     var listType = typeof(List<>).MakeGenericType(genericType);
                     var newList = (IList)Activator.CreateInstance(listType);

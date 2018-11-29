@@ -77,6 +77,26 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get a list of all constructors of a type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static ICollection<ConstructorInfo> GetConstructors(this Type type, ConstructorOptions options)
+        {
+            if (type == null)
+                return new List<ConstructorInfo>();
+            var allConstructors = type.GetConstructors()
+                .Concat(GetConstructors(type.BaseType != typeof(object) ? type.BaseType : null, options));
+            IEnumerable<ConstructorInfo> returnFields = allConstructors;
+            if (options.HasFlag(ConstructorOptions.EmptyConstructor))
+                returnFields = returnFields.Where(x => x.GetParameters().Any() == false);
+            if (options.HasFlag(ConstructorOptions.NonEmptyConstructor))
+                returnFields = returnFields.Where(x => x.GetParameters().Any() == true);
+
+            return returnFields.ToList();
+        }
+
+        /// <summary>
         /// Get an extended property object by name
         /// </summary>
         /// <param name="type"></param>

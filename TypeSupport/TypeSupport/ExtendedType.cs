@@ -20,6 +20,11 @@ namespace TypeSupport
         public bool HasEmptyConstructor { get; private set; }
 
         /// <summary>
+        /// True if a base type has an empty constructor defined
+        /// </summary>
+        public bool BaseHasEmptyConstructor { get; private set; }
+
+        /// <summary>
         /// True if the type is abstract
         /// </summary>
         public bool IsAbstract { get; private set; }
@@ -140,6 +145,16 @@ namespace TypeSupport
         public ICollection<Type> Interfaces { get; private set; }
 
         /// <summary>
+        /// All constructors
+        /// </summary>
+        public ICollection<ConstructorInfo> Constructors { get; private set; }
+
+        /// <summary>
+        /// All empty constructors
+        /// </summary>
+        public ICollection<ConstructorInfo> EmptyConstructors { get; private set; }
+
+        /// <summary>
         /// The type TypeSupport was created from
         /// </summary>
         public Type Type { get; }
@@ -217,8 +232,13 @@ namespace TypeSupport
             if (Type.CustomAttributes.Any())
                 Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
 
+            var allConstructors = Type.GetConstructors(ConstructorOptions.All);
+            var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == true).ToList();
             var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
             HasEmptyConstructor = Type.IsValueType || emptyConstructorDefined != null;
+            BaseHasEmptyConstructor = (Type.BaseType?.IsValueType == true || allEmptyConstructors?.Any() == true);
+            Constructors = allConstructors;
+            EmptyConstructors = allEmptyConstructors;
 
             ConcreteType = Type;
             IsAbstract = Type.IsAbstract;
