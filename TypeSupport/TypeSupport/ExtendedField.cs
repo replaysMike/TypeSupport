@@ -32,10 +32,17 @@ namespace TypeSupport
         /// </summary>
         public Type ReflectedType => _fieldInfo.ReflectedType;
 
+#if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
         /// Gets a collection that contains this member's custom attributes
         /// </summary>
         public IEnumerable<CustomAttributeData> CustomAttributes => _fieldInfo.CustomAttributes;
+#else
+        /// <summary>
+        /// Gets a collection that contains this member's custom attributes
+        /// </summary>
+        public IEnumerable<CustomAttributeData> CustomAttributes => _fieldInfo.GetCustomAttributesData();
+#endif
 
         /// <summary>
         /// True if this field backs an auto-property

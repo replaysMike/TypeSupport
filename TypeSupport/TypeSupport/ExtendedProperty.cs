@@ -33,11 +33,14 @@ namespace TypeSupport
         /// </summary>
         public Type ReflectedType => _propertyInfo.ReflectedType;
 
+#if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
         /// Gets a collection that contains this member's custom attributes
         /// </summary>
         public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.CustomAttributes;
-
+#else
+        public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.GetCustomAttributesData();
+#endif
         /// <summary>
         /// True if an auto-backed property
         /// </summary>
@@ -48,6 +51,7 @@ namespace TypeSupport
         /// </summary>
         public string BackingFieldName { get; }
 
+#if FEATURE_GETMETHOD
         /// <summary>
         /// True if property has a get method
         /// </summary>
@@ -57,6 +61,17 @@ namespace TypeSupport
         /// True if property has a set method
         /// </summary>
         public bool HasSetMethod => _propertyInfo.SetMethod != null;
+#else
+        /// <summary>
+        /// True if property has a get method
+        /// </summary>
+        public bool HasGetMethod => _propertyInfo.GetGetMethod(true) != null;
+        
+        /// <summary>
+        /// True if property has a set method
+        /// </summary>
+        public bool HasSetMethod => _propertyInfo.GetSetMethod(true) != null;
+#endif
 
         /// <summary>
         /// The getter method for the property

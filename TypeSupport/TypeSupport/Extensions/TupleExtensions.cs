@@ -15,6 +15,7 @@ namespace TypeSupport.Extensions
         /// </summary>
         private static readonly HashSet<Type> ValueTupleTypes = new HashSet<Type>(new Type[]
         {
+#if FEATURE_CUSTOM_VALUETUPLE
             typeof(ValueTuple<>),
             typeof(ValueTuple<,>),
             typeof(ValueTuple<,,>),
@@ -23,6 +24,7 @@ namespace TypeSupport.Extensions
             typeof(ValueTuple<,,,,,>),
             typeof(ValueTuple<,,,,,,>),
             typeof(ValueTuple<,,,,,,,>)
+#endif
         });
 
         /// <summary>
@@ -83,8 +85,13 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static bool IsValueTupleType(this Type type)
         {
+#if FEATURE_CUSTOM_TYPEINFO
             return type.GetTypeInfo().IsGenericType
                 && ValueTupleTypes.Contains(type.GetGenericTypeDefinition());
+#else
+            return type.IsGenericType
+                && ValueTupleTypes.Contains(type.GetGenericTypeDefinition());
+#endif
         }
 
         /// <summary>
@@ -94,8 +101,13 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static bool IsTupleType(this Type type)
         {
+#if FEATURE_CUSTOM_TYPEINFO
             return type.GetTypeInfo().IsGenericType
                 && TupleTypes.Contains(type.GetGenericTypeDefinition());
+#else
+            return type.IsGenericType
+                && TupleTypes.Contains(type.GetGenericTypeDefinition());
+#endif
         }
 
         /// <summary>

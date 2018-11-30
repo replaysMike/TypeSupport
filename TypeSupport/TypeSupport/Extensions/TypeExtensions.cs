@@ -31,10 +31,17 @@ namespace TypeSupport.Extensions
                 returnProperties = returnProperties.Where(x => x.GetGetMethod(true).IsPublic && x.GetSetMethod(true).IsPublic);
             if (options.HasFlag(PropertyOptions.Private))
                 returnProperties = returnProperties.Where(x => x.GetGetMethod(true).IsPrivate && x.GetSetMethod(true).IsPrivate);
+#if FEATURE_CUSTOM_ATTRIBUTES
             if (options.HasFlag(PropertyOptions.HasSetter))
                 returnProperties = returnProperties.Where(x => x.SetMethod != null);
             if (options.HasFlag(PropertyOptions.HasGetter))
                 returnProperties = returnProperties.Where(x => x.GetMethod != null);
+#else
+            if (options.HasFlag(PropertyOptions.HasSetter))
+                returnProperties = returnProperties.Where(x => x.GetSetMethod(true) != null);
+            if (options.HasFlag(PropertyOptions.HasGetter))
+                returnProperties = returnProperties.Where(x => x.GetGetMethod(true) != null);
+#endif
             if (options.HasFlag(PropertyOptions.HasIndexer))
                 returnProperties = returnProperties.Where(x => x.GetIndexParameters().Any());
 

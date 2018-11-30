@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net40;net45;net46</TargetFrameworks>
     <PackageProjectUrl>https://github.com/replaysMike/TypeSupport</PackageProjectUrl>
     <RepositoryUrl>https://github.com/replaysMike/TypeSupport</RepositoryUrl>
     <PackageTags>type support utility reflection tools</PackageTags>
@@ -9,12 +9,20 @@
     <PackageReleaseNotes>TypeSupport provides tools to give you more information about .Net types and factories for working with objects, collections, enums and more.</PackageReleaseNotes>
     <Company>Refactor Software</Company>
     <Authors>Michael Brown</Authors>
-    <AssemblyVersion>1.0.6.0</AssemblyVersion>
-    <Version>1.0.6</Version>
-    <FileVersion>1.0.6.0</FileVersion>
+    <AssemblyVersion>1.0.7.0</AssemblyVersion>
+    <Version>1.0.7</Version>
+    <FileVersion>1.0.7.0</FileVersion>
   </PropertyGroup>
 
-  <ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46'">
+    <DefineConstants>FEATURE_CUSTOM_ATTRIBUTES;FEATURE_CUSTOM_TYPEINFO;FEATURE_GETMETHOD;FEATURE_SETVALUE;FEATURE_TASK;FEATURE_ASSEMBLYBUILDER</DefineConstants>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<DefineConstants>FEATURE_CUSTOM_VALUETUPLE;FEATURE_CUSTOM_ATTRIBUTES;FEATURE_CUSTOM_TYPEINFO;FEATURE_GETMETHOD;FEATURE_SETVALUE;FEATURE_TASK;FEATURE_ASSEMBLYBUILDER</DefineConstants>
+	</PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
 

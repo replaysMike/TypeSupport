@@ -34,7 +34,11 @@ namespace TypeSupport.Assembly
                     // Create the assembly and cache it
                     var name = new AssemblyName(assemblyName);
                     var domain = System.Threading.Thread.GetDomain();
+#if FEATURE_ASSEMBLYBUILDER
                     var assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+#else
+                    var assembly = domain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+#endif
                     var module = assembly.DefineDynamicModule(name.Name);
                     var assemblyManager = new AssemblyManager(name, assembly, module, domain);
 

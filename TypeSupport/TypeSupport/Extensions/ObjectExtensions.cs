@@ -67,11 +67,19 @@ namespace TypeSupport.Extensions
             var property = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (property != null)
             {
+#if FEATURE_GETMETHOD
                 if (property.SetMethod != null)
+#else
+                if (property.GetSetMethod(true) != null)
+#endif
                 {
                     var indexParameters = property.GetIndexParameters();
                     if (!indexParameters.Any())
+#if FEATURE_SETVALUE
                         property.SetValue(obj, valueToSet);
+#else
+                        property.SetValue(obj, valueToSet, null);
+#endif
                 }
                 else
                 {
@@ -113,11 +121,19 @@ namespace TypeSupport.Extensions
         {
             try
             {
+#if FEATURE_GETMETHOD
                 if (property.SetMethod != null)
+#else
+                if (property.GetSetMethod(true) != null)
+#endif
                 {
                     var indexParameters = property.GetIndexParameters();
                     if (!indexParameters.Any())
+#if FEATURE_SETVALUE
                         property.SetValue(obj, valueToSet);
+#else
+                        property.SetValue(obj, valueToSet, null);
+#endif
                 }
                 else
                 {
@@ -160,7 +176,11 @@ namespace TypeSupport.Extensions
         {
             try
             {
+#if FEATURE_SETVALUE
                 return property.PropertyInfo.GetValue(obj);
+#else
+                return property.PropertyInfo.GetValue(obj, null);
+#endif                
             }
             catch (Exception ex)
             {

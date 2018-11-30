@@ -227,11 +227,15 @@ namespace TypeSupport
             GenericArgumentTypes = new List<Type>();
             KnownConcreteTypes = new List<Type>();
             EnumValues = new List<KeyValuePair<object, string>>();
-
+#if FEATURE_CUSTOM_ATTRIBUTES
             // attributes
             if (Type.CustomAttributes.Any())
                 Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
-
+#else
+            // attributes
+            if (Type.GetCustomAttributesData().Any())
+                Attributes = Type.GetCustomAttributesData().Select(x => x.GetType()).ToList();
+#endif
             var allConstructors = Type.GetConstructors(ConstructorOptions.All);
             var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == true).ToList();
             var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);

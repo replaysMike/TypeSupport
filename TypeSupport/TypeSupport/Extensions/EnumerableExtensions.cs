@@ -21,6 +21,7 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static Task ForEachAsync<T>(this IEnumerable<T> source, int degreeOfParallelism, Func<T, Task> body)
         {
+#if FEATURE_TASK
             return Task.WhenAll(
                 from partition in Partitioner.Create(source).GetPartitions(degreeOfParallelism)
                 select Task.Run(async delegate {
@@ -28,6 +29,17 @@ namespace TypeSupport.Extensions
                         while (partition.MoveNext())
                             await body(partition.Current);
                 }));
+#else
+            var taskFactory = new TaskFactory();
+            var tasks = from partition in Partitioner.Create(source).GetPartitions(degreeOfParallelism)
+                        select taskFactory.StartNew(delegate
+                        {
+                            using (partition)
+                                while (partition.MoveNext())
+                                    body(partition.Current);
+                        });
+            return taskFactory.ContinueWhenAll(tasks.ToArray(), continuation => { }, TaskContinuationOptions.ExecuteSynchronously);
+#endif
         }
 
         /// <summary>
