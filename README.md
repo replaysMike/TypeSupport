@@ -1,6 +1,7 @@
 # TypeSupport
 [![nuget](https://img.shields.io/nuget/v/TypeSupport.svg)](https://www.nuget.org/packages/TypeSupport/)
 [![nuget](https://img.shields.io/nuget/dt/TypeSupport.svg)](https://www.nuget.org/packages/TypeSupport/)
+[![Build status](https://ci.appveyor.com/api/projects/status/swv5vcad12nrwohk?svg=true)](https://ci.appveyor.com/project/MichaelBrown/typesupport)
 
 A CSharp library that makes it easier to work with Types dynamically. TypeSupport includes a flexible Object factory for creating and initializing all kinds of types.
 
