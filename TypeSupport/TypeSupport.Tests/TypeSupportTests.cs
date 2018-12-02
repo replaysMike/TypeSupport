@@ -122,6 +122,7 @@ namespace TypeSupport.Tests
             Assert.AreEqual(typeof(double), typeSupport.GenericArgumentTypes.Skip(1).First());
         }
 
+#if FEATURE_CUSTOM_VALUETUPLE
         [Test]
         public void Should_Discover_ValueTuple()
         {
@@ -134,6 +135,7 @@ namespace TypeSupport.Tests
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
             Assert.AreEqual(typeof(double), typeSupport.GenericArgumentTypes.Skip(1).First());
         }
+#endif
 
         [Test]
         public void Should_Discover_GenericIList()

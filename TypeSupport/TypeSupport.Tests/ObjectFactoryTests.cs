@@ -95,6 +95,7 @@ namespace TypeSupport.Tests
             Assert.AreEqual(typeof(byte[]), instance.GetType());
         }
 
+#if FEATURE_CUSTOM_VALUETUPLE
         [Test]
         public void Should_CreateValueTuple()
         {
@@ -104,6 +105,7 @@ namespace TypeSupport.Tests
             Assert.NotNull(instance);
             Assert.AreEqual(typeof((int,string)), instance.GetType());
         }
+#endif
 
         [Test]
         public void Should_CreateTuple()
