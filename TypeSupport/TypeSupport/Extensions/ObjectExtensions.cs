@@ -189,16 +189,150 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get the value of a property on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="property"></param>
+        public static T GetPropertyValue<T>(this object obj, ExtendedProperty property)
+        {
+            try
+            {
+#if FEATURE_SETVALUE
+                return (T)property.PropertyInfo.GetValue(obj);
+#else
+                return (T)property.PropertyInfo.GetValue(obj, null);
+#endif                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a property on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Name of property</param>
+        public static object GetPropertyValue(this object obj, string name)
+        {
+            var type = obj.GetType();
+            var property = type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            if (property == null)
+                throw new InvalidOperationException($"Unknown property name: {name}");
+
+            try
+            {
+#if FEATURE_SETVALUE
+                return property.GetValue(obj);
+#else
+                return property.GetValue(obj, null);
+#endif                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a property on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Name of property</param>
+        public static T GetPropertyValue<T>(this object obj, string name)
+        {
+            var type = obj.GetType();
+            var property = type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            if (property == null)
+                throw new InvalidOperationException($"Unknown property name: '{name}'");
+            if(property.PropertyType != typeof(T))
+                throw new InvalidOperationException($"Specified property '{name}' is of a different type '{typeof(T)}'");
+            try
+            {
+#if FEATURE_SETVALUE
+                return (T)property.GetValue(obj);
+#else
+                return (T)property.GetValue(obj, null);
+#endif                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// Get the value of a field on an object
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="field"></param>
-        /// <param name="valueToSet"></param>
         public static object GetFieldValue(this object obj, ExtendedField field)
         {
             try
             {
                 return field.FieldInfo.GetValue(obj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a field on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="field"></param>
+        public static T GetFieldValue<T>(this object obj, ExtendedField field)
+        {
+            try
+            {
+                return (T)field.FieldInfo.GetValue(obj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a field on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Name of field</param>
+        public static object GetFieldValue(this object obj, string name)
+        {
+            var type = obj.GetType();
+            var field = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            if (field == null)
+                throw new InvalidOperationException($"Unknown field name: {name}");
+            try
+            {
+                return field.GetValue(obj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the value of a field on an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Name of field</param>
+        public static T GetFieldValue<T>(this object obj, string name)
+        {
+            var type = obj.GetType();
+            var field = type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            if (field == null)
+                throw new InvalidOperationException($"Unknown field name: '{name}'");
+            if (field.FieldType != typeof(T))
+                throw new InvalidOperationException($"Specified field '{name}' is of a different type '{typeof(T)}'");
+            try
+            {
+                return (T)field.GetValue(obj);
             }
             catch (Exception ex)
             {
