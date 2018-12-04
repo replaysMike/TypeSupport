@@ -203,10 +203,29 @@ namespace TypeSupport
         /// Create a new type support
         /// </summary>
         /// <param name="type">The type to analyze</param>
-        public ExtendedType(Type type)
+        public ExtendedType(Type type) : this(type, TypeSupportOptions.All)
+        {
+        }
+
+        /// <summary>
+        /// Create a new type support
+        /// </summary>
+        /// <param name="type">The type to analyze</param>
+        /// <param name="options">The type support inspection options</param>
+        public ExtendedType(Type type, TypeSupportOptions options)
         {
             Type = type ?? throw new ArgumentNullException();
-            InspectType();
+            Attributes = new List<Type>();
+            Interfaces = new List<Type>();
+            GenericArgumentTypes = new List<Type>();
+            KnownConcreteTypes = new List<Type>();
+            EnumValues = new List<KeyValuePair<object, string>>();
+            Properties = new List<PropertyInfo>();
+            Fields = new List<FieldInfo>();
+            Constructors = new List<ConstructorInfo>();
+            EmptyConstructors = new List<ConstructorInfo>();
+
+            InspectType(options);
         }
 
         /// <summary>
@@ -215,34 +234,39 @@ namespace TypeSupport
         /// <param name="concreteObject"></param>
         public void SetConcreteTypeFromInstance(object concreteObject)
         {
-            if(concreteObject != null)
+            if (concreteObject != null)
                 ConcreteType = concreteObject.GetType();
         }
 
-        private void InspectType()
+        private void InspectType(TypeSupportOptions options)
         {
-            Properties = Type.GetProperties();
-            Fields = Type.GetFields();
-            Attributes = new List<Type>();
-            GenericArgumentTypes = new List<Type>();
-            KnownConcreteTypes = new List<Type>();
-            EnumValues = new List<KeyValuePair<object, string>>();
+            if (options.BitwiseHasFlag(TypeSupportOptions.Properties))
+                Properties = Type.GetProperties();
+            if (options.BitwiseHasFlag(TypeSupportOptions.Fields))
+                Fields = Type.GetFields();
+
+            if (options.BitwiseHasFlag(TypeSupportOptions.Attributes))
+            {
 #if FEATURE_CUSTOM_ATTRIBUTES
-            // attributes
-            if (Type.CustomAttributes.Any())
-                Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
+                if (Type.CustomAttributes.Any())
+                    Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
 #else
             // attributes
             if (Type.GetCustomAttributesData().Any())
-                Attributes = Type.GetCustomAttributesData().Select(x => x.GetType()).ToList();
+                Attributes = Type.GetCustomAttributesData().Select(x => x.Constructor.DeclaringType).ToList();
 #endif
-            var allConstructors = Type.GetConstructors(ConstructorOptions.All);
-            var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == true).ToList();
-            var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
-            HasEmptyConstructor = Type.IsValueType || emptyConstructorDefined != null;
-            BaseHasEmptyConstructor = (Type.BaseType?.IsValueType == true || allEmptyConstructors?.Any() == true);
-            Constructors = allConstructors;
-            EmptyConstructors = allEmptyConstructors;
+            }
+
+            if (options.BitwiseHasFlag(TypeSupportOptions.Constructors))
+            {
+                var allConstructors = Type.GetConstructors(ConstructorOptions.All);
+                var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == true).ToList();
+                var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
+                HasEmptyConstructor = Type.IsValueType || emptyConstructorDefined != null;
+                BaseHasEmptyConstructor = (Type.BaseType?.IsValueType == true || allEmptyConstructors?.Any() == true);
+                Constructors = allConstructors;
+                EmptyConstructors = allEmptyConstructors;
+            }
 
             ConcreteType = Type;
             IsAbstract = Type.IsAbstract;
@@ -264,7 +288,7 @@ namespace TypeSupport
             IsValueType = Type.IsValueType;
             IsPrimitive = Type.IsPrimitive;
             IsInterface = Type.IsInterface;
-            if (IsInterface)
+            if (IsInterface && options.BitwiseHasFlag(TypeSupportOptions.ConcreteTypes))
                 KnownConcreteTypes = GetConcreteTypes(Type);
             Interfaces = Type.GetInterfaces();
             IsEnum = Type.IsEnum;
@@ -277,55 +301,58 @@ namespace TypeSupport
             if (IsGeneric)
             {
                 var args = Type.GetGenericArguments();
-                if(args?.Any() == true)
+                if (args?.Any() == true)
                 {
-                    foreach(var arg in args)
+                    foreach (var arg in args)
                         GenericArgumentTypes.Add(arg);
                 }
             }
 
-            if (typeof(IEnumerable).IsAssignableFrom(Type))
+            if (options.BitwiseHasFlag(TypeSupportOptions.Collections))
             {
-                IsEnumerable = true;
-                if (IsGeneric)
+                if (typeof(IEnumerable).IsAssignableFrom(Type))
                 {
+                    IsEnumerable = true;
+                    if (IsGeneric)
+                    {
+                        var args = Type.GetGenericArguments();
+                        ElementType = args.FirstOrDefault();
+                        if (ElementType != null)
+                            ElementNullableBaseType = GetNullableBaseType(ElementType);
+                    }
+                }
+
+                if (!Type.IsGenericType
+                    && !Type.IsArray
+                    && (
+                            typeof(ICollection).IsAssignableFrom(Type)
+                            || typeof(IList).IsAssignableFrom(Type)
+                            || typeof(IList).IsAssignableFrom(Type)
+                        )
+                    )
+                {
+                    IsCollection = true;
+                    ElementType = typeof(object);
+                    GenericArgumentTypes.Add(typeof(object));
+                }
+
+                if (Type.IsGenericType
+                    && (
+                            typeof(ICollection).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                            || typeof(IList) == Type
+                            || typeof(IList).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                            || typeof(IList<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                            || typeof(ICollection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                            || typeof(Collection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
+                        )
+                    )
+                {
+                    IsCollection = true;
                     var args = Type.GetGenericArguments();
                     ElementType = args.FirstOrDefault();
                     if (ElementType != null)
                         ElementNullableBaseType = GetNullableBaseType(ElementType);
                 }
-            }
-
-            if (!Type.IsGenericType
-                && !Type.IsArray
-                && (
-                    typeof(ICollection).IsAssignableFrom(Type)
-                    || typeof(IList).IsAssignableFrom(Type)
-                    || typeof(IList).IsAssignableFrom(Type)
-                )
-            )
-            {
-                IsCollection = true;
-                ElementType = typeof(object);
-                GenericArgumentTypes.Add(typeof(object));
-            }
-
-            if (Type.IsGenericType
-                && (
-                    typeof(ICollection).IsAssignableFrom(Type.GetGenericTypeDefinition())
-                    || typeof(IList) == Type
-                    || typeof(IList).IsAssignableFrom(Type.GetGenericTypeDefinition())
-                    || typeof(IList<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
-                    || typeof(ICollection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
-                    || typeof(Collection<>).IsAssignableFrom(Type.GetGenericTypeDefinition())
-                )
-            )
-            {
-                IsCollection = true;
-                var args = Type.GetGenericArguments();
-                ElementType = args.FirstOrDefault();
-                if (ElementType != null)
-                    ElementNullableBaseType = GetNullableBaseType(ElementType);
             }
 
             if (typeof(IDictionary).IsAssignableFrom(Type))
@@ -338,17 +365,20 @@ namespace TypeSupport
             if (typeof(Delegate).IsAssignableFrom(Type))
                 IsDelegate = true;
 
-            HasIndexer = Properties.Select(x => x.GetIndexParameters())
+            if (options.BitwiseHasFlag(TypeSupportOptions.Indexers))
+            {
+                HasIndexer = Properties.Select(x => x.GetIndexParameters())
                 .Where(x => x.Length > 0)
                 .Any();
 
-            if (HasIndexer)
-            {
-                // c# only allows a single indexer
-                var indexerProperty = Properties.Where(x => x.GetIndexParameters().Length > 0).ToList();
-                var indexParameters = indexerProperty.FirstOrDefault().GetIndexParameters().FirstOrDefault();
-                IndexerType = indexParameters.ParameterType;
-                IndexerReturnType = indexerProperty.FirstOrDefault().PropertyType;
+                if (HasIndexer)
+                {
+                    // c# only allows a single indexer
+                    var indexerProperty = Properties.Where(x => x.GetIndexParameters().Length > 0).ToList();
+                    var indexParameters = indexerProperty.FirstOrDefault().GetIndexParameters().FirstOrDefault();
+                    IndexerType = indexParameters.ParameterType;
+                    IndexerReturnType = indexerProperty.FirstOrDefault().PropertyType;
+                }
             }
 
             // nullable
@@ -426,7 +456,7 @@ namespace TypeSupport
         public Type GetConcreteType(object obj)
         {
             var objectType = obj.GetType();
-            if(KnownConcreteTypes != null)
+            if (KnownConcreteTypes != null)
                 return KnownConcreteTypes.Where(x => objectType.IsAssignableFrom(x)).FirstOrDefault();
             return objectType;
         }
