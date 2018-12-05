@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -344,7 +345,9 @@ namespace TypeSupport
                             ElementNullableBaseType = GetNullableBaseType(ElementType);
                     }
 
-                    if (genericTypeDefinition == typeof(Dictionary<,>) || genericTypeDefinition == typeof(IDictionary<,>))
+                    if (genericTypeDefinition == typeof(Dictionary<,>)
+                        || genericTypeDefinition == typeof(ConcurrentDictionary<,>)
+                        || genericTypeDefinition == typeof(IDictionary<,>))
                         IsDictionary = true;
                 }
                 if (genericTypeDefinition == typeof(KeyValuePair<,>))
