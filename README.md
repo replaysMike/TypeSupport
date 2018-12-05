@@ -1,4 +1,5 @@
 # TypeSupport
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/50934d3f12bd4b03841ad2a7c3ce58be)](https://app.codacy.com/app/replaysMike/TypeSupport?utm_source=github.com&utm_medium=referral&utm_content=replaysMike/TypeSupport&utm_campaign=Badge_Grade_Settings)
 [![nuget](https://img.shields.io/nuget/v/TypeSupport.svg)](https://www.nuget.org/packages/TypeSupport/)
 [![nuget](https://img.shields.io/nuget/dt/TypeSupport.svg)](https://www.nuget.org/packages/TypeSupport/)
 [![Build status](https://ci.appveyor.com/api/projects/status/swv5vcad12nrwohk?svg=true)](https://ci.appveyor.com/project/MichaelBrown/typesupport)
