@@ -259,9 +259,6 @@ namespace TypeSupport.Tests
             var type = typeof(KeyValuePair<int, string>);
             var typeSupport = new ExtendedType(type);
 
-            var k = new KeyValuePair<int, string>();
-            k.SetPropertyValue("Key", 1);
-
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsKeyValuePair);
             Assert.AreEqual(true, typeSupport.IsGeneric);
