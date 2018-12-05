@@ -254,6 +254,23 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_KeyValuePairTypes()
+        {
+            var type = typeof(KeyValuePair<int, string>);
+            var typeSupport = new ExtendedType(type);
+
+            var k = new KeyValuePair<int, string>();
+            k.SetPropertyValue("Key", 1);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsKeyValuePair);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
+            Assert.AreEqual(typeof(int), typeSupport.ElementType);
+            Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
+            Assert.AreEqual(typeof(string), typeSupport.GenericArgumentTypes.Skip(1).First());
+        }
+
+        [Test]
         public void Should_Discover_AutoProperties()
         {
             var type = typeof(BasicObject);
