@@ -35,7 +35,7 @@ namespace TypeSupport.Extensions
         /// Get a property from an object instance
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="fieldName"></param>
+        /// <param name="fieldName">Field name</param>
         /// <returns></returns>
         public static PropertyInfo GetProperty(this object obj, string name)
         {
@@ -47,7 +47,7 @@ namespace TypeSupport.Extensions
         /// Get a field from an object instance
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="name"></param>
+        /// <param name="name">Field name</param>
         /// <returns></returns>
         public static FieldInfo GetField(this object obj, string name)
         {
@@ -56,15 +56,39 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Check if an object contains a property
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Property name</param>
+        /// <returns></returns>
+        public static bool ContainsProperty(this object obj, string name)
+        {
+            var t = obj.GetType();
+            return GetProperty(obj, name) != null;
+        }
+
+        /// <summary>
+        /// Check if an object contains a field
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <returns></returns>
+        public static bool ContainsField(this object obj, string name)
+        {
+            var t = obj.GetType();
+            return GetField(obj, name) != null;
+        }
+
+        /// <summary>
         /// Set value of a property on an object
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="propertyName"></param>
+        /// <param name="name">Property name</param>
         /// <param name="valueToSet"></param>
-        public static void SetPropertyValue(this object obj, string propertyName, object valueToSet)
+        public static void SetPropertyValue(this object obj, string name, object valueToSet)
         {
             var type = obj.GetType();
-            var property = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var property = type.GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (property != null)
             {
 #if FEATURE_GETMETHOD
@@ -88,27 +112,27 @@ namespace TypeSupport.Extensions
                     if (field != null)
                         field.SetValue(obj, valueToSet);
                     else
-                        throw new ArgumentException($"Property '{propertyName}' does not exist.");
+                        throw new ArgumentException($"Property '{name}' does not exist.");
                 }
             }
             else
-                throw new ArgumentException($"Property '{propertyName}' does not exist.");
+                throw new ArgumentException($"Property '{name}' does not exist.");
         }
 
         /// <summary>
         /// Set the value of a field on an object
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="fieldName"></param>
+        /// <param name="name">Field name</param>
         /// <param name="valueToSet"></param>
-        public static void SetFieldValue(this object obj, string fieldName, object valueToSet)
+        public static void SetFieldValue(this object obj, string name, object valueToSet)
         {
             var type = obj.GetType();
-            var field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (field != null)
                 field.SetValue(obj, valueToSet);
             else
-                throw new ArgumentException($"Field '{fieldName}' does not exist.");
+                throw new ArgumentException($"Field '{name}' does not exist.");
         }
 
         /// <summary>

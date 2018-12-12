@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -81,6 +80,28 @@ namespace TypeSupport.Extensions
             if (options.HasFlag(FieldOptions.Constants))
                 returnFields = returnFields.Where(x => x.FieldInfo.IsLiteral);
             return returnFields.Select(x => (ExtendedField)x).ToList();
+        }
+
+        /// <summary>
+        /// Check if a type contains a property
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Property name</param>
+        /// <returns></returns>
+        public static bool ContainsProperty(this Type type, string name)
+        {
+            return type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null;
+        }
+
+        /// <summary>
+        /// Check if a type contains a field
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <returns></returns>
+        public static bool ContainsField(this Type type, string name)
+        {
+            return type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null;
         }
 
         /// <summary>
