@@ -165,9 +165,9 @@ namespace TypeSupport.Extensions
                         field.SetValue(obj, valueToSet);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -183,9 +183,9 @@ namespace TypeSupport.Extensions
             {
                 field.SetValue(obj, valueToSet);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -204,9 +204,9 @@ namespace TypeSupport.Extensions
                 return property.PropertyInfo.GetValue(obj, null);
 #endif                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -225,9 +225,9 @@ namespace TypeSupport.Extensions
                 return (T)property.PropertyInfo.GetValue(obj, null);
 #endif                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -251,9 +251,9 @@ namespace TypeSupport.Extensions
                 return property.GetValue(obj, null);
 #endif                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -285,9 +285,9 @@ namespace TypeSupport.Extensions
                 return (T)property.GetValue(obj, null);
 #endif                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -302,9 +302,9 @@ namespace TypeSupport.Extensions
             {
                 return field.FieldInfo.GetValue(obj);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -319,9 +319,9 @@ namespace TypeSupport.Extensions
             {
                 return (T)field.FieldInfo.GetValue(obj);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -340,9 +340,9 @@ namespace TypeSupport.Extensions
             {
                 return field.GetValue(obj);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -363,9 +363,9 @@ namespace TypeSupport.Extensions
             {
                 return (T)field.GetValue(obj);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
         }
     }
