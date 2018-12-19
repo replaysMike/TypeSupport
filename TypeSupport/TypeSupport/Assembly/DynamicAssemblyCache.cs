@@ -10,7 +10,7 @@ namespace TypeSupport.Assembly
 	/// </summary>
 	public static class DynamicAssemblyCache
     {
-        internal static ConcurrentDictionary<string, AssemblyManager> Assemblies = new ConcurrentDictionary<string, AssemblyManager>();
+        private static readonly ConcurrentDictionary<string, AssemblyManager> _assemblies = new ConcurrentDictionary<string, AssemblyManager>();
 
         /// <summary>
         /// Get an assembly from the assembly cache. If it does not exist, a new one will be created for you.
@@ -21,10 +21,10 @@ namespace TypeSupport.Assembly
         {
             AssemblyManager manager = null;
 
-            if (Assemblies.ContainsKey(assemblyName))
+            if (_assemblies.ContainsKey(assemblyName))
             {
                 // grab the assembly from the cache
-                manager = Assemblies[assemblyName];
+                manager = _assemblies[assemblyName];
             }
             else
             {
@@ -43,12 +43,12 @@ namespace TypeSupport.Assembly
                     var assemblyManager = new AssemblyManager(name, assembly, module, domain);
 
                     // add the assembly to the cache
-                    Assemblies.TryAdd(assemblyName, assemblyManager);
+                    _assemblies.TryAdd(assemblyName, assemblyManager);
                     manager = assemblyManager;
                 }
-                catch (ApplicationException ex)
+                catch (ApplicationException)
                 {
-                    throw ex;
+                    throw;
                 }
             }
             return manager.Module;

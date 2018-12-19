@@ -30,7 +30,7 @@ namespace TypeSupport.Extensions
         /// <summary>
         /// Mapping for types that are generic Tuples
         /// </summary>
-        private static readonly HashSet<Type> TupleTypes = new HashSet<Type>(new Type[]
+        private static readonly HashSet<Type> TupleTypes = new HashSet<Type>(new []
         {
             typeof(Tuple<>),
             typeof(Tuple<,>),
@@ -181,7 +181,6 @@ namespace TypeSupport.Extensions
 
             FieldInfo field;
             int nth = 1;
-            var fields = tupleType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             while ((field = tupleType.GetField($"m_Item{nth}", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)) != null)
             {
                 nth++;

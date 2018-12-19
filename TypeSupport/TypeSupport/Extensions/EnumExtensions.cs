@@ -102,7 +102,7 @@ namespace TypeSupport.Extensions
         public static IEnumerable<Enum> ToListOfEnum(this Enum flags)
         {
             if (!typeof(Enum).GetCustomAttributes(typeof(FlagsAttribute), false).Any())
-                throw new Exception("Enum must have flags attribute.");
+                throw new InvalidOperationException("Enum must have flags attribute.");
             var flag = 1ul;
             foreach (var value in Enum.GetValues(flags.GetType()).Cast<Enum>())
             {
@@ -131,7 +131,7 @@ namespace TypeSupport.Extensions
             if (t.IsEnum)
             {
                 if (!t.GetCustomAttributes(typeof(FlagsAttribute), false).Any())
-                    throw new Exception("Enum must have flags attribute.");
+                    throw new InvalidOperationException("Enum must have flags attribute.");
                 var flagsEnum = Enum.Parse(t, flags.ToString()) as Enum;
                 var flag = 1ul;
                 foreach (var value in Enum.GetValues(flags.GetType()).Cast<T>())
@@ -161,7 +161,7 @@ namespace TypeSupport.Extensions
             if (t.IsEnum)
             {
                 if (!t.GetCustomAttributes(typeof(FlagsAttribute), false).Any())
-                    throw new Exception("Enum must have flags attribute.");
+                    throw new InvalidOperationException("Enum must have flags attribute.");
                 var flagsEnum = Enum.Parse(t, flags.ToString()) as Enum;
                 var flag = 1ul;
                 foreach (var value in Enum.GetValues(flags.GetType()).Cast<T>())
