@@ -12,7 +12,7 @@ The best way to understand what TypeSupport can do is to see it in action! It is
 
 ## Installation
 Install TypeSupport from the Package Manager Console:
-```
+```PowerShell
 PM> Install-Package TypeSupport
 ```
 
