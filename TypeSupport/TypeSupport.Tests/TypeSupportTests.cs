@@ -221,6 +221,26 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_ReferenceType()
+        {
+            var type = typeof(object);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsReferenceType);
+        }
+
+        [Test]
+        public void Should_Discover_Struct()
+        {
+            var type = typeof(StructObject);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsStruct);
+        }
+
+        [Test]
         public void Should_Discover_NullableInt()
         {
             var type = typeof(int?);
