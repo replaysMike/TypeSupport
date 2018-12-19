@@ -70,6 +70,17 @@ namespace TypeSupport
         /// Create a new, empty object of a given type
         /// </summary>
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
+        /// <returns></returns>
+        public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry)
+        {
+            return CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, 0);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
+        /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
         /// <param name="length">For array types, the length of the array to create</param>
         /// <returns></returns>
@@ -82,6 +93,7 @@ namespace TypeSupport
         /// Create a new, empty object of a given type
         /// </summary>
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
         /// <param name="length">For array types, the length of the array to create</param>
         /// <returns></returns>
