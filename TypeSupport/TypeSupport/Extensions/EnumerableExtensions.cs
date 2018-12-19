@@ -26,8 +26,12 @@ namespace TypeSupport.Extensions
                 from partition in Partitioner.Create(source).GetPartitions(degreeOfParallelism)
                 select Task.Run(async delegate {
                     using (partition)
+                    {
                         while (partition.MoveNext())
+                        {
                             await body(partition.Current);
+                        }
+                    }
                 }));
 #else
             var taskFactory = new TaskFactory();
@@ -35,8 +39,12 @@ namespace TypeSupport.Extensions
                         select taskFactory.StartNew(delegate
                         {
                             using (partition)
+                            {
                                 while (partition.MoveNext())
+                                {
                                     body(partition.Current);
+                                }
+                            }
                         });
             return taskFactory.ContinueWhenAll(tasks.ToArray(), continuation => { }, TaskContinuationOptions.ExecuteSynchronously);
 #endif

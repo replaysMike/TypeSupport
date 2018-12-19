@@ -8,7 +8,7 @@ namespace TypeSupport
 {
     public class ExtendedProperty
     {
-        private PropertyInfo _propertyInfo;
+        private readonly PropertyInfo _propertyInfo;
 
         public PropertyInfo PropertyInfo
         {
@@ -100,15 +100,14 @@ namespace TypeSupport
                 IsAutoProperty = true;
                 BackingFieldName = $"<{Name}>k__BackingField";
             }
-            else
-            {
-            }
         }
 
         public static implicit operator ExtendedProperty(PropertyInfo propertyInfo)
         {
             if (propertyInfo == null)
+            {
                 return null;
+            }
             return new ExtendedProperty(propertyInfo);
         }
 

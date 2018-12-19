@@ -521,7 +521,7 @@ namespace TypeSupport
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Type.GetHashCode();
         }
 
         public override string ToString()

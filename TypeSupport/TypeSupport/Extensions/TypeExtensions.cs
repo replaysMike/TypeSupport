@@ -21,9 +21,6 @@ namespace TypeSupport.Extensions
                 return new List<ExtendedProperty>();
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             var allProperties = type.GetProperties(flags);
-            var allFields = type.GetProperties(flags)
-                .Select(x => (ExtendedProperty)x)
-                .Concat(GetProperties(type.BaseType, options));
             IEnumerable<PropertyInfo> returnProperties = allProperties;
 
             if (options.HasFlag(PropertyOptions.Public))

@@ -63,7 +63,6 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static bool ContainsProperty(this object obj, string name)
         {
-            var t = obj.GetType();
             return GetProperty(obj, name) != null;
         }
 
@@ -75,7 +74,6 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static bool ContainsField(this object obj, string name)
         {
-            var t = obj.GetType();
             return GetField(obj, name) != null;
         }
 
@@ -268,10 +266,17 @@ namespace TypeSupport.Extensions
         {
             var type = obj.GetType();
             var property = type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
             if (property == null)
+            {
                 throw new InvalidOperationException($"Unknown property name: '{name}'");
-            if(property.PropertyType != typeof(T))
+            }
+
+            if (property.PropertyType != typeof(T))
+            {
                 throw new InvalidOperationException($"Specified property '{name}' is of a different type '{typeof(T)}'");
+            }
+
             try
             {
 #if FEATURE_SETVALUE

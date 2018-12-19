@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TypeSupport
 {
@@ -13,39 +11,39 @@ namespace TypeSupport
         /// <summary>
         /// Load and inspect custom attributes for object
         /// </summary>
-        Attributes,
+        Attributes = 1,
         /// <summary>
         /// Load and inspect collection information
         /// </summary>
-        Collections,
+        Collections = 2,
         /// <summary>
         /// Load and discover all concrete types for an interface
         /// </summary>
-        ConcreteTypes,
+        ConcreteTypes = 4,
         /// <summary>
         /// Load all constructor information
         /// </summary>
-        Constructors,
+        Constructors = 8,
         /// <summary>
         /// Load and inspect enum information for an object
         /// </summary>
-        Enums,
+        Enums = 16,
         /// <summary>
         /// Load and inspect fields for object
         /// </summary>
-        Fields,
+        Fields = 32,
         /// <summary>
         /// Load and inspect generics information
         /// </summary>
-        Generics,
+        Generics = 64,
         /// <summary>
         /// Load and inspect indexers object
         /// </summary>
-        Indexers,
+        Indexers = 128,
         /// <summary>
         /// Load and inspect properties for object
         /// </summary>
-        Properties,
+        Properties = 256,
         /// <summary>
         /// Uses all default options
         /// </summary>
