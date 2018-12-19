@@ -3,7 +3,7 @@ namespace TypeSupport.Tests.TestObjects
 {
     public class BasicObject
     {
-        private int _test;
+        private readonly int _test;
         public int Id { get; set; }
 
         public int Test
@@ -17,6 +17,7 @@ namespace TypeSupport.Tests.TestObjects
         public BasicObject(int id)
         {
             Id = id;
+            _test = 0;
         }
     }
 }

@@ -161,7 +161,6 @@ namespace TypeSupport.Extensions
 
             FieldInfo field;
             int nth = 1;
-            var fields = tupleType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             while ((field = tupleType.GetField($"Item{nth}", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)) != null)
             {
                 nth++;

@@ -244,7 +244,9 @@ namespace TypeSupport.Extensions
                 return true;
             // if 0 is a valid value and its defined, let it pass.
             else if (bitmask == 0 && maxValue > 0 && enumList.Where(x => Convert.ToInt32(x) == 0).Count() == 0)
+            {
                 return false;
+            }
 
             // if value is larger than max enum size, it's not defined.
             if (bitmask > maxValue)

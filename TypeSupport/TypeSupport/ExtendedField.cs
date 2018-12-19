@@ -10,7 +10,7 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedField
     {
-        private FieldInfo _fieldInfo;
+        private readonly FieldInfo _fieldInfo;
 
         public FieldInfo FieldInfo
         {
