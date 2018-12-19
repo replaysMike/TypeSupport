@@ -223,6 +223,45 @@ namespace TypeSupport
         /// <param name="initializer">An optional initializer to use to create the object</param>
         /// <param name="length">For array types, the length of the array to create</param>
         /// <returns></returns>
+        public T CreateEmptyObject<T>()
+        {
+            return (T)CreateEmptyObject(typeof(T), TypeRegistry, null, 0);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
+        /// <param name="initializer">An optional initializer to use to create the object</param>
+        /// <param name="length">For array types, the length of the array to create</param>
+        /// <returns></returns>
+        public T CreateEmptyObject<T>(int length)
+        {
+            return (T)CreateEmptyObject(typeof(T), TypeRegistry, null, length);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
+        /// <param name="initializer">An optional initializer to use to create the object</param>
+        /// <param name="length">For array types, the length of the array to create</param>
+        /// <returns></returns>
+        public T CreateEmptyObject<T>(Func<T> initializer)
+        {
+            Func<object> init = null;
+            if (initializer != null)
+                init = () => initializer();
+            return (T)CreateEmptyObject(typeof(T), TypeRegistry, init, 0);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
+        /// <param name="initializer">An optional initializer to use to create the object</param>
+        /// <param name="length">For array types, the length of the array to create</param>
+        /// <returns></returns>
         public T CreateEmptyObject<T>(Func<T> initializer, int length)
         {
             Func<object> init = null;
