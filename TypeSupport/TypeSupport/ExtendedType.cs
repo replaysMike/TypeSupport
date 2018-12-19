@@ -76,6 +76,16 @@ namespace TypeSupport
         public bool IsValueType { get; private set; }
 
         /// <summary>
+        /// True if the type is a reference type
+        /// </summary>
+        public bool IsReferenceType { get; private set; }
+
+        /// <summary>
+        /// True if the type is a struct
+        /// </summary>
+        public bool IsStruct { get; private set; }
+
+        /// <summary>
         /// True if the type is a primitive type
         /// </summary>
         public bool IsPrimitive { get; private set; }
@@ -292,6 +302,8 @@ namespace TypeSupport
             IsTuple = Type.IsValueTupleType() || Type.IsTupleType();
             IsValueTuple = Type.IsValueTupleType();
             IsValueType = Type.IsValueType;
+            IsReferenceType = Type.IsClass;
+            IsStruct = Type.IsValueType && !Type.IsEnum && !Type.IsPrimitive && !Type.IsClass;
             IsPrimitive = Type.IsPrimitive;
             IsInterface = Type.IsInterface;
             if (IsInterface && options.BitwiseHasFlag(TypeSupportOptions.ConcreteTypes))
