@@ -164,4 +164,3 @@ var typeRegistry = TypeRegistry.Configure((config) => {
 var factory = new ObjectFactory(typeRegistry);
 var car = factory.CreateEmptyObject<IVehicle>(); // car.GetType() == typeof(Car)
 ```
-
