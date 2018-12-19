@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿#pragma warning disable 0649,0169
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace TypeSupport.Tests.TestObjects

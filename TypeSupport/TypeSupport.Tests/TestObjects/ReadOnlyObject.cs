@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#pragma warning disable 0649,0169
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TypeSupport.Tests.TestObjects
