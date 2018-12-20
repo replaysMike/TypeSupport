@@ -116,6 +116,11 @@ namespace TypeSupport
         public bool IsInterface { get; private set; }
 
         /// <summary>
+        /// True if the type is serializable
+        /// </summary>
+        public bool IsSerializable { get; private set; }
+
+        /// <summary>
         /// True if the type contains an indexer
         /// </summary>
         public bool HasIndexer { get; private set; }
@@ -124,6 +129,11 @@ namespace TypeSupport
         /// True if the type is an anonymous type
         /// </summary>
         public bool IsAnonymous { get; private set; }
+
+        /// <summary>
+        /// True if the type contains an implementation or is of a concrete type (not: abstract, interfaces, anonymous types, object)
+        /// </summary>
+        public bool IsConcreteType { get; private set; }
 
         /// <summary>
         /// For enum types the list of valid values of the Enum
@@ -286,6 +296,7 @@ namespace TypeSupport
 
             ConcreteType = Type;
             IsAbstract = Type.IsAbstract;
+            IsSerializable = Type.IsSerializable;
             UnderlyingType = Type.UnderlyingSystemType;
             if (Type == typeof(string))
                 IsImmutable = true;
@@ -421,6 +432,9 @@ namespace TypeSupport
                 && Type.IsGenericType && Type.Name.Contains("AnonymousType")
                 && (Type.Name.StartsWith("<>") || Type.Name.StartsWith("VB$"))
                 && (Type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
+
+            // provide a way to detect if the type requires additional concrete information in order to be serialized
+            IsConcreteType = !(IsAbstract || IsInterface || IsAnonymous || Type == typeof(object));
         }
 
         /// <summary>
