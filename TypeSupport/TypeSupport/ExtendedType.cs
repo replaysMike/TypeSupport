@@ -255,6 +255,23 @@ namespace TypeSupport
         }
 
         /// <summary>
+        /// Create a new type support
+        /// </summary>
+        /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
+        public ExtendedType(string assemblyQualifiedFullName) : this(Type.GetType(assemblyQualifiedFullName), TypeSupportOptions.All)
+        {
+        }
+
+        /// <summary>
+        /// Create a new type support
+        /// </summary>
+        /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
+        /// <param name="options">The type support inspection options</param>
+        public ExtendedType(string assemblyQualifiedFullName, TypeSupportOptions options) : this(Type.GetType(assemblyQualifiedFullName), options)
+        {
+        }
+
+        /// <summary>
         /// For interface types, you can provide an object instance to determine a concrete type for it
         /// </summary>
         /// <param name="concreteObject"></param>
