@@ -3,6 +3,7 @@
 [![nuget](https://img.shields.io/nuget/dt/TypeSupport.svg)](https://www.nuget.org/packages/TypeSupport/)
 [![Build status](https://ci.appveyor.com/api/projects/status/swv5vcad12nrwohk?svg=true)](https://ci.appveyor.com/project/MichaelBrown/typesupport)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5ddab4815a2a49b3babac9af232f9f04)](https://www.codacy.com/app/replaysMike/TypeSupport?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=replaysMike/TypeSupport&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/5ddab4815a2a49b3babac9af232f9f04)](https://www.codacy.com/app/replaysMike/TypeSupport?utm_source=github.com&utm_medium=referral&utm_content=replaysMike/TypeSupport&utm_campaign=Badge_Coverage)
 
 A CSharp library that makes it easier to work with Types dynamically. TypeSupport includes a flexible Object factory for creating and initializing all kinds of types.
 
