@@ -251,7 +251,17 @@ namespace TypeSupport
             Constructors = new List<ConstructorInfo>();
             EmptyConstructors = new List<ConstructorInfo>();
 
-            InspectType(options);
+			var isCachingSupported = options.BitwiseHasFlag(TypeSupportOptions.Caching);
+			// if the type is cached, use it
+			if (isCachingSupported && ExtendedTypeCache.Contains(type, options))
+				InitializeFromCache(ExtendedTypeCache.Get(type, options));
+			else
+			{
+				// inspect the type with the given options
+				InspectType(options);
+				if (isCachingSupported)
+					ExtendedTypeCache.CacheType(this, options);
+			}
         }
 
         /// <summary>
@@ -281,6 +291,55 @@ namespace TypeSupport
                 ConcreteType = concreteObject.GetType();
         }
 
+		/// <summary>
+		/// Initialize an extended type from another extended type
+		/// </summary>
+		/// <param name="type"></param>
+		private void InitializeFromCache(ExtendedType type)
+		{
+			HasEmptyConstructor = type.HasEmptyConstructor;
+			BaseHasEmptyConstructor = type.BaseHasEmptyConstructor;
+			IsAbstract = type.IsAbstract;
+			IsImmutable = type.IsImmutable;
+			IsEnumerable = type.IsEnumerable;
+			IsCollection = type.IsCollection;
+			IsArray = type.IsArray;
+			IsDictionary = type.IsDictionary;
+			IsKeyValuePair = type.IsKeyValuePair;
+			IsGeneric = type.IsGeneric;
+			IsDelegate = type.IsDelegate;
+			IsValueType = type.IsValueType;
+			IsReferenceType = type.IsReferenceType;
+			IsStruct = type.IsStruct;
+			IsPrimitive = type.IsPrimitive;
+			IsEnum = type.IsEnum;
+			IsTuple = type.IsTuple;
+			IsValueTuple = type.IsValueTuple;
+			IsNullable = type.IsNullable;
+			IsInterface = type.IsInterface;
+			IsSerializable = type.IsSerializable;
+			HasIndexer = type.HasIndexer;
+			IsAnonymous = type.IsAnonymous;
+			IsConcreteType = type.IsConcreteType;
+			EnumValues = type.EnumValues;
+			KnownConcreteTypes = type.KnownConcreteTypes;
+			Attributes = type.Attributes;
+			GenericArgumentTypes = type.GenericArgumentTypes;
+			Properties = type.Properties;
+			Fields = type.Fields;
+			Interfaces = type.Interfaces;
+			Constructors = type.Constructors;
+			EmptyConstructors = type.EmptyConstructors;
+			ConcreteType = type.ConcreteType;
+			ElementType = type.ElementType;
+			ElementNullableBaseType = type.ElementNullableBaseType;
+			EnumType = type.EnumType;
+			IndexerType = type.IndexerType;
+			IndexerReturnType = type.IndexerReturnType;
+			UnderlyingType = type.UnderlyingType;
+			NullableBaseType = type.NullableBaseType;
+		}
+
         private void InspectType(TypeSupportOptions options)
         {
             if (options.BitwiseHasFlag(TypeSupportOptions.Properties))
@@ -303,8 +362,9 @@ namespace TypeSupport
             if (options.BitwiseHasFlag(TypeSupportOptions.Constructors))
             {
                 var allConstructors = Type.GetConstructors(ConstructorOptions.All);
-                var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == true).ToList();
-                var emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
+                var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == false).ToList();
+                ConstructorInfo emptyConstructorDefined = null;
+                emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
                 HasEmptyConstructor = Type.IsValueType || emptyConstructorDefined != null;
                 BaseHasEmptyConstructor = (Type.BaseType?.IsValueType == true || allEmptyConstructors?.Any() == true);
                 Constructors = allConstructors;
