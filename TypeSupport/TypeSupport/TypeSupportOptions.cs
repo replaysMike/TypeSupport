@@ -6,7 +6,7 @@ namespace TypeSupport
     /// Type support options
     /// </summary>
     [Flags]
-    public enum TypeSupportOptions
+    public enum TypeSupportOptions : int
     {
         /// <summary>
         /// Load and inspect custom attributes for object
@@ -44,9 +44,13 @@ namespace TypeSupport
         /// Load and inspect properties for object
         /// </summary>
         Properties = 256,
-        /// <summary>
-        /// Uses all default options
-        /// </summary>
-        All = Attributes | Collections | ConcreteTypes | Constructors | Enums | Fields | Generics | Indexers | Properties,
+		/// <summary>
+		/// Enable type caching
+		/// </summary>
+		Caching = 512,
+		/// <summary>
+		/// Uses all default options
+		/// </summary>
+		All = Attributes | Collections | ConcreteTypes | Constructors | Enums | Fields | Generics | Indexers | Properties | Caching,
     }
 }
