@@ -226,6 +226,16 @@ namespace TypeSupport
         public Type NullableBaseType { get; private set; }
 
         /// <summary>
+        /// Get the name of the type
+        /// </summary>
+        public string Name { get { return Type?.Name; } }
+
+        /// <summary>
+        /// Get the full name of the type
+        /// </summary>
+        public string FullName { get { return Type?.FullName; } }
+
+        /// <summary>
         /// Create a new type support
         /// </summary>
         /// <param name="type">The type to analyze</param>
@@ -251,17 +261,17 @@ namespace TypeSupport
             Constructors = new List<ConstructorInfo>();
             EmptyConstructors = new List<ConstructorInfo>();
 
-			var isCachingSupported = options.BitwiseHasFlag(TypeSupportOptions.Caching);
-			// if the type is cached, use it
-			if (isCachingSupported && ExtendedTypeCache.Contains(type, options))
-				InitializeFromCache(ExtendedTypeCache.Get(type, options));
-			else
-			{
-				// inspect the type with the given options
-				InspectType(options);
-				if (isCachingSupported)
-					ExtendedTypeCache.CacheType(this, options);
-			}
+            var isCachingSupported = options.BitwiseHasFlag(TypeSupportOptions.Caching);
+            // if the type is cached, use it
+            if (isCachingSupported && ExtendedTypeCache.Contains(type, options))
+                InitializeFromCache(ExtendedTypeCache.Get(type, options));
+            else
+            {
+                // inspect the type with the given options
+                InspectType(options);
+                if (isCachingSupported)
+                    ExtendedTypeCache.CacheType(this, options);
+            }
         }
 
         /// <summary>
@@ -291,54 +301,54 @@ namespace TypeSupport
                 ConcreteType = concreteObject.GetType();
         }
 
-		/// <summary>
-		/// Initialize an extended type from another extended type
-		/// </summary>
-		/// <param name="type"></param>
-		private void InitializeFromCache(ExtendedType type)
-		{
-			HasEmptyConstructor = type.HasEmptyConstructor;
-			BaseHasEmptyConstructor = type.BaseHasEmptyConstructor;
-			IsAbstract = type.IsAbstract;
-			IsImmutable = type.IsImmutable;
-			IsEnumerable = type.IsEnumerable;
-			IsCollection = type.IsCollection;
-			IsArray = type.IsArray;
-			IsDictionary = type.IsDictionary;
-			IsKeyValuePair = type.IsKeyValuePair;
-			IsGeneric = type.IsGeneric;
-			IsDelegate = type.IsDelegate;
-			IsValueType = type.IsValueType;
-			IsReferenceType = type.IsReferenceType;
-			IsStruct = type.IsStruct;
-			IsPrimitive = type.IsPrimitive;
-			IsEnum = type.IsEnum;
-			IsTuple = type.IsTuple;
-			IsValueTuple = type.IsValueTuple;
-			IsNullable = type.IsNullable;
-			IsInterface = type.IsInterface;
-			IsSerializable = type.IsSerializable;
-			HasIndexer = type.HasIndexer;
-			IsAnonymous = type.IsAnonymous;
-			IsConcreteType = type.IsConcreteType;
-			EnumValues = type.EnumValues;
-			KnownConcreteTypes = type.KnownConcreteTypes;
-			Attributes = type.Attributes;
-			GenericArgumentTypes = type.GenericArgumentTypes;
-			Properties = type.Properties;
-			Fields = type.Fields;
-			Interfaces = type.Interfaces;
-			Constructors = type.Constructors;
-			EmptyConstructors = type.EmptyConstructors;
-			ConcreteType = type.ConcreteType;
-			ElementType = type.ElementType;
-			ElementNullableBaseType = type.ElementNullableBaseType;
-			EnumType = type.EnumType;
-			IndexerType = type.IndexerType;
-			IndexerReturnType = type.IndexerReturnType;
-			UnderlyingType = type.UnderlyingType;
-			NullableBaseType = type.NullableBaseType;
-		}
+        /// <summary>
+        /// Initialize an extended type from another extended type
+        /// </summary>
+        /// <param name="type"></param>
+        private void InitializeFromCache(ExtendedType type)
+        {
+            HasEmptyConstructor = type.HasEmptyConstructor;
+            BaseHasEmptyConstructor = type.BaseHasEmptyConstructor;
+            IsAbstract = type.IsAbstract;
+            IsImmutable = type.IsImmutable;
+            IsEnumerable = type.IsEnumerable;
+            IsCollection = type.IsCollection;
+            IsArray = type.IsArray;
+            IsDictionary = type.IsDictionary;
+            IsKeyValuePair = type.IsKeyValuePair;
+            IsGeneric = type.IsGeneric;
+            IsDelegate = type.IsDelegate;
+            IsValueType = type.IsValueType;
+            IsReferenceType = type.IsReferenceType;
+            IsStruct = type.IsStruct;
+            IsPrimitive = type.IsPrimitive;
+            IsEnum = type.IsEnum;
+            IsTuple = type.IsTuple;
+            IsValueTuple = type.IsValueTuple;
+            IsNullable = type.IsNullable;
+            IsInterface = type.IsInterface;
+            IsSerializable = type.IsSerializable;
+            HasIndexer = type.HasIndexer;
+            IsAnonymous = type.IsAnonymous;
+            IsConcreteType = type.IsConcreteType;
+            EnumValues = type.EnumValues;
+            KnownConcreteTypes = type.KnownConcreteTypes;
+            Attributes = type.Attributes;
+            GenericArgumentTypes = type.GenericArgumentTypes;
+            Properties = type.Properties;
+            Fields = type.Fields;
+            Interfaces = type.Interfaces;
+            Constructors = type.Constructors;
+            EmptyConstructors = type.EmptyConstructors;
+            ConcreteType = type.ConcreteType;
+            ElementType = type.ElementType;
+            ElementNullableBaseType = type.ElementNullableBaseType;
+            EnumType = type.EnumType;
+            IndexerType = type.IndexerType;
+            IndexerReturnType = type.IndexerReturnType;
+            UnderlyingType = type.UnderlyingType;
+            NullableBaseType = type.NullableBaseType;
+        }
 
         private void InspectType(TypeSupportOptions options)
         {
@@ -411,50 +421,30 @@ namespace TypeSupport
                     IsEnumerable = true;
                     if (IsGeneric)
                     {
-                        var args = Type.GetGenericArguments();
-                        ElementType = args.FirstOrDefault();
+                        var genericArgument = Type.GetGenericArguments().FirstOrDefault();
+                        if (genericArgument != null) ElementType = genericArgument;
                         if (ElementType != null)
                             ElementNullableBaseType = GetNullableBaseType(ElementType);
+                    }
+
+                    // inspect the interfaces for a generic type
+                    if (ElementType == null)
+                    {
+                        foreach (var @interface in Interfaces)
+                        {
+                            // if the class implements any generic interface, it can be considered generic
+                            if (@interface.IsAssignableFrom(Type) && @interface.IsGenericType)
+                            {
+                                ElementType = GetElementTypeForInterfaceType(@interface);
+                            }
+                        }
                     }
                 }
             }
 
             if (IsGeneric)
             {
-                var genericTypeDefinition = Type.GetGenericTypeDefinition();
-                var args = Type.GetGenericArguments();
-                if (args?.Any() == true)
-                {
-                    foreach (var arg in args)
-                        GenericArgumentTypes.Add(arg);
-                }
-
-                if (options.BitwiseHasFlag(TypeSupportOptions.Collections))
-                {
-                    if (typeof(ICollection).IsAssignableFrom(genericTypeDefinition)
-                        || typeof(IList) == Type
-                        || typeof(IList).IsAssignableFrom(genericTypeDefinition)
-                        || typeof(IList<>).IsAssignableFrom(genericTypeDefinition)
-                        || typeof(ICollection<>).IsAssignableFrom(genericTypeDefinition)
-                        || typeof(Collection<>).IsAssignableFrom(genericTypeDefinition)
-                        )
-                    {
-                        IsCollection = true;
-                        ElementType = args.FirstOrDefault();
-                        if (ElementType != null)
-                            ElementNullableBaseType = GetNullableBaseType(ElementType);
-                    }
-
-                    if (genericTypeDefinition == typeof(Dictionary<,>)
-                        || genericTypeDefinition == typeof(ConcurrentDictionary<,>)
-                        || genericTypeDefinition == typeof(IDictionary<,>))
-                        IsDictionary = true;
-                }
-                if (genericTypeDefinition == typeof(KeyValuePair<,>))
-                {
-                    IsKeyValuePair = true;
-                    ElementType = args.FirstOrDefault();
-                }
+                InspectGenericType(Type, options);
             }
             else
             {
@@ -512,6 +502,65 @@ namespace TypeSupport
 
             // provide a way to detect if the type requires additional concrete information in order to be serialized
             IsConcreteType = !(IsAbstract || IsInterface || IsAnonymous || Type == typeof(object));
+        }
+
+        private Type GetElementTypeForInterfaceType(Type type)
+        {
+            var genericTypeDefinition = type.GetGenericTypeDefinition();
+            var args = type.GetGenericArguments();
+            var genericArgumentTypes = new List<Type>();
+            if (args?.Any() == true)
+            {
+                foreach (var arg in args)
+                {
+                    if (!genericArgumentTypes.Contains(arg))
+                        genericArgumentTypes.Add(arg);
+                }
+            }
+            var elementType = genericArgumentTypes.FirstOrDefault();
+
+            return elementType;
+        }
+
+        private void InspectGenericType(Type type, TypeSupportOptions options)
+        {
+            var genericTypeDefinition = type.GetGenericTypeDefinition();
+            var args = type.GetGenericArguments();
+            if (args?.Any() == true)
+            {
+                foreach (var arg in args)
+                {
+                    if (!GenericArgumentTypes.Contains(arg))
+                        GenericArgumentTypes.Add(arg);
+                }
+            }
+
+            if (options.BitwiseHasFlag(TypeSupportOptions.Collections))
+            {
+                if (typeof(ICollection).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(IList) == type
+                    || typeof(IList).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(IList<>).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(ICollection<>).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(Collection<>).IsAssignableFrom(genericTypeDefinition)
+                    )
+                {
+                    IsCollection = true;
+                    ElementType = args.FirstOrDefault();
+                    if (ElementType != null)
+                        ElementNullableBaseType = GetNullableBaseType(ElementType);
+                }
+
+                if (genericTypeDefinition == typeof(Dictionary<,>)
+                    || genericTypeDefinition == typeof(ConcurrentDictionary<,>)
+                    || genericTypeDefinition == typeof(IDictionary<,>))
+                    IsDictionary = true;
+            }
+            if (genericTypeDefinition == typeof(KeyValuePair<,>))
+            {
+                IsKeyValuePair = true;
+                ElementType = args.FirstOrDefault();
+            }
         }
 
         /// <summary>
