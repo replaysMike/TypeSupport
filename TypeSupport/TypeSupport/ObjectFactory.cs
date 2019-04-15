@@ -42,7 +42,7 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(Type type)
         {
-            return CreateEmptyObject(type, TypeRegistry, null, 0);
+            return CreateEmptyObject(type, TypeRegistry);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(Type type, TypeRegistry typeRegistry)
         {
-            return CreateEmptyObject(type, typeRegistry, null, 0);
+            return CreateEmptyObject(type, typeRegistry);
         }
 
         /// <summary>
@@ -82,11 +82,11 @@ namespace TypeSupport
         /// </summary>
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry, int length)
+        public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry, params object[] dimensions)
         {
-            return CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, length);
+            return CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, dimensions);
         }
 
         /// <summary>
@@ -94,11 +94,11 @@ namespace TypeSupport
         /// </summary>
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(string assemblyQualifiedFullName, Func<object> initializer, int length)
+        public object CreateEmptyObject(string assemblyQualifiedFullName, Func<object> initializer, params object[] dimensions)
         {
-            return CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, initializer, length);
+            return CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, initializer, dimensions);
         }
 
         /// <summary>
@@ -107,14 +107,14 @@ namespace TypeSupport
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry, Func<object> initializer, int length)
+        public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry, Func<object> initializer, params object[] dimensions)
         {
             if (string.IsNullOrEmpty(assemblyQualifiedFullName))
                 throw new ArgumentNullException(nameof(assemblyQualifiedFullName));
             var type = Type.GetType(assemblyQualifiedFullName);
-            return CreateEmptyObject(type, typeRegistry, initializer, length);
+            return CreateEmptyObject(type, typeRegistry, initializer, dimensions);
         }
 
         /// <summary>
@@ -122,11 +122,11 @@ namespace TypeSupport
         /// </summary>
         /// <param name="type">The type to create</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(Type type, Func<object> initializer, int length)
+        public object CreateEmptyObject(Type type, Func<object> initializer, params object[] dimensions)
         {
-            return CreateEmptyObject(type, TypeRegistry, initializer, length);
+            return CreateEmptyObject(type, TypeRegistry, initializer, dimensions);
         }
 
         /// <summary>
@@ -134,11 +134,11 @@ namespace TypeSupport
         /// </summary>
         /// <param name="type">The type to create</param>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, int length)
+        public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, params object[] dimensions)
         {
-            return CreateEmptyObject(type, typeRegistry, null, length);
+            return CreateEmptyObject(type, typeRegistry, null, dimensions);
         }
 
         /// <summary>
@@ -146,11 +146,11 @@ namespace TypeSupport
         /// </summary>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public T CreateEmptyObject<T>()
+        public T CreateEmptyObject<T>(params object[] dimensions)
         {
-            return (T)CreateEmptyObject(typeof(T), TypeRegistry, null, 0);
+            return (T)CreateEmptyObject(typeof(T), TypeRegistry, null, dimensions);
         }
 
         /// <summary>
@@ -158,26 +158,13 @@ namespace TypeSupport
         /// </summary>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
-        /// <returns></returns>
-        public T CreateEmptyObject<T>(int length)
-        {
-            return (T)CreateEmptyObject(typeof(T), TypeRegistry, null, length);
-        }
-
-        /// <summary>
-        /// Create a new, empty object of a given type
-        /// </summary>
-        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
-        /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
         /// <returns></returns>
         public T CreateEmptyObject<T>(Func<T> initializer)
         {
             Func<object> init = null;
             if (initializer != null)
                 init = () => initializer();
-            return (T)CreateEmptyObject(typeof(T), TypeRegistry, init, 0);
+            return (T)CreateEmptyObject(typeof(T), TypeRegistry, init);
         }
 
         /// <summary>
@@ -185,14 +172,14 @@ namespace TypeSupport
         /// </summary>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public T CreateEmptyObject<T>(Func<T> initializer, int length)
+        public T CreateEmptyObject<T>(Func<T> initializer, params object[] dimensions)
         {
             Func<object> init = null;
             if (initializer != null)
                 init = () => initializer();
-            return (T)CreateEmptyObject(typeof(T), init, length);
+            return (T)CreateEmptyObject(typeof(T), init, dimensions);
         }
 
         /// <summary>
@@ -200,11 +187,11 @@ namespace TypeSupport
         /// </summary>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public T CreateEmptyObject<T>(TypeRegistry typeRegistry, Func<T> initializer, int length)
+        public T CreateEmptyObject<T>(TypeRegistry typeRegistry, Func<T> initializer, params object[] dimensions)
         {
-            return (T)CreateEmptyObject(typeof(T), typeRegistry, initializer as Func<object>, length);
+            return (T)CreateEmptyObject(typeof(T), typeRegistry, initializer as Func<object>, dimensions);
         }
 
         /// <summary>
@@ -214,9 +201,9 @@ namespace TypeSupport
         /// <param name="typeRegistry">A type registry for constructing unknown types</param>
         /// <param name="typeDescriptor">A type descriptor that indicates the embedded concrete type for an interface type</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
-        /// <param name="length">For array types, the length of the array to create</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, Func<object> initializer, int length)
+        public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, Func<object> initializer, params object[] dimensions)
         {
             var objectType = type;
             if (initializer != null)
@@ -244,7 +231,11 @@ namespace TypeSupport
             }
 
             if (typeSupport.IsArray)
-                return Activator.CreateInstance(typeSupport.Type, new object[] { length });
+            {
+                if (dimensions.Length > 1) dimensions.Reverse();
+                if (dimensions == null || dimensions.Length == 0) dimensions = new object[] { 0 };
+                return Activator.CreateInstance(typeSupport.Type, dimensions);
+            }
             else if (typeSupport.IsDictionary)
             {
                 var genericType = typeSupport.Type.GetGenericArguments().ToList();

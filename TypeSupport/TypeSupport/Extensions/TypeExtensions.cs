@@ -64,6 +64,8 @@ namespace TypeSupport.Extensions
             if (options.HasFlag(FieldOptions.AllWritable))
             {
                 returnFields = returnFields.Where(x => !x.FieldInfo.IsLiteral);
+                // technically init only are writable when constructed
+                // returnFields = returnFields.Where(x => !x.FieldInfo.IsInitOnly);
             }
 
             if (options.HasFlag(FieldOptions.Public))

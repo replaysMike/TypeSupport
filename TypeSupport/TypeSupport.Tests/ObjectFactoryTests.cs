@@ -74,7 +74,7 @@ namespace TypeSupport.Tests
         }
 
         [Test]
-        public void Should_CreateByteArray()
+        public void Should_CreateEmptyByteArray()
         {
             var factory = new ObjectFactory();
             var instance = factory.CreateEmptyObject<byte[]>();
@@ -85,10 +85,34 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_CreatePopulatedByteArray()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject<byte[]>(10);
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(10, instance.Length);
+            Assert.AreEqual(typeof(byte[]), instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreatePopulatedMultidimensionalByteArray()
+        {
+            var factory = new ObjectFactory();
+            var testArray = new byte[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var instance = factory.CreateEmptyObject<byte[,]>(new object[] { 2, 3 });
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(byte[,]), instance.GetType());
+            Assert.AreEqual(testArray.GetLength(0), instance.GetLength(0));
+            Assert.AreEqual(testArray.GetLength(1), instance.GetLength(1));
+        }
+
+        [Test]
         public void Should_CreateByteArrayOfLength()
         {
             var factory = new ObjectFactory();
-            var instance = factory.CreateEmptyObject<byte[]>(length: 32);
+            var instance = factory.CreateEmptyObject<byte[]>(32);
 
             Assert.NotNull(instance);
             Assert.AreEqual(32, instance.Length);
