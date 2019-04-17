@@ -232,9 +232,25 @@ namespace TypeSupport
 
             if (typeSupport.IsArray)
             {
-                if (dimensions.Length > 1) dimensions.Reverse();
-                if (dimensions == null || dimensions.Length == 0) dimensions = new object[] { 0 };
-                return Activator.CreateInstance(typeSupport.Type, dimensions);
+                object[] createParameters = dimensions;
+                // we also want to allow passing of collections/lists/arrays so do some conversion first
+                if (createParameters?.Length > 0)
+                {
+                    var parameterType = createParameters[0].GetType();
+                    if (parameterType.IsArray)
+                    {
+                        var ar = (Array)createParameters[0];
+                        createParameters = ar.Cast<object>().ToArray();
+                    } else if (typeof(ICollection).IsAssignableFrom(parameterType)
+                        || typeof(IList).IsAssignableFrom(parameterType))
+                    {
+                        var ar = (ICollection)createParameters[0];
+                        createParameters = ar.Cast<object>().ToArray();
+                    }
+                }
+                if (createParameters != null && createParameters.Length > 1) createParameters.Reverse();
+                if (createParameters == null || createParameters.Length == 0) createParameters = new object[] { 0 };
+                return Activator.CreateInstance(typeSupport.Type, createParameters);
             }
             else if (typeSupport.IsDictionary)
             {
