@@ -104,6 +104,49 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(byte[,]), instance.GetType());
+            Assert.AreEqual(testArray.Rank, instance.Rank);
+            Assert.AreEqual(testArray.GetLength(0), instance.GetLength(0));
+            Assert.AreEqual(testArray.GetLength(1), instance.GetLength(1));
+        }
+
+        [Test]
+        public void Should_CreatePopulatedMultidimensionalByteArrayViaIntArrayDimensions()
+        {
+            var factory = new ObjectFactory();
+            var testArray = new byte[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var instance = factory.CreateEmptyObject<byte[,]>(new int[] { 2, 3 });
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(byte[,]), instance.GetType());
+            Assert.AreEqual(testArray.Rank, instance.Rank);
+            Assert.AreEqual(testArray.GetLength(0), instance.GetLength(0));
+            Assert.AreEqual(testArray.GetLength(1), instance.GetLength(1));
+        }
+
+        [Test]
+        public void Should_CreatePopulatedMultidimensionalByteArrayViaIntDimensions()
+        {
+            var factory = new ObjectFactory();
+            var testArray = new byte[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var instance = factory.CreateEmptyObject<byte[,]>(2, 3);
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(byte[,]), instance.GetType());
+            Assert.AreEqual(testArray.Rank, instance.Rank);
+            Assert.AreEqual(testArray.GetLength(0), instance.GetLength(0));
+            Assert.AreEqual(testArray.GetLength(1), instance.GetLength(1));
+        }
+
+        [Test]
+        public void Should_CreatePopulatedMultidimensionalByteArrayViaList()
+        {
+            var factory = new ObjectFactory();
+            var testArray = new byte[2, 3] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var instance = factory.CreateEmptyObject<byte[,]>(new List<int> { 2, 3 });
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(byte[,]), instance.GetType());
+            Assert.AreEqual(testArray.Rank, instance.Rank);
             Assert.AreEqual(testArray.GetLength(0), instance.GetLength(0));
             Assert.AreEqual(testArray.GetLength(1), instance.GetLength(1));
         }

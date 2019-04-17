@@ -453,7 +453,6 @@ namespace TypeSupport
                     if (!Type.IsArray
                         && (typeof(ICollection).IsAssignableFrom(Type)
                             || typeof(IList).IsAssignableFrom(Type)
-                            || typeof(IList).IsAssignableFrom(Type)
                             )
                         )
                     {
