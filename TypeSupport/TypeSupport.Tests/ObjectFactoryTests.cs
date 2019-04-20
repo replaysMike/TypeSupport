@@ -175,10 +175,40 @@ namespace TypeSupport.Tests
 #endif
 
         [Test]
-        public void Should_CreateTuple()
+        public void Should_CreateGenericSingularTuple()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject<Tuple<int>>();
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(Tuple<int>), instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreateSingularTuple()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject(typeof(Tuple<int>));
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(Tuple<int>), instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreateGenericTuple()
         {
             var factory = new ObjectFactory();
             var instance = factory.CreateEmptyObject<Tuple<int, string>>();
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(Tuple<int, string>), instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreateNonGenericTuple()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject(typeof(Tuple<int, string>));
 
             Assert.NotNull(instance);
             Assert.AreEqual(typeof(Tuple<int, string>), instance.GetType());

@@ -48,17 +48,6 @@ namespace TypeSupport
         /// <summary>
         /// Create a new, empty object of a given type
         /// </summary>
-        /// <param name="type">The type of object to construct</param>
-        /// <param name="typeRegistry">A type registry for constructing unknown types</param>
-        /// <returns></returns>
-        public object CreateEmptyObject(Type type, TypeRegistry typeRegistry)
-        {
-            return CreateEmptyObject(type, typeRegistry);
-        }
-
-        /// <summary>
-        /// Create a new, empty object of a given type
-        /// </summary>
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName)
