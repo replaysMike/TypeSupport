@@ -165,3 +165,21 @@ var typeRegistry = TypeRegistry.Configure((config) => {
 var factory = new ObjectFactory(typeRegistry);
 var car = factory.CreateEmptyObject<IVehicle>(); // car.GetType() == typeof(Car)
 ```
+
+### Capabilities
+
+- [x] All basic types, enums, generics, collections and enumerables
+- [x] Internal caching of type examination
+- [x] Constructor analysis (empty constructors, parameterized constructors)
+- [x] Easy listing of valid Enum values
+- [x] Easy listing of concrete types implementing an interface
+- [x] Easy listing of attributes
+- [x] Easy listing of generic arguments
+- [x] Easy listing of properties/fields
+- [x] Easy listing of implemented interfaces
+- [x] Easy listing of Tuple/ValueTuple types
+- [x] Nullable type detection
+- [x] Custom collection information detection
+- [x] Primitive / Struct detection
+- [x] Anonymous type detection
+- [x] High performance testing and optimization
