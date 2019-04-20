@@ -31,6 +31,22 @@ namespace TypeSupport
 		{
 		}
 
+        /// <summary>
+        /// Clear the cache
+        /// </summary>
+        public static void Clear()
+        {
+            _cacheLock.Wait();
+            try
+            {
+                Instance.CachedTypes.Clear();
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
+        }
+
 		/// <summary>
 		/// Returns true if the extended type is cached
 		/// </summary>

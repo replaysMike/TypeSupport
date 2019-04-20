@@ -158,12 +158,12 @@ namespace TypeSupport
         /// <summary>
         /// A list of the type's properties
         /// </summary>
-        public ICollection<PropertyInfo> Properties { get; private set; }
+        public ICollection<ExtendedProperty> Properties { get; private set; }
 
         /// <summary>
         /// A list of the type's fields
         /// </summary>
-        public ICollection<FieldInfo> Fields { get; private set; }
+        public ICollection<ExtendedField> Fields { get; private set; }
 
         /// <summary>
         /// List of implemented interfaces
@@ -256,8 +256,8 @@ namespace TypeSupport
             GenericArgumentTypes = new List<Type>();
             KnownConcreteTypes = new List<Type>();
             EnumValues = new List<KeyValuePair<object, string>>();
-            Properties = new List<PropertyInfo>();
-            Fields = new List<FieldInfo>();
+            Properties = new List<ExtendedProperty>();
+            Fields = new List<ExtendedField>();
             Constructors = new List<ConstructorInfo>();
             EmptyConstructors = new List<ConstructorInfo>();
 
@@ -353,9 +353,9 @@ namespace TypeSupport
         private void InspectType(TypeSupportOptions options)
         {
             if (options.BitwiseHasFlag(TypeSupportOptions.Properties))
-                Properties = Type.GetProperties();
+                Properties = Type.GetProperties(PropertyOptions.All);
             if (options.BitwiseHasFlag(TypeSupportOptions.Fields))
-                Fields = Type.GetFields();
+                Fields = Type.GetFields(FieldOptions.All);
 
             if (options.BitwiseHasFlag(TypeSupportOptions.Attributes))
             {
@@ -474,17 +474,17 @@ namespace TypeSupport
 
             if (options.BitwiseHasFlag(TypeSupportOptions.Indexers))
             {
-                HasIndexer = Properties.Select(x => x.GetIndexParameters())
+                HasIndexer = Properties.Select(x => x.PropertyInfo.GetIndexParameters())
                 .Where(x => x.Length > 0)
                 .Any();
 
                 if (HasIndexer)
                 {
                     // c# only allows a single indexer
-                    var indexerProperty = Properties.Where(x => x.GetIndexParameters().Length > 0).ToList();
-                    var indexParameters = indexerProperty.FirstOrDefault().GetIndexParameters().FirstOrDefault();
+                    var indexerProperty = Properties.Where(x => x.PropertyInfo.GetIndexParameters().Length > 0).ToList();
+                    var indexParameters = indexerProperty.FirstOrDefault().PropertyInfo.GetIndexParameters().FirstOrDefault();
                     IndexerType = indexParameters.ParameterType;
-                    IndexerReturnType = indexerProperty.FirstOrDefault().PropertyType;
+                    IndexerReturnType = indexerProperty.FirstOrDefault().PropertyInfo.PropertyType;
                 }
             }
 
@@ -653,8 +653,16 @@ namespace TypeSupport
 
         public override bool Equals(object obj)
         {
-            var objTyped = (ExtendedType)obj;
-            return objTyped.Type.Equals(Type);
+            if (obj == null || (obj.GetType() != typeof(ExtendedType) && obj.GetType() != typeof(Type))) return false;
+            if (obj is ExtendedType)
+            {
+                var objTyped = (ExtendedType)obj;
+                return Equals(objTyped);
+            } else if(obj is Type)
+            {
+                return Equals((Type)obj);
+            }
+            return false;
         }
 
         public override int GetHashCode()
@@ -669,12 +677,62 @@ namespace TypeSupport
 
         public bool Equals(ExtendedType other)
         {
-            return other.Type.Equals(Type);
+            if (other == null || other.GetType() != typeof(ExtendedType)) return false;
+            return IsEqualTo(other);
         }
 
         public bool Equals(Type other)
         {
-            return other.Equals(Type);
+            if (other == null) return false;
+            return Type.Equals(other);
+        }
+
+        private bool IsEqualTo(ExtendedType type)
+        {
+            var isEqual = false;
+            if (HasEmptyConstructor == type.HasEmptyConstructor
+            && BaseHasEmptyConstructor == type.BaseHasEmptyConstructor
+            && IsAbstract == type.IsAbstract
+            && IsImmutable == type.IsImmutable
+            && IsEnumerable == type.IsEnumerable
+            && IsCollection == type.IsCollection
+            && IsArray == type.IsArray
+            && IsDictionary == type.IsDictionary
+            && IsKeyValuePair == type.IsKeyValuePair
+            && IsGeneric == type.IsGeneric
+            && IsDelegate == type.IsDelegate
+            && IsValueType == type.IsValueType
+            && IsReferenceType == type.IsReferenceType
+            && IsStruct == type.IsStruct
+            && IsPrimitive == type.IsPrimitive
+            && IsEnum == type.IsEnum
+            && IsTuple == type.IsTuple
+            && IsValueTuple == type.IsValueTuple
+            && IsNullable == type.IsNullable
+            && IsInterface == type.IsInterface
+            && IsSerializable == type.IsSerializable
+            && HasIndexer == type.HasIndexer
+            && IsAnonymous == type.IsAnonymous
+            && IsConcreteType == type.IsConcreteType
+            && Enumerable.SequenceEqual(EnumValues, type.EnumValues)
+            && Enumerable.SequenceEqual(KnownConcreteTypes, type.KnownConcreteTypes)
+            && Enumerable.SequenceEqual(Attributes, type.Attributes)
+            && Enumerable.SequenceEqual(GenericArgumentTypes, type.GenericArgumentTypes)
+            && Enumerable.SequenceEqual(Properties, type.Properties)
+            && Enumerable.SequenceEqual(Fields, type.Fields)
+            && Enumerable.SequenceEqual(Interfaces, type.Interfaces)
+            && Enumerable.SequenceEqual(Constructors, type.Constructors)
+            && Enumerable.SequenceEqual(EmptyConstructors, type.EmptyConstructors)
+            && ConcreteType == type.ConcreteType
+            && ElementType == type.ElementType
+            && ElementNullableBaseType == type.ElementNullableBaseType
+            && EnumType == type.EnumType
+            && IndexerType == type.IndexerType
+            && IndexerReturnType == type.IndexerReturnType
+            && UnderlyingType == type.UnderlyingType
+            && NullableBaseType == type.NullableBaseType)
+                isEqual = true;
+            return isEqual;
         }
     }
 
