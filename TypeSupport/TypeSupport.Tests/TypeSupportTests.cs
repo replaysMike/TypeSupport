@@ -198,6 +198,19 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_GenericDictionaryDuplicateTypes()
+        {
+            var type = typeof(IDictionary<int, int>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(2, typeSupport.GenericArgumentTypes.Count);
+            Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
+            Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.Skip(1).First());
+        }
+
+        [Test]
         public void Should_Discover_Dictionary()
         {
             var type = typeof(IDictionary);
