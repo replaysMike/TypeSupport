@@ -529,8 +529,7 @@ namespace TypeSupport
             {
                 foreach (var arg in args)
                 {
-                    if (!GenericArgumentTypes.Contains(arg))
-                        GenericArgumentTypes.Add(arg);
+                    GenericArgumentTypes.Add(arg);
                 }
             }
 
