@@ -39,4 +39,8 @@
     <ProjectReference Include="..\TypeSupport\TypeSupport.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>

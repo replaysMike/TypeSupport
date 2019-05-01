@@ -79,7 +79,8 @@ namespace TypeSupport
         /// <returns></returns>
         internal Type GetMapping(Type type)
         {
-            return Mappings.Where(x => x.Source.Equals(type)).Select(x => x.Destination).FirstOrDefault();
+            var mapping = Mappings.Where(x => x.Source.Equals(type)).Select(x => x.Destination).FirstOrDefault();
+            return mapping;
         }
 
         /// <summary>
@@ -89,7 +90,8 @@ namespace TypeSupport
         /// <returns></returns>
         internal Func<object> GetFactory(Type type)
         {
-            return Factories.Where(x => x.Source.Equals(type)).Select(x => x.Factory).FirstOrDefault();
+            var factory = Factories.Where(x => x.Source.Equals(type)).Select(x => x.Factory).FirstOrDefault();
+            return factory;
         }
 
         /// <summary>
@@ -122,9 +124,12 @@ namespace TypeSupport
     /// <typeparam name="TDestination"></typeparam>
     public class TypeFactory<TSource, TDestination> : TypeFactory
     {
+        /// <summary>
+        /// Generic factory method
+        /// </summary>
         public new Func<TDestination> Factory { get; }
 
-        public TypeFactory(Func<TDestination> factory) : base(typeof(TSource))
+        public TypeFactory(Func<TDestination> factory) : base(typeof(TSource), factory as Func<object>)
         {
             Factory = factory;
         }
@@ -135,7 +140,13 @@ namespace TypeSupport
     /// </summary>
     public class TypeFactory
     {
+        /// <summary>
+        /// The source type
+        /// </summary>
         public Type Source { get; }
+        /// <summary>
+        /// The factory method
+        /// </summary>
         public Func<object> Factory { get; }
         internal TypeFactory(Type source)
         {

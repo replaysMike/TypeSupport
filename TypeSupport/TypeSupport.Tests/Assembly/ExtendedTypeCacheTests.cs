@@ -2,7 +2,7 @@
 using System;
 using TypeSupport.Tests.TestObjects;
 
-namespace TypeSupport.Tests
+namespace TypeSupport.Tests.Assembly
 {
     [TestFixture]
     public class ExtendedTypeCacheTests

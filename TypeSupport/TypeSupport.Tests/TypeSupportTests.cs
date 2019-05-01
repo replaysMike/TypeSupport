@@ -76,7 +76,7 @@ namespace TypeSupport.Tests
             var typeSupport = new ExtendedType(type);
 
             Assert.NotNull(typeSupport);
-            Assert.AreEqual(4, typeSupport.KnownConcreteTypes.Count);
+            Assert.AreEqual(5, typeSupport.KnownConcreteTypes.Count);
         }
 
         [Test]

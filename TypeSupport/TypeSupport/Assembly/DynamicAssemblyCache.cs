@@ -13,6 +13,11 @@ namespace TypeSupport.Assembly
         private static readonly ConcurrentDictionary<string, AssemblyManager> _assemblies = new ConcurrentDictionary<string, AssemblyManager>();
 
         /// <summary>
+        /// Get the cached assembly managers
+        /// </summary>
+        public static ConcurrentDictionary<string, AssemblyManager> Assemblies => _assemblies;
+
+        /// <summary>
         /// Get an assembly from the assembly cache. If it does not exist, a new one will be created for you.
         /// </summary>
         /// <param name="assemblyName"></param>
