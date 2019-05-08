@@ -90,7 +90,9 @@ namespace TypeSupport
         public ExtendedProperty(PropertyInfo propertyInfo)
         {
             _propertyInfo = propertyInfo;
-            if (_propertyInfo.GetGetMethod(true)
+
+            if (HasGetMethod 
+                && GetMethod
                     .GetCustomAttributes(typeof(CompilerGeneratedAttribute), true)
                     .Any()
                 && _propertyInfo.DeclaringType
