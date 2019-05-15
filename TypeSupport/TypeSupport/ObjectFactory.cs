@@ -134,6 +134,17 @@ namespace TypeSupport
         /// Create a new, empty object of a given type
         /// </summary>
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
+        /// <returns></returns>
+        public object CreateEmptyObject(Type type, params object[] dimensions)
+        {
+            return CreateEmptyObject(type, TypeRegistry, null, dimensions);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <param name="initializer">An optional initializer to use to create the object</param>
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
