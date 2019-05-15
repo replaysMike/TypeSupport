@@ -4,12 +4,13 @@ namespace TypeSupport.Tests.TestObjects
     public class InheritedObject : BaseInheritedObject
     {
         private readonly string _name;
-        public int Id { get; set; }
+        public new int Id { get; }
     }
 
     public class BaseInheritedObject
     {
         private readonly string _baseName;
         public int BaseId { get; set; }
+        public int? Id { get; set; }
     }
 }

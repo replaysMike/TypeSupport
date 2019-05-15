@@ -357,7 +357,33 @@ namespace TypeSupport.Tests
             var type = typeof(InheritedObject);
             var fields = type.GetFields(FieldOptions.All);
 
-            Assert.AreEqual(4, fields.Count);
+            // there are 4 fields, plus an overridden field with duplicate name
+            Assert.AreEqual(5, fields.Count);
+        }
+
+        [Test]
+        public void Should_Throw_DuplicateInheritedPropertyNames()
+        {
+            var obj = new InheritedObject();
+            Assert.Throws<System.Reflection.AmbiguousMatchException>(() => {
+                var property = obj.GetProperty("Id");
+            });
+        }
+
+        [Test]
+        public void Should_Locate_DuplicateInheritedPropertyNamesByPropertyType()
+        {
+            var obj = new InheritedObject();
+            var property = obj.GetProperty("Id", typeof(int?));
+            Assert.AreEqual(typeof(int?), property.PropertyType);
+        }
+
+        [Test]
+        public void Should_Locate_DuplicateInheritedPropertyNamesByClassOwner()
+        {
+            var obj = new InheritedObject();
+            var property = obj.GetProperty("Id", typeof(BaseInheritedObject));
+            Assert.AreEqual(typeof(int?), property.PropertyType);
         }
 
         [Test]
@@ -366,7 +392,7 @@ namespace TypeSupport.Tests
             var type = typeof(InheritedObject);
             var properties = type.GetProperties(PropertyOptions.All);
 
-            Assert.AreEqual(2, properties.Count);
+            Assert.AreEqual(3, properties.Count);
         }
 
         [Test]

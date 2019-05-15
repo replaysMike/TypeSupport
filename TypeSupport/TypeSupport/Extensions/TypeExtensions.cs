@@ -135,6 +135,19 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get an extended property object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="declaringType">The declaring type the property belongs to</param>
+        /// <returns></returns>
+        public static ExtendedProperty GetExtendedProperty(this Type type, string name, Type declaringType)
+        {
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return properties.Single(x => x.Name.Equals(name) && x.DeclaringType.Equals(declaringType));
+        }
+
+        /// <summary>
         /// Get an extended field object by name
         /// </summary>
         /// <param name="type"></param>
@@ -143,6 +156,19 @@ namespace TypeSupport.Extensions
         public static ExtendedField GetExtendedField(this Type type, string name)
         {
             return type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+
+        /// <summary>
+        /// Get an extended field object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="declaringType">The delcaring type the field belongs to</param>
+        /// <returns></returns>
+        public static ExtendedField GetExtendedField(this Type type, string name, Type declaringType)
+        {
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            return fields.Single(x => x.Name.Equals(name) && x.DeclaringType.Equals(declaringType));
         }
     }
 }

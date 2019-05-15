@@ -44,6 +44,27 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get a property from an object instance and specify the derived type to match
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="fieldName">Field name</param>
+        /// <param name="derivedType">Derived type</param>
+        /// <returns></returns>
+        public static PropertyInfo GetProperty(this object obj, string name, Type derivedType)
+        {
+            var t = obj.GetType();
+            var properties = t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var val = properties
+                .FirstOrDefault(p => p.Name.Equals(name) && p.PropertyType.Equals(derivedType));
+            if (val == null)
+            {
+                val = properties
+                    .Single(p => p.Name.Equals(name) && p.DeclaringType.Equals(derivedType));
+            }
+            return val;
+        }
+
+        /// <summary>
         /// Get a field from an object instance
         /// </summary>
         /// <param name="obj"></param>
