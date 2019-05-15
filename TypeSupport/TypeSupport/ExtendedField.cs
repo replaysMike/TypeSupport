@@ -73,7 +73,7 @@ namespace TypeSupport
                 var i = fieldInfo.Name.IndexOf("<");
                 var end = fieldInfo.Name.IndexOf(">", i + 1);
                 BackedPropertyName = fieldInfo.Name.Substring(i + 1, end - (i + 1));
-                BackedProperty = ReflectedType.GetExtendedProperty(BackedPropertyName);
+                BackedProperty = ReflectedType.GetExtendedProperty(BackedPropertyName, fieldInfo.DeclaringType);
             }
         }
 
