@@ -59,7 +59,7 @@ namespace TypeSupport.Extensions
             if (val == null)
             {
                 val = properties
-                    .Single(p => p.Name.Equals(name) && p.DeclaringType.Equals(derivedType));
+                    .FirstOrDefault(p => p.Name.Equals(name) && p.DeclaringType.Equals(derivedType));
             }
             return val;
         }
@@ -92,7 +92,7 @@ namespace TypeSupport.Extensions
             if (val == null)
             {
                 val = fields
-                    .Single(p => p.Name.Equals(name) && p.DeclaringType.Equals(derivedType));
+                    .FirstOrDefault(p => p.Name.Equals(name) && p.DeclaringType.Equals(derivedType));
             }
             return val;
         }
