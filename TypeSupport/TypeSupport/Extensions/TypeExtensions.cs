@@ -82,6 +82,37 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get all of the fields of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <returns></returns>
+        public static ICollection<ExtendedMethod> GetMethods(this Type type, MethodOptions options)
+        {
+            if (type == null)
+                return new List<ExtendedMethod>();
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Static;
+            var allMethods = type.GetMethods(flags)
+                .Select(x => new ExtendedMethod(x, type))
+                .Concat(GetMethods(type.BaseType, options));
+            IEnumerable<ExtendedMethod> returnMethods = allMethods;
+
+            if (options.HasFlag(MethodOptions.Public))
+                returnMethods = returnMethods.Where(x => x.IsPublic);
+            if (options.HasFlag(MethodOptions.Private))
+                returnMethods = returnMethods.Where(x => x.IsPrivate);
+            if (options.HasFlag(MethodOptions.Static))
+                returnMethods = returnMethods.Where(x => x.IsStatic);
+            if (options.HasFlag(MethodOptions.Overridden))
+                returnMethods = allMethods.Where(x => x.IsOverride);
+            if (options.HasFlag(MethodOptions.Virtual))
+                returnMethods = returnMethods.Where(x => x.IsVirtual);
+            if (options.HasFlag(MethodOptions.Constructor))
+                returnMethods = returnMethods.Where(x => x.IsConstructor);
+            return returnMethods.Select(x => (ExtendedMethod)x).ToList();
+        }
+
+        /// <summary>
         /// Check if a type contains a property
         /// </summary>
         /// <param name="obj"></param>

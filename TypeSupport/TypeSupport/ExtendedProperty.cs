@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace TypeSupport
 {
+    /// <summary>
+    /// Discovers the attributes of a property and provides access to property metadata
+    /// </summary>
     public class ExtendedProperty
     {
         private readonly PropertyInfo _propertyInfo;

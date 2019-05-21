@@ -19,5 +19,10 @@ namespace TypeSupport.Tests.TestObjects
             Id = id;
             _test = 0;
         }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }

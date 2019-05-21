@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using TypeSupport.Extensions;
 
 namespace TypeSupport
@@ -18,167 +14,172 @@ namespace TypeSupport
         /// <summary>
         /// True if type has an empty constructor defined
         /// </summary>
-        public bool HasEmptyConstructor { get; private set; }
+        public bool HasEmptyConstructor { get; internal set; }
 
         /// <summary>
         /// True if a base type has an empty constructor defined
         /// </summary>
-        public bool BaseHasEmptyConstructor { get; private set; }
+        public bool BaseHasEmptyConstructor { get; internal set; }
 
         /// <summary>
         /// True if the type is abstract
         /// </summary>
-        public bool IsAbstract { get; private set; }
+        public bool IsAbstract { get; internal set; }
 
         /// <summary>
         /// True if type is an immutable type
         /// </summary>
-        public bool IsImmutable { get; private set; }
+        public bool IsImmutable { get; internal set; }
 
         /// <summary>
         /// True if the type implements IEnumerable
         /// </summary>
-        public bool IsEnumerable { get; private set; }
+        public bool IsEnumerable { get; internal set; }
 
         /// <summary>
         /// True if the type implements ICollection
         /// </summary>
-        public bool IsCollection { get; private set; }
+        public bool IsCollection { get; internal set; }
 
         /// <summary>
         /// True if the type is an array
         /// </summary>
-        public bool IsArray { get; private set; }
+        public bool IsArray { get; internal set; }
 
         /// <summary>
         /// True if the type implements IDictionary
         /// </summary>
-        public bool IsDictionary { get; private set; }
+        public bool IsDictionary { get; internal set; }
 
         /// <summary>
         /// True if the type is a key value pair
         /// </summary>
-        public bool IsKeyValuePair { get; private set; }
+        public bool IsKeyValuePair { get; internal set; }
 
         /// <summary>
         /// True if the type is a generic type
         /// </summary>
-        public bool IsGeneric { get; private set; }
+        public bool IsGeneric { get; internal set; }
 
         /// <summary>
         /// True if the type is a delegate
         /// </summary>
-        public bool IsDelegate { get; private set; }
+        public bool IsDelegate { get; internal set; }
 
         /// <summary>
         /// True if the type is an integral value type
         /// </summary>
-        public bool IsValueType { get; private set; }
+        public bool IsValueType { get; internal set; }
 
         /// <summary>
         /// True if the type is a reference type
         /// </summary>
-        public bool IsReferenceType { get; private set; }
+        public bool IsReferenceType { get; internal set; }
 
         /// <summary>
         /// True if the type is a struct
         /// </summary>
-        public bool IsStruct { get; private set; }
+        public bool IsStruct { get; internal set; }
 
         /// <summary>
         /// True if the type is a primitive type
         /// </summary>
-        public bool IsPrimitive { get; private set; }
+        public bool IsPrimitive { get; internal set; }
 
         /// <summary>
         /// True if the type is a system enum
         /// </summary>
-        public bool IsEnum { get; private set; }
+        public bool IsEnum { get; internal set; }
 
         /// <summary>
         /// True if the type is a Tuple of any length <see cref="Tuple"/>
         /// </summary>
-        public bool IsTuple { get; private set; }
+        public bool IsTuple { get; internal set; }
 
         /// <summary>
         /// True if they type is a Tuple of any length <see cref="ValueTuple"/>
         /// </summary>
-        public bool IsValueTuple { get; private set; }
+        public bool IsValueTuple { get; internal set; }
 
         /// <summary>
         /// True if the type is nullable
         /// </summary>
-        public bool IsNullable { get; private set; }
+        public bool IsNullable { get; internal set; }
 
         /// <summary>
         /// True if the type is an interface
         /// </summary>
-        public bool IsInterface { get; private set; }
+        public bool IsInterface { get; internal set; }
 
         /// <summary>
         /// True if the type is serializable
         /// </summary>
-        public bool IsSerializable { get; private set; }
+        public bool IsSerializable { get; internal set; }
 
         /// <summary>
         /// True if the type contains an indexer
         /// </summary>
-        public bool HasIndexer { get; private set; }
+        public bool HasIndexer { get; internal set; }
 
         /// <summary>
         /// True if the type is an anonymous type
         /// </summary>
-        public bool IsAnonymous { get; private set; }
+        public bool IsAnonymous { get; internal set; }
 
         /// <summary>
         /// True if the type contains an implementation or is of a concrete type (not: abstract, interfaces, anonymous types, object)
         /// </summary>
-        public bool IsConcreteType { get; private set; }
+        public bool IsConcreteType { get; internal set; }
 
         /// <summary>
         /// For enum types the list of valid values of the Enum
         /// </summary>
-        public ICollection<KeyValuePair<object, string>> EnumValues { get; private set; }
+        public ICollection<KeyValuePair<object, string>> EnumValues { get; internal set; }
 
         /// <summary>
         /// For interface types the list of known concrete types that implement it
         /// </summary>
-        public ICollection<Type> KnownConcreteTypes { get; private set; }
+        public ICollection<Type> KnownConcreteTypes { get; internal set; }
 
         /// <summary>
         /// The list of attributes defined on the type (concrete types only)
         /// </summary>
-        public ICollection<Type> Attributes { get; private set; }
+        public ICollection<Type> Attributes { get; internal set; }
 
         /// <summary>
         /// The list of type arguments of a generic type
         /// </summary>
-        public ICollection<Type> GenericArgumentTypes { get; private set; }
+        public ICollection<Type> GenericArgumentTypes { get; internal set; }
 
         /// <summary>
         /// A list of the type's properties
         /// </summary>
-        public ICollection<ExtendedProperty> Properties { get; private set; }
+        public ICollection<ExtendedProperty> Properties { get; internal set; }
 
         /// <summary>
         /// A list of the type's fields
         /// </summary>
-        public ICollection<ExtendedField> Fields { get; private set; }
+        public ICollection<ExtendedField> Fields { get; internal set; }
+
+        /// <summary>
+        /// A list of the type's methods
+        /// </summary>
+        public ICollection<ExtendedMethod> Methods { get; internal set; }
 
         /// <summary>
         /// List of implemented interfaces
         /// </summary>
-        public ICollection<Type> Interfaces { get; private set; }
+        public ICollection<Type> Interfaces { get; internal set; }
 
         /// <summary>
         /// All constructors
         /// </summary>
-        public ICollection<ConstructorInfo> Constructors { get; private set; }
+        public ICollection<ConstructorInfo> Constructors { get; internal set; }
 
         /// <summary>
         /// All empty constructors
         /// </summary>
-        public ICollection<ConstructorInfo> EmptyConstructors { get; private set; }
+        public ICollection<ConstructorInfo> EmptyConstructors { get; internal set; }
 
         /// <summary>
         /// The type TypeSupport was created from
@@ -188,42 +189,42 @@ namespace TypeSupport
         /// <summary>
         /// For interface types the concrete type that implements it, <seealso cref="SetConcreteTypeFromInstance(object)"/>
         /// </summary>
-        public Type ConcreteType { get; private set; }
+        public Type ConcreteType { get; internal set; }
 
         /// <summary>
         /// For array and enumerable types, the element data type
         /// </summary>
-        public Type ElementType { get; private set; }
+        public Type ElementType { get; internal set; }
 
         /// <summary>
         /// For array and enumerable types that have a nullable value, the type of the nullable
         /// </summary>
-        public Type ElementNullableBaseType { get; private set; }
+        public Type ElementNullableBaseType { get; internal set; }
 
         /// <summary>
         /// The declared value type of an enum (one of the following numeric types: sbyte,byte,ushort,short,uint,int,ulong,long)
         /// </summary>
-        public Type EnumType { get; private set; }
+        public Type EnumType { get; internal set; }
 
         /// <summary>
         /// The declared type of an indexer key
         /// </summary>
-        public Type IndexerType { get; private set; }
+        public Type IndexerType { get; internal set; }
 
         /// <summary>
         /// The declared return type of an indexer key
         /// </summary>
-        public Type IndexerReturnType { get; private set; }
+        public Type IndexerReturnType { get; internal set; }
 
         /// <summary>
         /// The underlying type of the Type
         /// </summary>
-        public Type UnderlyingType { get; private set; }
+        public Type UnderlyingType { get; internal set; }
 
         /// <summary>
         /// The base type of a nullable Type
         /// </summary>
-        public Type NullableBaseType { get; private set; }
+        public Type NullableBaseType { get; internal set; }
 
         /// <summary>
         /// Get the name of the type
@@ -268,7 +269,8 @@ namespace TypeSupport
             else
             {
                 // inspect the type with the given options
-                InspectType(options);
+                var typeInspector = new TypeInspector(this, options);
+                typeInspector.Inspect();
                 if (isCachingSupported)
                     ExtendedTypeCache.CacheType(this, options);
             }
@@ -348,307 +350,6 @@ namespace TypeSupport
             IndexerReturnType = type.IndexerReturnType;
             UnderlyingType = type.UnderlyingType;
             NullableBaseType = type.NullableBaseType;
-        }
-
-        private void InspectType(TypeSupportOptions options)
-        {
-            if (options.BitwiseHasFlag(TypeSupportOptions.Properties))
-                Properties = Type.GetProperties(PropertyOptions.All);
-            if (options.BitwiseHasFlag(TypeSupportOptions.Fields))
-                Fields = Type.GetFields(FieldOptions.All);
-
-            if (options.BitwiseHasFlag(TypeSupportOptions.Attributes))
-            {
-#if FEATURE_CUSTOM_ATTRIBUTES
-                if (Type.CustomAttributes.Any())
-                    Attributes = Type.CustomAttributes.Select(x => x.AttributeType).ToList();
-#else
-            // attributes
-            if (Type.GetCustomAttributesData().Any())
-                Attributes = Type.GetCustomAttributesData().Select(x => x.Constructor.DeclaringType).ToList();
-#endif
-            }
-
-            if (options.BitwiseHasFlag(TypeSupportOptions.Constructors))
-            {
-                var allConstructors = Type.GetConstructors(ConstructorOptions.All);
-                var allEmptyConstructors = allConstructors.Where(x => x.GetParameters().Any() == false).ToList();
-                ConstructorInfo emptyConstructorDefined = null;
-                emptyConstructorDefined = Type.GetConstructor(Type.EmptyTypes);
-                HasEmptyConstructor = Type.IsValueType || emptyConstructorDefined != null;
-                BaseHasEmptyConstructor = (Type.BaseType?.IsValueType == true || allEmptyConstructors?.Any() == true);
-                Constructors = allConstructors;
-                EmptyConstructors = allEmptyConstructors;
-            }
-
-            ConcreteType = Type;
-            IsAbstract = Type.IsAbstract;
-            IsSerializable = Type.IsSerializable;
-            UnderlyingType = Type.UnderlyingSystemType;
-            if (Type == typeof(string))
-                IsImmutable = true;
-
-            // collections support
-            IsArray = Type.IsArray;
-            IsGeneric = Type.IsGenericType;
-            if (IsArray)
-            {
-                ElementType = GetElementType(Type);
-                if (ElementType != null)
-                    ElementNullableBaseType = GetNullableBaseType(ElementType);
-            }
-            IsTuple = Type.IsValueTupleType() || Type.IsTupleType();
-            IsValueTuple = Type.IsValueTupleType();
-            IsValueType = Type.IsValueType;
-            IsReferenceType = Type.IsClass;
-            IsStruct = Type.IsValueType && !Type.IsEnum && !Type.IsPrimitive && !Type.IsClass;
-            IsPrimitive = Type.IsPrimitive;
-            IsInterface = Type.IsInterface;
-            if (IsInterface && options.BitwiseHasFlag(TypeSupportOptions.ConcreteTypes))
-                KnownConcreteTypes = GetConcreteTypes(Type);
-            Interfaces = Type.GetInterfaces();
-            IsEnum = Type.IsEnum;
-            if (IsEnum)
-            {
-                EnumType = Type.GetEnumUnderlyingType();
-                EnumValues = Type.ToListOfKeyValuePairs(EnumType).ToList();
-            }
-
-            if (options.BitwiseHasFlag(TypeSupportOptions.Collections))
-            {
-                if (typeof(IEnumerable).IsAssignableFrom(Type))
-                {
-                    IsEnumerable = true;
-                    if (IsGeneric)
-                    {
-                        var genericArgument = Type.GetGenericArguments().FirstOrDefault();
-                        if (genericArgument != null) ElementType = genericArgument;
-                        if (ElementType != null)
-                            ElementNullableBaseType = GetNullableBaseType(ElementType);
-                    }
-
-                    // inspect the interfaces for a generic type
-                    if (ElementType == null)
-                    {
-                        foreach (var @interface in Interfaces)
-                        {
-                            // if the class implements any generic interface, it can be considered generic
-                            if (@interface.IsAssignableFrom(Type) && @interface.IsGenericType)
-                            {
-                                ElementType = GetElementTypeForInterfaceType(@interface);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (IsGeneric)
-            {
-                InspectGenericType(Type, options);
-            }
-            else
-            {
-                if (options.BitwiseHasFlag(TypeSupportOptions.Collections))
-                {
-                    if (!Type.IsArray
-                        && (typeof(ICollection).IsAssignableFrom(Type)
-                            || typeof(IList).IsAssignableFrom(Type)
-                            )
-                        )
-                    {
-                        IsCollection = true;
-                        ElementType = typeof(object);
-                        GenericArgumentTypes.Add(typeof(object));
-                    }
-
-                    if (typeof(IDictionary).IsAssignableFrom(Type))
-                    {
-                        IsDictionary = true;
-                        ElementType = typeof(object);
-                    }
-                }
-            }
-
-            if (typeof(Delegate).IsAssignableFrom(Type))
-                IsDelegate = true;
-
-            if (options.BitwiseHasFlag(TypeSupportOptions.Indexers))
-            {
-                HasIndexer = Properties.Select(x => x.PropertyInfo.GetIndexParameters())
-                .Where(x => x.Length > 0)
-                .Any();
-
-                if (HasIndexer)
-                {
-                    // c# only allows a single indexer
-                    var indexerProperty = Properties.Where(x => x.PropertyInfo.GetIndexParameters().Length > 0).ToList();
-                    var indexParameters = indexerProperty.FirstOrDefault().PropertyInfo.GetIndexParameters().FirstOrDefault();
-                    IndexerType = indexParameters.ParameterType;
-                    IndexerReturnType = indexerProperty.FirstOrDefault().PropertyInfo.PropertyType;
-                }
-            }
-
-            // nullable
-            var nullableBaseType = GetNullableBaseType(Type);
-            NullableBaseType = nullableBaseType ?? Type;
-            IsNullable = nullableBaseType != null;
-
-            // anonymous
-            IsAnonymous = Attribute.IsDefined(Type, typeof(CompilerGeneratedAttribute), false)
-                && Type.IsGenericType && Type.Name.Contains("AnonymousType")
-                && (Type.Name.StartsWith("<>") || Type.Name.StartsWith("VB$"))
-                && (Type.Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
-
-            // provide a way to detect if the type requires additional concrete information in order to be serialized
-            IsConcreteType = !(IsAbstract || IsInterface || IsAnonymous || Type == typeof(object));
-        }
-
-        private Type GetElementTypeForInterfaceType(Type type)
-        {
-            var genericTypeDefinition = type.GetGenericTypeDefinition();
-            var args = type.GetGenericArguments();
-            var genericArgumentTypes = new List<Type>();
-            if (args?.Any() == true)
-            {
-                foreach (var arg in args)
-                {
-                    if (!genericArgumentTypes.Contains(arg))
-                        genericArgumentTypes.Add(arg);
-                }
-            }
-            var elementType = genericArgumentTypes.FirstOrDefault();
-
-            return elementType;
-        }
-
-        private void InspectGenericType(Type type, TypeSupportOptions options)
-        {
-            var genericTypeDefinition = type.GetGenericTypeDefinition();
-            var args = type.GetGenericArguments();
-            if (args?.Any() == true)
-            {
-                foreach (var arg in args)
-                {
-                    GenericArgumentTypes.Add(arg);
-                }
-            }
-
-            if (options.BitwiseHasFlag(TypeSupportOptions.Collections))
-            {
-                if (typeof(ICollection).IsAssignableFrom(genericTypeDefinition)
-                    || typeof(IList) == type
-                    || typeof(IList).IsAssignableFrom(genericTypeDefinition)
-                    || typeof(IList<>).IsAssignableFrom(genericTypeDefinition)
-                    || typeof(ICollection<>).IsAssignableFrom(genericTypeDefinition)
-                    || typeof(Collection<>).IsAssignableFrom(genericTypeDefinition)
-                    )
-                {
-                    IsCollection = true;
-                    ElementType = args.FirstOrDefault();
-                    if (ElementType != null)
-                        ElementNullableBaseType = GetNullableBaseType(ElementType);
-                }
-
-                if (genericTypeDefinition == typeof(Dictionary<,>)
-                    || genericTypeDefinition == typeof(ConcurrentDictionary<,>)
-                    || genericTypeDefinition == typeof(IDictionary<,>))
-                    IsDictionary = true;
-            }
-            if (genericTypeDefinition == typeof(KeyValuePair<,>))
-            {
-                IsKeyValuePair = true;
-                ElementType = args.FirstOrDefault();
-            }
-        }
-
-        /// <summary>
-        /// Get the list of concrete types that implement an interface
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public ICollection<Type> GetConcreteTypes(Type type)
-        {
-            if (!type.IsInterface)
-                throw new TypeSupportException(type, $"The type {type.Name} is not an interface. Only interface types can be analyzed.");
-            var typeAssembly = System.Reflection.Assembly.GetAssembly(type);
-
-            if (type.IsGenericType)
-            {
-                var genericType = type.GetGenericTypeDefinition();
-                return typeAssembly.GetTypes()
-                    .Select(p => new KeyValuePair<Type, Type[]>(p, p.GetInterfaces()))
-                    .Where(x => x.Value.Any(y => y.IsGenericType && y.GetGenericTypeDefinition().Equals(genericType)))
-                    .Select(x => x.Key)
-                    .ToList();
-            }
-            else
-            {
-                var allTypes = typeAssembly.GetTypes()
-                    .Where(p => type.IsAssignableFrom(p) && !p.IsInterface && !p.IsAbstract)
-                    .ToList();
-
-                return allTypes;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if a type can be assigned to a specific generic type
-        /// </summary>
-        /// <param name="givenType"></param>
-        /// <param name="genericType"></param>
-        /// <returns></returns>
-        public bool IsAssignableToGenericType(Type givenType, Type genericType)
-        {
-            var interfaceTypes = givenType.GetInterfaces();
-
-            foreach (var it in interfaceTypes)
-            {
-                if (it.IsGenericType && it.GetGenericTypeDefinition() == genericType)
-                    return true;
-            }
-
-            if (givenType.IsGenericType && givenType.GetGenericTypeDefinition() == genericType)
-                return true;
-
-            Type baseType = givenType.BaseType;
-            if (baseType == null) return false;
-
-            return IsAssignableToGenericType(baseType, genericType);
-        }
-
-        /// <summary>
-        /// Get the concrete type of an object instance
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public Type GetConcreteType(object obj)
-        {
-            var objectType = obj.GetType();
-            if (KnownConcreteTypes != null)
-                return KnownConcreteTypes.Where(x => objectType.IsAssignableFrom(x)).FirstOrDefault();
-            return objectType;
-        }
-
-        /// <summary>
-        /// Get the base type of a nullable object
-        /// </summary>
-        /// <param name="type">Nullable type to analyse</param>
-        /// <returns>Null if the type is not nullable</returns>
-        public Type GetNullableBaseType(Type type)
-        {
-            return Nullable.GetUnderlyingType(type);
-        }
-
-        /// <summary>
-        /// Get the type of an array element
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public Type GetElementType(Type type)
-        {
-            if (!type.IsArray)
-                throw new TypeSupportException(type, $"The type {type.Name} is not an array.");
-            return type.GetElementType();
         }
 
         public override bool Equals(object obj)

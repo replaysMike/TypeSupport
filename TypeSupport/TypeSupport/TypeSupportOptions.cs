@@ -48,9 +48,13 @@ namespace TypeSupport
 		/// Enable type caching
 		/// </summary>
 		Caching = 512,
-		/// <summary>
-		/// Uses all default options
-		/// </summary>
-		All = Attributes | Collections | ConcreteTypes | Constructors | Enums | Fields | Generics | Indexers | Properties | Caching,
+        /// <summary>
+        /// Load and inspect methods
+        /// </summary>
+        Methods = 1024,
+        /// <summary>
+        /// Uses all default options
+        /// </summary>
+        All = Attributes | Collections | ConcreteTypes | Constructors | Enums | Fields | Generics | Indexers | Properties | Caching | Methods,
     }
 }

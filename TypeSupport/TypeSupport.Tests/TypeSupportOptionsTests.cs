@@ -18,7 +18,8 @@ namespace TypeSupport.Tests
                 | TypeSupportOptions.Fields
                 | TypeSupportOptions.Generics
                 | TypeSupportOptions.Indexers
-                | TypeSupportOptions.Properties;
+                | TypeSupportOptions.Properties
+                | TypeSupportOptions.Methods;
             Assert.AreEqual(allOptions, TypeSupportOptions.All);
         }
 

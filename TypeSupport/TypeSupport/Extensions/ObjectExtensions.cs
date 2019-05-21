@@ -32,6 +32,16 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get all of the methods of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static ICollection<ExtendedMethod> GetMethods(this object obj, MethodOptions options)
+        {
+            return obj.GetType().GetMethods(options);
+        }
+
+        /// <summary>
         /// Get a property from an object instance
         /// </summary>
         /// <param name="obj"></param>
