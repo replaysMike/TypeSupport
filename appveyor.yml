@@ -1,0 +1,28 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Release
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+environment:
+  CODACY_TOKEN:
+    secure: i4htiDvo1KvqjlwwqZoFE+MUhANU+/ODvqQ94ocj+ciTCzRzJlpLU4YmBkeGGX+v
+cache:
+ - packages -> **\packages.config
+ - '%USERPROFILE%\.nuget\packages -> **\project.json'  # project.json cache
+nuget:
+  account_feed: true
+  project_feed: true
+before_build:
+- ps: dotnet restore .\TypeSupport\TypeSupport.sln
+build_script:
+- ps: .\scripts\build.ps1
+test_script:
+- ps: .\scripts\run-tests.ps1
+after_test:
+- ps: .\scripts\send-coverage.ps1
