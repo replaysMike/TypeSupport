@@ -5,6 +5,14 @@ namespace TypeSupport.Tests.TestObjects
     {
     }
 
+    public interface IInterfaceWithGenericImplementations<T>
+    {
+    }
+
+    public interface IInterfaceWithGenericImplementations<T1, T2, T3>
+    {
+    }
+
     public class InterfaceWithImplementations1 : IInterfaceWithImplementations { }
     public class InterfaceWithImplementations2 : IInterfaceWithImplementations { }
     public class InterfaceWithImplementations3 : IInterfaceWithImplementations { }
@@ -16,5 +24,15 @@ namespace TypeSupport.Tests.TestObjects
         {
             Value = value;
         }
+    }
+
+    public class InterfaceWithGenericImplementations<T> : IInterfaceWithGenericImplementations<T>
+    {
+
+    }
+
+    public class InterfaceWithMultiGenericImplementations<T1, T2, T3> : IInterfaceWithGenericImplementations<T1, T2, T3>
+    {
+
     }
 }

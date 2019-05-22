@@ -352,14 +352,54 @@ namespace TypeSupport
             NullableBaseType = type.NullableBaseType;
         }
 
+        /// <summary>
+        /// Returns true if the type implements an interface
+        /// </summary>
+        /// <param name="interfaceType">The interface type to check</param>
+        /// <returns></returns>
+        public bool Implements(Type interfaceType)
+        {
+            var interfaceExtendedType = interfaceType.GetExtendedType();
+            if (interfaceExtendedType.IsGeneric)
+            {
+                // match interface and generic arguments
+                var genericArguments = interfaceType.GetGenericArguments();
+                var t = Interfaces.First().GetGenericArguments();
+                var s = t.SequenceEqual(genericArguments);
+                var genericInterface = Interfaces.Where(x => x.IsGenericType
+                    && x.Name == interfaceExtendedType.Name
+                    && x.GetGenericArguments().Length.Equals(genericArguments.Length)
+                    && ( genericArguments.SequenceEqual(x.GetGenericArguments())
+                        || genericArguments.All(y => y.IsGenericParameter)
+                    )
+                ).FirstOrDefault();
+                return genericInterface != null;
+            }
+            // match interface
+            var nonGenericInterface = Interfaces.Where(x => !x.IsGenericType && x.Equals(interfaceType)).FirstOrDefault();
+            return nonGenericInterface != null;
+        }
+
+        /// <summary>
+        /// Returns true if the type implements an interface
+        /// </summary>
+        /// <typeparam name="TInterface">The interface type to check</typeparam>
+        /// <returns></returns>
+        public bool Implements<TInterface>()
+        {
+            return Implements(typeof(TInterface));
+        }
+
         public override bool Equals(object obj)
         {
-            if (obj == null || (obj.GetType() != typeof(ExtendedType) && obj.GetType() != typeof(Type))) return false;
+            if (obj == null || (obj.GetType() != typeof(ExtendedType) && obj.GetType() != typeof(Type)))
+                return false;
             if (obj is ExtendedType)
             {
                 var objTyped = (ExtendedType)obj;
                 return Equals(objTyped);
-            } else if(obj is Type)
+            }
+            else if (obj is Type)
             {
                 return Equals((Type)obj);
             }
@@ -378,13 +418,15 @@ namespace TypeSupport
 
         public bool Equals(ExtendedType other)
         {
-            if (other == null || other.GetType() != typeof(ExtendedType)) return false;
+            if (other == null || other.GetType() != typeof(ExtendedType))
+                return false;
             return IsEqualTo(other);
         }
 
         public bool Equals(Type other)
         {
-            if (other == null) return false;
+            if (other == null)
+                return false;
             return Type.Equals(other);
         }
 

@@ -404,5 +404,69 @@ namespace TypeSupport.Tests
             Assert.IsFalse(options.BitwiseHasFlag<PropertyOptions>(PropertyOptions.Private));
             Assert.IsFalse(options.BitwiseHasFlag<PropertyOptions>(PropertyOptions.Public));
         }
+
+        [Test]
+        public void Should_Match_ImplementedInterface()
+        {
+            var type = typeof(InterfaceWithImplementations1);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsTrue(typeSupport.Implements<IInterfaceWithImplementations>());
+        }
+
+        [Test]
+        public void ShouldNot_Match_ImplementedInterface()
+        {
+            var type = typeof(InterfaceWithImplementations1);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsFalse(typeSupport.Implements<IInterfaceWithoutImplementations>());
+        }
+
+        [Test]
+        public void Should_Match_ImplementedGenericInterface()
+        {
+            var type = typeof(InterfaceWithGenericImplementations<bool>);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsTrue(typeSupport.Implements<IInterfaceWithGenericImplementations<bool>>());
+        }
+
+        [Test]
+        public void Should_Match_ImplementedGenericInterfaceWithoutGenericArgs()
+        {
+            var type = typeof(InterfaceWithGenericImplementations<bool>);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsTrue(typeSupport.Implements(typeof(IInterfaceWithGenericImplementations<>)));
+        }
+
+        [Test]
+        public void Should_Match_ImplementedMultiGenericInterfaceWithoutGenericArgs()
+        {
+            var type = typeof(InterfaceWithMultiGenericImplementations<bool, int, double>);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsTrue(typeSupport.Implements(typeof(IInterfaceWithGenericImplementations<,,>)));
+        }
+
+        [Test]
+        public void ShouldNot_Match_ImplementedMultiGenericInterfaceWithoutCorrectGenericArgs()
+        {
+            var type = typeof(InterfaceWithMultiGenericImplementations<bool, int, double>);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsFalse(typeSupport.Implements(typeof(IInterfaceWithGenericImplementations<>)));
+        }
+
+        [Test]
+        public void ShouldNot_Match_ImplementedMultiGenericInterfaceWithoutGenericArgs()
+        {
+            var type = typeof(InterfaceWithMultiGenericImplementations<bool, int, double>);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsFalse(typeSupport.Implements(typeof(IInterfaceWithGenericImplementations<double, int, decimal>)));
+        }
+
+        [Test]
+        public void ShouldNot_Match_ImplementedGenericInterface()
+        {
+            var type = typeof(InterfaceWithGenericImplementations<bool>);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsFalse(typeSupport.Implements<IInterfaceWithGenericImplementations<double>>());
+        }
     }
 }
