@@ -6,6 +6,6 @@ namespace TypeSupport.Tests.TestObjects
 {
     public class ReadOnlyObject
     {
-        private readonly Dictionary<string, IList> inner = new Dictionary<string, IList>();
+        private readonly Dictionary<string, IList> _inner = new Dictionary<string, IList>();
     }
 }

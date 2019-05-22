@@ -24,5 +24,6 @@ namespace TypeSupport.Tests.TestObjects
         {
             return base.ToString();
         }
+
     }
 }

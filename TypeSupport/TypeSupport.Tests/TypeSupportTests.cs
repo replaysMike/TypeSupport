@@ -406,6 +406,15 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_Discover_OperatorOverload()
+        {
+            var type = typeof(OperatorOverloadObject);
+            var typeSupport = new ExtendedType(type);
+            Assert.IsTrue(typeSupport.Methods.Any(x => x.Name == "op_Equality" && x.IsOperatorOverload));
+            Assert.IsTrue(typeSupport.Methods.Any(x => x.Name == "op_Inequality" && x.IsOperatorOverload));
+        }
+
+        [Test]
         public void Should_Match_ImplementedInterface()
         {
             var type = typeof(InterfaceWithImplementations1);
