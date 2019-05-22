@@ -339,6 +339,7 @@ namespace TypeSupport
             GenericArgumentTypes = type.GenericArgumentTypes;
             Properties = type.Properties;
             Fields = type.Fields;
+            Methods = type.Methods;
             Interfaces = type.Interfaces;
             Constructors = type.Constructors;
             EmptyConstructors = type.EmptyConstructors;
@@ -461,6 +462,7 @@ namespace TypeSupport
             && Enumerable.SequenceEqual(GenericArgumentTypes, type.GenericArgumentTypes)
             && Enumerable.SequenceEqual(Properties, type.Properties)
             && Enumerable.SequenceEqual(Fields, type.Fields)
+            && Enumerable.SequenceEqual(Methods, type.Methods)
             && Enumerable.SequenceEqual(Interfaces, type.Interfaces)
             && Enumerable.SequenceEqual(Constructors, type.Constructors)
             && Enumerable.SequenceEqual(EmptyConstructors, type.EmptyConstructors)
