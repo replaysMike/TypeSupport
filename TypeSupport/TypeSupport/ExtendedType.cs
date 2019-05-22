@@ -364,8 +364,6 @@ namespace TypeSupport
             {
                 // match interface and generic arguments
                 var genericArguments = interfaceType.GetGenericArguments();
-                var t = Interfaces.First().GetGenericArguments();
-                var s = t.SequenceEqual(genericArguments);
                 var genericInterface = Interfaces.Where(x => x.IsGenericType
                     && x.Name == interfaceExtendedType.Name
                     && x.GetGenericArguments().Length.Equals(genericArguments.Length)

@@ -13,6 +13,47 @@ namespace TypeSupport
     {
         private readonly MethodInfo _methodInfo;
         private readonly Type _parentType;
+        private readonly string[] _operatorOverloadNames = new string[]
+        {
+            "op_Implicit",
+            "op_Explicit",
+            "op_Addition",
+            "op_Subtraction",
+            "op_Multiply",
+            "op_Division",
+            "op_Modulus",
+            "op_ExclusiveOr",
+            "op_BitwiseAnd",
+            "op_BitwiseOr",
+            "op_LogicalAnd",
+            "op_LogicalOr",
+            "op_Assign",
+            "op_LeftShift",
+            "op_RightShift",
+            "op_SignedRightShift",
+            "op_UnsignedRightShift",
+            "op_Equality",
+            "op_GreaterThan",
+            "op_LessThan",
+            "op_Inequality",
+            "op_GreaterThanOrEqual",
+            "op_LessThanOrEqual",
+            "op_MultiplicationAssignment",
+            "op_SubtractionAssignment",
+            "op_ExclusiveOrAssignment",
+            "op_LeftShiftAssignment",
+            "op_ModulusAssignment",
+            "op_AdditionAssignment",
+            "op_BitwiseAndAssignment",
+            "op_BitwiseOrAssignment",
+            "op_Comma",
+            "op_DivisionAssignment",
+            "op_Decrement",
+            "op_Increment",
+            "op_UnaryNegation",
+            "op_UnaryPlus",
+            "op_OnesComplement"
+        };
 
         public MethodInfo MethodInfo
         {
@@ -107,6 +148,11 @@ namespace TypeSupport
         public bool IsSetter { get; }
 
         /// <summary>
+        /// True if this method is an operator overload
+        /// </summary>
+        public bool IsOperatorOverload { get; }
+
+        /// <summary>
         /// Get the parameters for the method
         /// </summary>
         public IEnumerable<ParameterInfo> Parameters => _methodInfo.GetParameters();
@@ -130,6 +176,7 @@ namespace TypeSupport
             IsOverridden = _parentType != null && _methodInfo.GetBaseDefinition().DeclaringType == _methodInfo.DeclaringType
             && _methodInfo.DeclaringType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Static)
                 .Any(x => x.Name == _methodInfo.Name && x.DeclaringType == _parentType);
+            IsOperatorOverload = _methodInfo.IsSpecialName && _methodInfo.IsStatic && _operatorOverloadNames.Contains(_methodInfo.Name);
         }
 
         /// <summary>
