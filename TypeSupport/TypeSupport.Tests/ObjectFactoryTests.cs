@@ -269,7 +269,9 @@ namespace TypeSupport.Tests
             var instance = factory.CreateEmptyObject(typeof(ObjectWithExplicitlyImplementedInterfaceDeclaredGenericProperty<int>));
 
             Assert.NotNull(instance);
-            Assert.AreEqual(typeof(int), instance.GetType());
+            Assert.AreEqual(
+                typeof(ObjectWithExplicitlyImplementedInterfaceDeclaredGenericProperty<int>),
+                instance.GetType());
         }
     }
 }
