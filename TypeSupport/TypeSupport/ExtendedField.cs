@@ -67,12 +67,14 @@ namespace TypeSupport
         public ExtendedField(FieldInfo fieldInfo)
         {
             _fieldInfo = fieldInfo;
-            if (fieldInfo.Name.Contains("k__BackingField") || fieldInfo.Name.StartsWith("<"))
+            var name = fieldInfo.Name;
+            if (name.Contains("k__BackingField") || name.StartsWith("<"))
             {
                 IsBackingField = true;
-                var i = fieldInfo.Name.IndexOf("<");
-                var end = fieldInfo.Name.IndexOf(">", i + 1);
-                BackedPropertyName = fieldInfo.Name.Substring(i + 1, end - (i + 1));
+                var i = name.IndexOf("<");
+                var end = name.LastIndexOf(">");
+
+                BackedPropertyName = name.Substring(i + 1, end - (i + 1));
                 BackedProperty = ReflectedType.GetExtendedProperty(BackedPropertyName, fieldInfo.DeclaringType);
             }
         }
