@@ -232,7 +232,7 @@ namespace TypeSupport
 
             if (typeSupport.IsArray)
             {
-                object[] createParameters = dimensions;
+                var createParameters = dimensions;
                 // we also want to allow passing of collections/lists/arrays so do some conversion first
                 if (createParameters?.Length > 0)
                 {
@@ -241,27 +241,34 @@ namespace TypeSupport
                     {
                         var ar = (Array)createParameters[0];
                         createParameters = ar.Cast<object>().ToArray();
-                    } else if (typeof(ICollection).IsAssignableFrom(parameterType)
-                        || typeof(IList).IsAssignableFrom(parameterType))
+                    }
+                    else if (typeof(ICollection).IsAssignableFrom(parameterType)
+                      || typeof(IList).IsAssignableFrom(parameterType))
                     {
                         var ar = (ICollection)createParameters[0];
                         createParameters = ar.Cast<object>().ToArray();
                     }
                 }
-                if (createParameters != null && createParameters.Length > 1) createParameters.Reverse();
-                if (createParameters == null || createParameters.Length == 0) createParameters = new object[] { 0 };
+                if (createParameters != null && createParameters.Length > 1)
+                    createParameters.Reverse();
+                if (createParameters == null || createParameters.Length == 0)
+                    createParameters = new object[] { 0 };
                 return Activator.CreateInstance(typeSupport.Type, createParameters);
             }
             else if (typeSupport.IsDictionary)
             {
                 var genericType = typeSupport.Type.GetGenericArguments().ToList();
-                if (genericType.Count != 2)
+                Type listType;
+                if (genericType.Count == 0)
+                {
+                    return Activator.CreateInstance<Hashtable>() as IDictionary;
+                }
+                else if (genericType.Count != 2)
                     throw new TypeSupportException(objectType, "IDictionary should contain 2 element types.");
                 Type[] typeArgs = { genericType[0], genericType[1] };
 
-                var listType = typeof(Dictionary<,>).MakeGenericType(typeArgs);
-                var newDictionary = Activator.CreateInstance(listType) as IDictionary;
-                return newDictionary;
+                listType = typeof(Dictionary<,>).MakeGenericType(typeArgs);
+                return Activator.CreateInstance(listType) as IDictionary;
             }
             else if (typeSupport.IsEnumerable && !typeSupport.IsImmutable)
             {
@@ -275,7 +282,6 @@ namespace TypeSupport
                            && typeSupport.Type.GetGenericTypeDefinition() == typeof(IList<>);
                 if (!isGenericList && !isGenericIList && !isGenericCollection)
                 {
-                    var constructors = typeSupport.Type.GetConstructors(ConstructorOptions.All);
                     if (typeSupport.HasEmptyConstructor)
                     {
                         var newList = Activator.CreateInstance(typeSupport.Type);
@@ -311,7 +317,7 @@ namespace TypeSupport
                 var originalTypeSupport = new ExtendedType(objectType);
                 var genericArguments = originalTypeSupport.Type.GetGenericArguments();
                 var newType = typeSupport.Type.MakeGenericType(genericArguments);
-                object newObject = null;
+                object newObject;
                 if (typeSupport.HasEmptyConstructor)
                     newObject = Activator.CreateInstance(newType);
                 else
