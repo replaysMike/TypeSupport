@@ -74,6 +74,17 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_CreateNonGenericIDictionary()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject<IDictionary>();
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(0, instance.Count);
+            Assert.AreEqual(typeof(IDictionary), instance.GetType());
+        }
+
+        [Test]
         public void Should_CreateEmptyByteArray()
         {
             var factory = new ObjectFactory();
@@ -160,6 +171,17 @@ namespace TypeSupport.Tests
             Assert.NotNull(instance);
             Assert.AreEqual(32, instance.Length);
             Assert.AreEqual(typeof(byte[]), instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreateEmptyHashtable()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject<Hashtable>();
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(0, instance.Count);
+            Assert.AreEqual(typeof(Hashtable), instance.GetType());
         }
 
 #if FEATURE_CUSTOM_VALUETUPLE
