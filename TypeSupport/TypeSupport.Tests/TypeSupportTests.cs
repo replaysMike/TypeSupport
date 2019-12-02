@@ -503,5 +503,19 @@ namespace TypeSupport.Tests
             var typeSupport = new ExtendedType(type);
             Assert.IsFalse(typeSupport.Implements<IInterfaceWithGenericImplementations<double>>());
         }
+
+        [Test]
+        public void Should_GetOnlyPropertyInspect()
+        {
+            var instance = new ObjectWithGetProperty();
+            var typeSupport = instance.GetExtendedType();
+            var props = typeSupport.Properties.Select(i => i.Name);
+            Assert.IsFalse(typeSupport.IsInterface);
+            Assert.IsNotEmpty(props);
+            foreach(var p in typeSupport.Properties)
+            {
+                Assert.IsNotEmpty(p.Name);
+            }
+        }
     }
 }
