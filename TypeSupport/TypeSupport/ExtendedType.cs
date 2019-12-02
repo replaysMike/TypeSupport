@@ -132,6 +132,11 @@ namespace TypeSupport
         public bool IsConcreteType { get; internal set; }
 
         /// <summary>
+        /// True if the type is a numeric type, which consists of Integral types and floating point types (char/byte/short/int/float/double/decimal/BigInteger etc)
+        /// </summary>
+        public bool IsNumericType { get; internal set; }
+
+        /// <summary>
         /// For enum types the list of valid values of the Enum
         /// </summary>
         public ICollection<KeyValuePair<object, string>> EnumValues { get; internal set; }
@@ -330,6 +335,7 @@ namespace TypeSupport
             IsNullable = type.IsNullable;
             IsInterface = type.IsInterface;
             IsSerializable = type.IsSerializable;
+            IsNumericType = type.IsNumericType;
             HasIndexer = type.HasIndexer;
             IsAnonymous = type.IsAnonymous;
             IsConcreteType = type.IsConcreteType;

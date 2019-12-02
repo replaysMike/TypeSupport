@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using TypeSupport.Extensions;
@@ -15,6 +16,10 @@ namespace TypeSupport
     /// </summary>
     internal class TypeInspector
     {
+        /// <summary>
+        /// List of numeric types
+        /// </summary>
+        private readonly HashSet<Type> _numericTypes = new HashSet<Type> { typeof(char), typeof(sbyte), typeof(byte), typeof(ushort), typeof(short), typeof(uint), typeof(int), typeof(ulong), typeof(long), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(Int16), typeof(Int32), typeof(Int64) };
         internal ExtendedType _extendedType;
         internal TypeSupportOptions _options;
 
@@ -80,7 +85,9 @@ namespace TypeSupport
                 _extendedType.ElementType = GetElementType(_extendedType.Type);
                 if (_extendedType.ElementType != null)
                     _extendedType.ElementNullableBaseType = GetNullableBaseType(_extendedType.ElementType);
+                _extendedType.IsNumericType = IsNumericType(_extendedType.ElementNullableBaseType ?? _extendedType.ElementType);
             }
+
             _extendedType.IsTuple = _extendedType.Type.IsValueTupleType() || _extendedType.Type.IsTupleType();
             _extendedType.IsValueTuple = _extendedType.Type.IsValueTupleType();
             _extendedType.IsValueType = _extendedType.Type.IsValueType;
@@ -178,7 +185,11 @@ namespace TypeSupport
             _extendedType.NullableBaseType = nullableBaseType ?? _extendedType.Type;
             _extendedType.IsNullable = nullableBaseType != null;
 
-            // anonymous
+            // numerics support
+            if (!_extendedType.IsNumericType)
+                _extendedType.IsNumericType = IsNumericType(_extendedType.NullableBaseType ?? _extendedType.Type);
+
+            // anonymous types
             _extendedType.IsAnonymous = Attribute.IsDefined(_extendedType.Type, typeof(CompilerGeneratedAttribute), false)
                 && _extendedType.Type.IsGenericType && _extendedType.Type.Name.Contains("AnonymousType")
                 && (_extendedType.Type.Name.StartsWith("<>") || _extendedType.Type.Name.StartsWith("VB$"))
@@ -244,6 +255,7 @@ namespace TypeSupport
                 extendedType.IsKeyValuePair = true;
                 extendedType.ElementType = args.FirstOrDefault();
             }
+            extendedType.IsNumericType = IsNumericType(extendedType.ElementNullableBaseType ?? extendedType.ElementType);
         }
 
         /// <summary>
@@ -300,6 +312,11 @@ namespace TypeSupport
                 return false;
 
             return IsAssignableToGenericType(baseType, genericType);
+        }
+
+        public bool IsNumericType(Type type)
+        {
+            return _numericTypes.Contains(type);
         }
 
         /// <summary>
