@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TypeSupport.Tests.TestObjects;
 using TypeSupport.Extensions;
+using System.Numerics;
 
 namespace TypeSupport.Tests
 {
@@ -27,6 +28,31 @@ namespace TypeSupport.Tests
         public void TypeSupportAndTypeSupport_ShouldNot_BeEqual()
         {
             Assert.AreNotEqual(new ExtendedType(typeof(bool)), new ExtendedType(typeof(int)));
+        }
+
+        [Test]
+        public void Should_All_BeNumericType()
+        {
+            var types = new List<Type> { typeof(char), typeof(sbyte), typeof(byte), typeof(ushort), typeof(short), typeof(uint), typeof(int), typeof(ulong), typeof(long), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger),
+                typeof(char?), typeof(sbyte?), typeof(byte?), typeof(ushort?), typeof(short?), typeof(uint?), typeof(int?), typeof(ulong?), typeof(long?), typeof(float?), typeof(double?), typeof(decimal?), typeof(BigInteger?),
+                typeof(char[]), typeof(char?[]), typeof(int[]), typeof(int?[]), typeof(List<int>), typeof(List<int?>),
+                typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(Int16), typeof(Int32), typeof(Int64) };
+            foreach (var type in types)
+            {
+                var typeSupport = new ExtendedType(type);
+                Assert.IsTrue(typeSupport.IsNumericType, $"Type {type.FullName} should be numeric but was not!");
+            }
+        }
+
+        [Test]
+        public void Should_None_BeNumericType()
+        {
+            var types = new List<Type> { typeof(bool), typeof(string), typeof(BasicObject), typeof(List<bool>), typeof(bool[]) };
+            foreach (var type in types)
+            {
+                var typeSupport = new ExtendedType(type);
+                Assert.IsFalse(typeSupport.IsNumericType, $"Type {type.FullName} should not be numeric but was!");
+            }
         }
 
         [Test]

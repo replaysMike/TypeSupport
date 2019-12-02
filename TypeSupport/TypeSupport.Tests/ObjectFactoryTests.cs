@@ -81,7 +81,7 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(instance);
             Assert.AreEqual(0, instance.Count);
-            Assert.AreEqual(typeof(IDictionary), instance.GetType());
+            Assert.IsTrue(instance is IDictionary);
         }
 
         [Test]
