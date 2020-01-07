@@ -19,15 +19,46 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void TypeSupportAndType_ShouldNot_BeEqual()
+        {
+            Assert.AreNotEqual(new ExtendedType(typeof(bool)), typeof(int));
+        }
+
+        [Test]
+        public void TypeSupportAndType_Operator_Should_BeEqual()
+        {
+            Assert.IsTrue(new ExtendedType(typeof(bool)) == typeof(bool));
+        }
+
+
+        [Test]
+        public void TypeSupportAndType_Operator_ShouldNot_BeEqual()
+        {
+            Assert.IsTrue(new ExtendedType(typeof(bool)) != typeof(int));
+        }
+
+        [Test]
         public void TypeSupportAndTypeSupport_Should_BeEqual()
         {
             Assert.AreEqual(new ExtendedType(typeof(bool)), new ExtendedType(typeof(bool)));
         }
 
         [Test]
+        public void TypeSupportAndTypeSupport_Operator_Should_BeEqual()
+        {
+            Assert.IsTrue(new ExtendedType(typeof(bool)) == new ExtendedType(typeof(bool)));
+        }
+
+        [Test]
         public void TypeSupportAndTypeSupport_ShouldNot_BeEqual()
         {
             Assert.AreNotEqual(new ExtendedType(typeof(bool)), new ExtendedType(typeof(int)));
+        }
+
+        [Test]
+        public void TypeSupportAndTypeSupport_Operator_ShouldNot_BeEqual()
+        {
+            Assert.IsTrue(new ExtendedType(typeof(bool)) != new ExtendedType(typeof(int)));
         }
 
         [Test]
@@ -512,10 +543,21 @@ namespace TypeSupport.Tests
             var props = typeSupport.Properties.Select(i => i.Name);
             Assert.IsFalse(typeSupport.IsInterface);
             Assert.IsNotEmpty(props);
-            foreach(var p in typeSupport.Properties)
+            foreach (var p in typeSupport.Properties)
             {
                 Assert.IsNotEmpty(p.Name);
             }
+        }
+
+        [Test]
+        public void Should_DiscoverTypeAttributes()
+        {
+            var type = typeof(BasicObject);
+            var typeSupport = type.GetExtendedType();
+            Assert.IsTrue(typeSupport.HasAttribute<TestDecoratedAttribute>());
+            Assert.IsTrue(typeSupport.HasAttribute(typeof(TestDecoratedAttribute)));
+            Assert.AreEqual(1000, typeSupport.GetAttribute<TestDecoratedAttribute>().Value);
+            Assert.AreEqual(1000, (typeSupport.GetAttribute(typeof(TestDecoratedAttribute)) as TestDecoratedAttribute).Value);
         }
     }
 }

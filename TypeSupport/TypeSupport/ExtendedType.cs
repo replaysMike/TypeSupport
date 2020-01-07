@@ -9,7 +9,7 @@ namespace TypeSupport
     /// <summary>
     /// Helper class for getting information about a <see cref="Type"/>
     /// </summary>
-    public class ExtendedType : IEquatable<ExtendedType>, IEquatable<Type>
+    public class ExtendedType : IEquatable<ExtendedType>, IEquatable<Type>, IAttributeInspection
     {
         /// <summary>
         /// True if type has an empty constructor defined
@@ -307,6 +307,15 @@ namespace TypeSupport
             if (concreteObject != null)
                 ConcreteType = concreteObject.GetType();
         }
+
+        public bool HasAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(Type, typeof(TAttribute)) != null;
+
+        public bool HasAttribute(Type attributeType) => Attribute.GetCustomAttribute(Type, attributeType) != null;
+
+        public TAttribute GetAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(Type, typeof(TAttribute)) as TAttribute;
+
+        public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(Type, attributeType);
+
 
         /// <summary>
         /// Initialize an extended type from another extended type

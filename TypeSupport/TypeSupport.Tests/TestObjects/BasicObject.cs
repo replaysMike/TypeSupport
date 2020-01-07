@@ -1,6 +1,7 @@
 ﻿#pragma warning disable 0649,0169
 namespace TypeSupport.Tests.TestObjects
 {
+    [TestDecorated(1000)]
     public class BasicObject
     {
         [TestDecorated(789)]
