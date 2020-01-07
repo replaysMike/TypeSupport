@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
 using NUnit.Framework;
-using TypeSupport.Tests.TestObjects;
 using TypeSupport.Extensions;
+using TypeSupport.Tests.TestObjects;
 
 namespace TypeSupport.Tests
 {
@@ -23,6 +20,17 @@ namespace TypeSupport.Tests
             Assert.IsTrue(em.IsAutoPropertyAccessor);
             Assert.NotNull(em.MethodInfo);
             Assert.AreEqual(typeof(BasicObject), em.MethodInfo.ReflectedType);
+        }
+
+        [Test]
+        public void Should_DiscoverMethodAttributes()
+        {
+            var methods = typeof(BasicObject).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var em = new ExtendedMethod(methods.First(x => x.Name.Equals("TestMethod")));
+            Assert.IsTrue(em.HasAttribute<TestDecoratedAttribute>());
+            Assert.IsTrue(em.HasAttribute(typeof(TestDecoratedAttribute)));
+            Assert.AreEqual(456, em.GetAttribute<TestDecoratedAttribute>().Value);
+            Assert.AreEqual(456, (em.GetAttribute(typeof(TestDecoratedAttribute)) as TestDecoratedAttribute).Value);
         }
 
         [Test]

@@ -9,7 +9,7 @@ namespace TypeSupport
     /// <summary>
     /// Discovers the attributes of a method and provides access to method metadata
     /// </summary>
-    public class ExtendedMethod
+    public class ExtendedMethod : IAttributeInspection
     {
         private readonly MethodInfo _methodInfo;
         private readonly Type _parentType;
@@ -186,6 +186,14 @@ namespace TypeSupport
         public ExtendedMethod(MethodInfo methodInfo) : this(methodInfo, null)
         {
         }
+
+        public bool HasAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) != null;
+
+        public bool HasAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType) != null;
+
+        public TAttribute GetAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) as TAttribute;
+
+        public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType);
 
         public static implicit operator ExtendedMethod(MethodInfo methodInfo)
         {

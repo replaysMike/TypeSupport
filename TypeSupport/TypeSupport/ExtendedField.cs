@@ -8,7 +8,7 @@ namespace TypeSupport
     /// <summary>
     /// Discovers the attributes of a field and provides access to field metadata
     /// </summary>
-    public class ExtendedField
+    public class ExtendedField : IAttributeInspection
     {
         private readonly FieldInfo _fieldInfo;
 
@@ -78,6 +78,14 @@ namespace TypeSupport
                 BackedProperty = ReflectedType.GetExtendedProperty(BackedPropertyName, fieldInfo.DeclaringType);
             }
         }
+
+        public bool HasAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) != null;
+
+        public bool HasAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType) != null;
+
+        public TAttribute GetAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) as TAttribute;
+
+        public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType);
 
         public static implicit operator ExtendedField(FieldInfo fieldInfo)
         {

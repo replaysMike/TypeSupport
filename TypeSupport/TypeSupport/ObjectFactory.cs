@@ -48,6 +48,16 @@ namespace TypeSupport
         /// <summary>
         /// Create a new, empty object of a given type
         /// </summary>
+        /// <param name="type">The type of object to construct</param>
+        /// <returns></returns>
+        public object CreateEmptyObject(ExtendedType type)
+        {
+            return CreateEmptyObject(type, TypeRegistry);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName)
@@ -103,7 +113,7 @@ namespace TypeSupport
             if (string.IsNullOrEmpty(assemblyQualifiedFullName))
                 throw new ArgumentNullException(nameof(assemblyQualifiedFullName));
             var type = Type.GetType(assemblyQualifiedFullName);
-            return CreateEmptyObject(type, typeRegistry, initializer, dimensions);
+            return CreateEmptyObject(type.GetExtendedType(), typeRegistry, initializer, dimensions);
         }
 
         /// <summary>
@@ -115,7 +125,7 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(Type type, Func<object> initializer, params object[] dimensions)
         {
-            return CreateEmptyObject(type, TypeRegistry, initializer, dimensions);
+            return CreateEmptyObject(type.GetExtendedType(), TypeRegistry, initializer, dimensions);
         }
 
         /// <summary>
@@ -126,6 +136,18 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, params object[] dimensions)
+        {
+            return CreateEmptyObject(type.GetExtendedType(), typeRegistry, null, dimensions);
+        }
+
+        /// <summary>
+        /// Create a new, empty object of a given type
+        /// </summary>
+        /// <param name="type">The type to create</param>
+        /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
+        /// <param name="dimensions">For array types, the dimensions of the array to create</param>
+        /// <returns></returns>
+        public object CreateEmptyObject(ExtendedType type, TypeRegistry typeRegistry, params object[] dimensions)
         {
             return CreateEmptyObject(type, typeRegistry, null, dimensions);
         }
@@ -138,7 +160,7 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(Type type, params object[] dimensions)
         {
-            return CreateEmptyObject(type, TypeRegistry, null, dimensions);
+            return CreateEmptyObject(type.GetExtendedType(), TypeRegistry, null, dimensions);
         }
 
         /// <summary>
@@ -150,7 +172,7 @@ namespace TypeSupport
         /// <returns></returns>
         public T CreateEmptyObject<T>(params object[] dimensions)
         {
-            return (T)CreateEmptyObject(typeof(T), TypeRegistry, null, dimensions);
+            return (T)CreateEmptyObject(typeof(T).GetExtendedType(), TypeRegistry, null, dimensions);
         }
 
         /// <summary>
@@ -164,7 +186,7 @@ namespace TypeSupport
             Func<object> init = null;
             if (initializer != null)
                 init = () => initializer();
-            return (T)CreateEmptyObject(typeof(T), TypeRegistry, init);
+            return (T)CreateEmptyObject(typeof(T).GetExtendedType(), TypeRegistry, init);
         }
 
         /// <summary>
@@ -191,7 +213,7 @@ namespace TypeSupport
         /// <returns></returns>
         public T CreateEmptyObject<T>(TypeRegistry typeRegistry, Func<T> initializer, params object[] dimensions)
         {
-            return (T)CreateEmptyObject(typeof(T), typeRegistry, initializer as Func<object>, dimensions);
+            return (T)CreateEmptyObject(typeof(T).GetExtendedType(), typeRegistry, initializer as Func<object>, dimensions);
         }
 
         /// <summary>
@@ -203,7 +225,7 @@ namespace TypeSupport
         /// <param name="initializer">An optional initializer to use to create the object</param>
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
-        public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, Func<object> initializer, params object[] dimensions)
+        public object CreateEmptyObject(ExtendedType type, TypeRegistry typeRegistry, Func<object> initializer, params object[] dimensions)
         {
             var objectType = type;
             if (initializer != null)
@@ -212,20 +234,20 @@ namespace TypeSupport
             }
 
             // check the type registry for a custom type mapping
-            if (typeRegistry?.ContainsType(objectType) == true)
+            if (typeRegistry?.ContainsType(objectType.Type) == true)
                 objectType = typeRegistry.GetMapping(objectType);
             // check the type registry for a custom type factory
-            if (typeRegistry?.ContainsFactoryType(objectType) == true)
-                return typeRegistry.GetFactory(objectType).Invoke();
+            if (typeRegistry?.ContainsFactoryType(objectType.Type) == true)
+                return typeRegistry.GetFactory(objectType.Type).Invoke();
 
-            var typeSupport = new ExtendedType(objectType);
+            var typeSupport = new ExtendedType(objectType.Type);
             // if we are asked to create an instance of an interface, try to initialize using a valid concrete type
             if (typeSupport.IsInterface && !typeSupport.IsEnumerable)
             {
                 // try a known concrete type from typeSupport
                 var concreteType = typeSupport.KnownConcreteTypes.FirstOrDefault();
                 if (concreteType == null)
-                    throw new TypeSupportException(objectType, $"Unable to locate a concrete type for '{typeSupport.Type.FullName}'! Cannot create instance.");
+                    throw new TypeSupportException(objectType.Type, $"Unable to locate a concrete type for '{typeSupport.Type.FullName}'! Cannot create instance.");
 
                 typeSupport = new ExtendedType(concreteType);
             }
@@ -264,7 +286,7 @@ namespace TypeSupport
                     return Activator.CreateInstance<Hashtable>() as IDictionary;
                 }
                 else if (genericType.Count != 2)
-                    throw new TypeSupportException(objectType, "IDictionary should contain 2 element types.");
+                    throw new TypeSupportException(objectType.Type, "IDictionary should contain 2 element types.");
                 Type[] typeArgs = { genericType[0], genericType[1] };
 
                 listType = typeof(Dictionary<,>).MakeGenericType(typeArgs);
@@ -314,7 +336,7 @@ namespace TypeSupport
                 // create a generic type and create an instance
                 // to accomplish this, we need to create a new generic type using the type arguments from the interface
                 // and the concrete class definition. voodoo!
-                var originalTypeSupport = new ExtendedType(objectType);
+                var originalTypeSupport = new ExtendedType(objectType.Type);
                 var genericArguments = originalTypeSupport.Type.GetGenericArguments();
                 var newType = typeSupport.Type.MakeGenericType(genericArguments);
                 object newObject;

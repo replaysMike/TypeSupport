@@ -423,16 +423,52 @@ namespace TypeSupport
 
         public bool Equals(ExtendedType other)
         {
-            if (other == null || other.GetType() != typeof(ExtendedType))
+            if (other is null || other.GetType() != typeof(ExtendedType))
                 return false;
             return IsEqualTo(other);
         }
 
         public bool Equals(Type other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
             return Type.Equals(other);
+        }
+
+        public static bool operator ==(ExtendedType left, ExtendedType right)
+        {
+            if ((left is null && !(right is null)) || (right is null && !(left is null)))
+                return false;
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ExtendedType left, ExtendedType right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(ExtendedType left, Type right)
+        {
+            if ((left is null && !(right is null)) || (right is null && !(left is null)))
+                return false;
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ExtendedType left, Type right)
+        {
+            return !(left == right);
+        }
+
+        public static bool operator ==(Type left, ExtendedType right)
+        {
+            if ((left is null && !(right is null)) || (right is null && !(left is null)))
+                return false;
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Type left, ExtendedType right)
+        {
+            return !(left == right);
         }
 
         private bool IsEqualTo(ExtendedType type)

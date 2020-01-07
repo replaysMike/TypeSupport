@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TypeSupport.Extensions;
 
 namespace TypeSupport
 {
@@ -63,6 +64,16 @@ namespace TypeSupport
         }
 
         /// <summary>
+        /// True if a mapping exists for the source type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool ContainsType(ExtendedType type)
+        {
+            return Mappings.Any(x => x.Source.Equals(type.Type));
+        }
+
+        /// <summary>
         /// True if a factory exists for the source type
         /// </summary>
         /// <param name="type"></param>
@@ -73,13 +84,41 @@ namespace TypeSupport
         }
 
         /// <summary>
+        /// True if a factory exists for the source type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public bool ContainsFactoryType(ExtendedType type)
+        {
+            return ContainsFactoryType(type.Type);
+        }
+
+        /// <summary>
         /// Get the destination mapping for a source type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
         internal Type GetMapping(Type type)
         {
-            var mapping = Mappings.Where(x => x.Source.Equals(type)).Select(x => x.Destination).FirstOrDefault();
+            var mapping = Mappings
+                .Where(x => x.Source.Equals(type))
+                .Select(x => x.Destination)
+                .FirstOrDefault();
+            return mapping;
+        }
+
+        /// <summary>
+        /// Get the destination mapping for a source type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        internal ExtendedType GetMapping(ExtendedType type)
+        {
+            var mapping = Mappings
+                .Where(x => x.Source.Equals(type))
+                .Select(x => x.Destination)
+                .FirstOrDefault()
+                .GetExtendedType();
             return mapping;
         }
 
@@ -92,6 +131,16 @@ namespace TypeSupport
         {
             var factory = Factories.Where(x => x.Source.Equals(type)).Select(x => x.Factory).FirstOrDefault();
             return factory;
+        }
+
+        /// <summary>
+        /// Get the factory for creating a source type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        internal Func<object> GetFactory(ExtendedType type)
+        {
+            return GetFactory(type.Type);
         }
 
         /// <summary>
@@ -207,6 +256,12 @@ namespace TypeSupport
         {
             Source = source;
             Destination = destination;
+        }
+
+        internal TypeMap(ExtendedType source, ExtendedType destination)
+        {
+            Source = source.Type;
+            Destination = destination.Type;
         }
 
         public override string ToString()

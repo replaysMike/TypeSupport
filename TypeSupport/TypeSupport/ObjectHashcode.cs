@@ -47,5 +47,15 @@ namespace TypeSupport
             var typedObj = (ObjectHashcode)obj;
             return typedObj.Hashcode.Equals(Hashcode) && typedObj.Type.Equals(Type);
         }
+
+        public static bool operator ==(ObjectHashcode left, ObjectHashcode right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ObjectHashcode left, ObjectHashcode right)
+        {
+            return !(left == right);
+        }
     }
 }

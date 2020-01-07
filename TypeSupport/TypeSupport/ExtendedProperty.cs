@@ -9,7 +9,7 @@ namespace TypeSupport
     /// <summary>
     /// Discovers the attributes of a property and provides access to property metadata
     /// </summary>
-    public class ExtendedProperty
+    public class ExtendedProperty : IAttributeInspection
     {
         private readonly PropertyInfo _propertyInfo;
 
@@ -44,6 +44,7 @@ namespace TypeSupport
 #else
         public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.GetCustomAttributesData();
 #endif
+
         /// <summary>
         /// True if an auto-backed property
         /// </summary>
@@ -106,6 +107,14 @@ namespace TypeSupport
                 BackingFieldName = $"<{Name}>k__BackingField";
             }
         }
+
+        public bool HasAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) != null;
+
+        public bool HasAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType) != null;
+
+        public TAttribute GetAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) as TAttribute;
+
+        public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType);
 
         public static implicit operator ExtendedProperty(PropertyInfo propertyInfo)
         {

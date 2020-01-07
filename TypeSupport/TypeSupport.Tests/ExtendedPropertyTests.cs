@@ -15,7 +15,7 @@ namespace TypeSupport.Tests
             var ef = new ExtendedProperty(properties.First());
             Assert.NotNull(ef);
             Assert.IsNotEmpty(ef.Name);
-            Assert.AreEqual(0, ef.CustomAttributes.Count());
+            Assert.AreEqual(1, ef.CustomAttributes.Count());
             Assert.AreEqual("<Id>k__BackingField", ef.BackingFieldName);
             Assert.IsTrue(ef.HasGetMethod);
             Assert.NotNull(ef.GetMethod);
@@ -25,6 +25,18 @@ namespace TypeSupport.Tests
             Assert.NotNull(ef.PropertyInfo);
             Assert.AreEqual(typeof(BasicObject), ef.ReflectedType);
             Assert.AreEqual(typeof(int), ef.Type);
+            ;
+        }
+
+        [Test]
+        public void Should_DiscoverPropertyAttributes()
+        {
+            var properties = typeof(BasicObject).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var ef = new ExtendedProperty(properties.First());
+            Assert.IsTrue(ef.HasAttribute<TestDecoratedAttribute>());
+            Assert.IsTrue(ef.HasAttribute(typeof(TestDecoratedAttribute)));
+            Assert.AreEqual(123, ef.GetAttribute<TestDecoratedAttribute>().Value);
+            Assert.AreEqual(123, (ef.GetAttribute(typeof(TestDecoratedAttribute)) as TestDecoratedAttribute).Value);
         }
     }
 }
