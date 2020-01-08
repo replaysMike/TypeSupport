@@ -192,6 +192,36 @@ namespace TypeSupport.Tests
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
             Assert.AreEqual(typeof(double), typeSupport.GenericArgumentTypes.Skip(1).First());
         }
+
+        [Test]
+        public void Should_Discover_NamedValueTuple_FromMethod()
+        {
+            var instance = (id: 1, value: "test");
+            var names = InspectNamedValueTuple(instance);
+            CollectionAssert.AreEqual(new List<string> { "id", "value" }, names);
+        }
+
+        private ICollection<string> InspectNamedValueTuple((int id, string value) tuple)
+        {
+            return tuple.GetTupleNamedParameters(System.Reflection.MethodBase.GetCurrentMethod());
+        }
+
+        [Test]
+        public void Should_Discover_NamedValueTuple_FromConstructor()
+        {
+            var instance = new ObjectWithNamedTuple((id: 1, value: "test"));
+            var tupleType = typeof((int, string));
+            var names = instance.GetTupleNamedParameters(instance.GetType().GetConstructor(new Type[] { tupleType }), tupleType);
+            CollectionAssert.AreEqual(new List<string> { "id", "value" }, names);
+        }
+
+        [Test]
+        public void Should_Discover_NamedValueTuple_FromClass()
+        {
+            var instance = new ObjectWithNamedTuple();
+            var names = instance.GetTupleNamedParameters(nameof(instance.TupleValue));
+            CollectionAssert.AreEqual(new List<string> { "id", "value" }, names);
+        }
 #endif
 
         [Test]

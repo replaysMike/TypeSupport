@@ -13,7 +13,7 @@ namespace TypeSupport.Extensions
         /// <summary>
         /// Mapping for types that are generic ValueTuples
         /// </summary>
-        private static readonly HashSet<Type> ValueTupleTypes = new HashSet<Type>(new Type[]
+        private static readonly HashSet<Type> _valueTupleTypes = new HashSet<Type>(new Type[]
         {
 #if FEATURE_CUSTOM_VALUETUPLE
             typeof(ValueTuple<>),
@@ -30,7 +30,7 @@ namespace TypeSupport.Extensions
         /// <summary>
         /// Mapping for types that are generic Tuples
         /// </summary>
-        private static readonly HashSet<Type> TupleTypes = new HashSet<Type>(new []
+        private static readonly HashSet<Type> _tupleTypes = new HashSet<Type>(new []
         {
             typeof(Tuple<>),
             typeof(Tuple<,>),
@@ -49,7 +49,7 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static Type CreateValueTuple(ICollection<Type> types)
         {
-            Type type = ValueTupleTypes.Skip(types.Count - 1).First();
+            Type type = _valueTupleTypes.Skip(types.Count - 1).First();
             return type.MakeGenericType(types.ToArray());
         }
 
@@ -60,7 +60,7 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static Type CreateTuple(ICollection<Type> types)
         {
-            Type type = TupleTypes.Skip(types.Count - 1).First();
+            Type type = _tupleTypes.Skip(types.Count - 1).First();
             return type.MakeGenericType(types.ToArray());
         }
 
@@ -87,10 +87,10 @@ namespace TypeSupport.Extensions
         {
 #if FEATURE_CUSTOM_TYPEINFO
             return type.GetTypeInfo().IsGenericType
-                && ValueTupleTypes.Contains(type.GetGenericTypeDefinition());
+                && _valueTupleTypes.Contains(type.GetGenericTypeDefinition());
 #else
             return type.IsGenericType
-                && ValueTupleTypes.Contains(type.GetGenericTypeDefinition());
+                && _valueTupleTypes.Contains(type.GetGenericTypeDefinition());
 #endif
         }
 
@@ -103,10 +103,10 @@ namespace TypeSupport.Extensions
         {
 #if FEATURE_CUSTOM_TYPEINFO
             return type.GetTypeInfo().IsGenericType
-                && TupleTypes.Contains(type.GetGenericTypeDefinition());
+                && _tupleTypes.Contains(type.GetGenericTypeDefinition());
 #else
             return type.IsGenericType
-                && TupleTypes.Contains(type.GetGenericTypeDefinition());
+                && _tupleTypes.Contains(type.GetGenericTypeDefinition());
 #endif
         }
 
@@ -189,5 +189,54 @@ namespace TypeSupport.Extensions
 
             return items;
         }
+#if FEATURE_CUSTOM_VALUETUPLE
+        /// <summary>
+        /// Get the names of a named value tuple contained in a method or constructor
+        /// </summary>
+        /// <param name="tuple"></param>
+        /// <param name="container">The container that declared the named tuple (method or constructor)</param>
+        /// <param name="tupleType">The optional type of the named tuple, if inspecting a constructor</param>
+        /// <returns></returns>
+        /// <example>
+        ///  From tuple declared in a constructor:
+        ///     var instance = new ObjectWithNamedTuple((id: 1, value: "test"));
+        ///     var tupleType = typeof((int, string));
+        ///     var names = instance.GetTupleNamedParameters(instance.GetType().GetConstructor(new Type[] { tupleType }), tupleType);
+        ///  From tuple declared in a method:
+        ///     private ICollection<string> InspectNamedValueTuple((int id, string value) tuple) {
+        ///         return tuple.GetTupleNamedParameters(System.Reflection.MethodBase.GetCurrentMethod());
+        ///     }
+        /// </example>
+        public static ICollection<string> GetTupleNamedParameters(this object tuple, MethodBase container, Type tupleType = null)
+        {
+            if (tupleType == null)
+                tupleType = tuple.GetType();
+            var parameters = container.GetParameters().FirstOrDefault(x => x.ParameterType.Name.Equals(tupleType.Name));
+            var elementAttributes = parameters?.GetCustomAttributes().FirstOrDefault(t => t.GetType() == typeof(System.Runtime.CompilerServices.TupleElementNamesAttribute)) as System.Runtime.CompilerServices.TupleElementNamesAttribute;
+            return elementAttributes?.TransformNames ?? new List<string>();
+        }
+
+        /// <summary>
+        /// Get the names of a named value tuple contained in a class
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="fieldName">The property or field name that stores the tuple</param>
+        /// <returns></returns>
+        /// <example>
+        ///     var instance = new ObjectWithNamedTuple();
+        ///     var names = instance.GetTupleNamedParameters(nameof(instance.TupleValue));
+        /// </example>
+        public static ICollection<string> GetTupleNamedParameters(this object instance, string fieldName)
+        {
+            var property = instance.GetProperty(fieldName);               
+            var elementAttributes = property.GetCustomAttributes().FirstOrDefault(t => t.GetType() == typeof(System.Runtime.CompilerServices.TupleElementNamesAttribute)) as System.Runtime.CompilerServices.TupleElementNamesAttribute;
+            if (elementAttributes == null)
+            {
+                var field = instance.GetField(fieldName);
+                elementAttributes = field.GetCustomAttributes().FirstOrDefault(t => t.GetType() == typeof(System.Runtime.CompilerServices.TupleElementNamesAttribute)) as System.Runtime.CompilerServices.TupleElementNamesAttribute;
+            }
+            return elementAttributes?.TransformNames ?? new List<string>();
+        }
+#endif
     }
 }
