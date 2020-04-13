@@ -32,6 +32,11 @@ namespace TypeSupport
         public Type Type => _propertyInfo.PropertyType;
 
         /// <summary>
+        /// Gets the base type of this property object
+        /// </summary>
+        public Type BaseType => _propertyInfo.PropertyType.BaseType;
+
+        /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
         public Type ReflectedType => _propertyInfo.ReflectedType;
@@ -44,6 +49,8 @@ namespace TypeSupport
 #else
         public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.GetCustomAttributesData();
 #endif
+
+        public IEnumerable<Attribute> Attributes => GetAttributes();
 
         /// <summary>
         /// True if an auto-backed property
@@ -115,6 +122,27 @@ namespace TypeSupport
         public TAttribute GetAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) as TAttribute;
 
         public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType);
+
+        /// <summary>
+        /// Get all custom attributes on property
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Attribute> GetAttributes()
+        {
+            var attributes = _propertyInfo.GetCustomAttributes(true);
+            return attributes.Cast<Attribute>();
+        }
+
+        /// <summary>
+        /// Get all custom attributes on property
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TAttribute> GetAttributes<TAttribute>()
+            where TAttribute : Attribute
+        {
+            var attributes = _propertyInfo.GetCustomAttributes(true);
+            return attributes.OfType<TAttribute>().Cast<TAttribute>();
+        }
 
         public static implicit operator ExtendedProperty(PropertyInfo propertyInfo)
         {

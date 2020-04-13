@@ -195,6 +195,27 @@ namespace TypeSupport
 
         public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType);
 
+        /// <summary>
+        /// Get all custom attributes on method
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Attribute> GetAttributes()
+        {
+            var attributes = _methodInfo.GetCustomAttributes(true);
+            return attributes.Cast<Attribute>();
+        }
+
+        /// <summary>
+        /// Get all custom attributes on method
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TAttribute> GetAttributes<TAttribute>()
+            where TAttribute : Attribute
+        {
+            var attributes = _methodInfo.GetCustomAttributes(true);
+            return attributes.OfType<TAttribute>().Cast<TAttribute>();
+        }
+
         public static implicit operator ExtendedMethod(MethodInfo methodInfo)
         {
             if (methodInfo == null)

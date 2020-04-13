@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TypeSupport.Extensions;
 
@@ -26,6 +27,11 @@ namespace TypeSupport
         /// Gets the type of this field object
         /// </summary>
         public Type Type => _fieldInfo.FieldType;
+
+        /// <summary>
+        /// Gets the base type of this field object
+        /// </summary>
+        public Type BaseType => _fieldInfo.FieldType.BaseType;
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
@@ -86,6 +92,27 @@ namespace TypeSupport
         public TAttribute GetAttribute<TAttribute>() where TAttribute : class => Attribute.GetCustomAttribute(this, typeof(TAttribute)) as TAttribute;
 
         public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(this, attributeType);
+
+        /// <summary>
+        /// Get all custom attributes on field
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Attribute> GetAttributes()
+        {
+            var attributes = _fieldInfo.GetCustomAttributes(true);
+            return attributes.Cast<Attribute>();
+        }
+
+        /// <summary>
+        /// Get all custom attributes on field
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TAttribute> GetAttributes<TAttribute>()
+            where TAttribute : Attribute
+        {
+            var attributes = _fieldInfo.GetCustomAttributes(true);
+            return attributes.OfType<TAttribute>().Cast<TAttribute>();
+        }
 
         public static implicit operator ExtendedField(FieldInfo fieldInfo)
         {

@@ -76,6 +76,8 @@ namespace TypeSupport
             _extendedType.UnderlyingType = _extendedType.Type.UnderlyingSystemType;
             if (_extendedType.Type == typeof(string))
                 _extendedType.IsImmutable = true;
+            // base types
+            _extendedType.BaseTypes = GetBaseTypes(_extendedType.Type, new List<Type>());
 
             // collections support
             _extendedType.IsArray = _extendedType.Type.IsArray;
@@ -215,6 +217,16 @@ namespace TypeSupport
             var elementType = genericArgumentTypes.FirstOrDefault();
 
             return elementType;
+        }
+
+        private ICollection<Type> GetBaseTypes(Type type, ICollection<Type> baseTypes)
+        {
+            if (type.BaseType != null)
+            {
+                baseTypes.Add(type.BaseType);
+                baseTypes = GetBaseTypes(type.BaseType, baseTypes);
+            }
+            return baseTypes;
         }
 
         private void InspectGenericType(ExtendedType extendedType, Type type, TypeSupportOptions options)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TypeSupport
 {
@@ -31,5 +32,17 @@ namespace TypeSupport
         /// <param name="attributeType"></param>
         /// <returns></returns>
         Attribute GetAttribute(Type attributeType);
+
+        /// <summary>
+        /// Get all custom attributes on object
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Attribute> GetAttributes();
+
+        /// <summary>
+        /// Get all custom attributes on object
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<TAttribute> GetAttributes<TAttribute>() where TAttribute : Attribute;
     }
 }

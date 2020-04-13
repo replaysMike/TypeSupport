@@ -589,5 +589,15 @@ namespace TypeSupport.Tests
             Assert.AreEqual(1000, typeSupport.GetAttribute<TestDecoratedAttribute>().Value);
             Assert.AreEqual(1000, (typeSupport.GetAttribute(typeof(TestDecoratedAttribute)) as TestDecoratedAttribute).Value);
         }
+
+        [Test]
+        public void Should_DiscoverBaseTypes()
+        {
+            var type = typeof(InheritedObject);
+            var typeSupport = type.GetExtendedType();
+            Assert.AreEqual(2, typeSupport.BaseTypes.Count);
+            Assert.AreEqual(typeof(BaseInheritedObject), typeSupport.BaseTypes.First());
+            Assert.AreEqual(typeof(object), typeSupport.BaseTypes.Skip(1).First());
+        }
     }
 }

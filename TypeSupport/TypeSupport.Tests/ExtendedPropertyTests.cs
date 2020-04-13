@@ -38,5 +38,23 @@ namespace TypeSupport.Tests
             Assert.AreEqual(123, ef.GetAttribute<TestDecoratedAttribute>().Value);
             Assert.AreEqual(123, (ef.GetAttribute(typeof(TestDecoratedAttribute)) as TestDecoratedAttribute).Value);
         }
+
+        [Test]
+        public void Should_DiscoverAllPropertyAttributes()
+        {
+            var fields = typeof(BasicObject).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var ef = new ExtendedProperty(fields.First());
+            var allAttributes = ef.GetAttributes();
+            Assert.AreEqual(1, allAttributes.Count());
+        }
+
+        [Test]
+        public void Should_DiscoverAllPropertyGenericAttributes()
+        {
+            var fields = typeof(BasicObject).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var ef = new ExtendedProperty(fields.First());
+            var allAttributes = ef.GetAttributes<TestDecoratedAttribute>();
+            Assert.AreEqual(1, allAttributes.Count());
+        }
     }
 }

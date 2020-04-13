@@ -34,6 +34,24 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_DiscoverAllMethodAttributes()
+        {
+            var methods = typeof(BasicObject).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var em = new ExtendedMethod(methods.First(x => x.Name.Equals("TestMethod")));
+            var allAttributes = em.GetAttributes();
+            Assert.AreEqual(1, allAttributes.Count());
+        }
+
+        [Test]
+        public void Should_DiscoverAllMethodGenericAttributes()
+        {
+            var methods = typeof(BasicObject).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var em = new ExtendedMethod(methods.First(x => x.Name.Equals("TestMethod")));
+            var allAttributes = em.GetAttributes<TestDecoratedAttribute>();
+            Assert.AreEqual(1, allAttributes.Count());
+        }
+
+        [Test]
         public void Should_DiscoverGetter()
         {
             var methods = typeof(BasicObject).GetMethods(MethodOptions.All);

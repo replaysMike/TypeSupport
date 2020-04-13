@@ -142,6 +142,11 @@ namespace TypeSupport
         public ICollection<KeyValuePair<object, string>> EnumValues { get; internal set; }
 
         /// <summary>
+        /// The list of types this type inherits from
+        /// </summary>
+        public ICollection<Type> BaseTypes { get; internal set; }
+
+        /// <summary>
         /// For interface types the list of known concrete types that implement it
         /// </summary>
         public ICollection<Type> KnownConcreteTypes { get; internal set; }
@@ -316,6 +321,26 @@ namespace TypeSupport
 
         public Attribute GetAttribute(Type attributeType) => Attribute.GetCustomAttribute(Type, attributeType);
 
+        /// <summary>
+        /// Get all custom attributes on type
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Attribute> GetAttributes()
+        {
+            var attributes = Type.GetCustomAttributes(true);
+            return attributes.Cast<Attribute>();
+        }
+
+        /// <summary>
+        /// Get all custom attributes on type
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TAttribute> GetAttributes<TAttribute>()
+            where TAttribute : Attribute
+        {
+            var attributes = Type.GetCustomAttributes(true);
+            return attributes.OfType<TAttribute>().Cast<TAttribute>();
+        }
 
         /// <summary>
         /// Initialize an extended type from another extended type
@@ -366,6 +391,7 @@ namespace TypeSupport
             IndexerReturnType = type.IndexerReturnType;
             UnderlyingType = type.UnderlyingType;
             NullableBaseType = type.NullableBaseType;
+            BaseTypes = type.BaseTypes;
         }
 
         /// <summary>
@@ -399,10 +425,26 @@ namespace TypeSupport
         /// </summary>
         /// <typeparam name="TInterface">The interface type to check</typeparam>
         /// <returns></returns>
-        public bool Implements<TInterface>()
+        public bool Implements<TInterface>() => Implements(typeof(TInterface));
+
+        /// <summary>
+        /// Returns true if type inherits from <paramref name="type"/>
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <returns></returns>
+        public bool InheritsFrom(Type type)
         {
-            return Implements(typeof(TInterface));
+            if (BaseTypes == null)
+                return false;
+            return BaseTypes.Contains(type);
         }
+
+        /// <summary>
+        /// Returns true if type inherits from <seealso cref="TType"/>
+        /// </summary>
+        /// <typeparam name="TType"></typeparam>
+        /// <returns></returns>
+        public bool InheritsFrom<TType>() => InheritsFrom(typeof(TType));
 
         public override bool Equals(object obj)
         {
@@ -507,6 +549,7 @@ namespace TypeSupport
             && HasIndexer == type.HasIndexer
             && IsAnonymous == type.IsAnonymous
             && IsConcreteType == type.IsConcreteType
+            && Enumerable.SequenceEqual(BaseTypes, type.BaseTypes)
             && Enumerable.SequenceEqual(EnumValues, type.EnumValues)
             && Enumerable.SequenceEqual(KnownConcreteTypes, type.KnownConcreteTypes)
             && Enumerable.SequenceEqual(Attributes, type.Attributes)
