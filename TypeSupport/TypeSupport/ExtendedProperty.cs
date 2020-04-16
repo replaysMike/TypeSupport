@@ -12,6 +12,11 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedProperty : IAttributeInspection
     {
+        /// <summary>
+        /// Inspect basics without iterating into properties/fields/methods to prevent a StackOverflow
+        /// </summary>
+        private const TypeSupportOptions InspectionOptions = TypeSupportOptions.Attributes | TypeSupportOptions.Collections | TypeSupportOptions.ConcreteTypes | TypeSupportOptions.Enums | TypeSupportOptions.Generics | TypeSupportOptions.Indexers | TypeSupportOptions.Caching;
+
         private readonly PropertyInfo _propertyInfo;
 
         public PropertyInfo PropertyInfo
@@ -29,17 +34,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this property object
         /// </summary>
-        public ExtendedType Type => _propertyInfo.PropertyType;
+        public ExtendedType Type { get; }
 
         /// <summary>
         /// Gets the base type of this property object
         /// </summary>
-        public ExtendedType BaseType => _propertyInfo.PropertyType.BaseType;
+        public ExtendedType BaseType { get; }
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType => _propertyInfo.ReflectedType;
+        public ExtendedType ReflectedType { get; }
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -141,6 +146,9 @@ namespace TypeSupport
         public ExtendedProperty(PropertyInfo propertyInfo)
         {
             _propertyInfo = propertyInfo;
+            Type = _propertyInfo.PropertyType?.GetExtendedType(InspectionOptions);
+            BaseType = _propertyInfo.PropertyType.BaseType?.GetExtendedType(InspectionOptions);
+            ReflectedType = _propertyInfo.ReflectedType?.GetExtendedType(InspectionOptions);
 
             if (HasGetMethod)
             {

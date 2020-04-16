@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using TypeSupport.Extensions;
 
 namespace TypeSupport
 {
@@ -11,6 +12,11 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedMethod : IAttributeInspection
     {
+        /// <summary>
+        /// Inspect basics without iterating into properties/fields/methods to prevent a StackOverflow
+        /// </summary>
+        private const TypeSupportOptions InspectionOptions = TypeSupportOptions.Attributes | TypeSupportOptions.Collections | TypeSupportOptions.ConcreteTypes | TypeSupportOptions.Enums | TypeSupportOptions.Generics | TypeSupportOptions.Indexers | TypeSupportOptions.Caching;
+
         private readonly MethodInfo _methodInfo;
         private readonly Type _parentType;
         private readonly string[] _operatorOverloadNames = new string[]
@@ -70,7 +76,7 @@ namespace TypeSupport
         /// <summary>
         /// Gets the return type of this method
         /// </summary>
-        public Type ReturnType => _methodInfo.ReturnType;
+        public ExtendedType ReturnType { get; }
 
         /// <summary>
         /// Gets the type of this method
@@ -165,6 +171,7 @@ namespace TypeSupport
         {
             _methodInfo = methodInfo;
             _parentType = parentType;
+            ReturnType = _methodInfo.ReturnType?.GetExtendedType(InspectionOptions);
             IsAutoPropertyAccessor = _methodInfo.IsSpecialName
                 && _methodInfo.IsHideBySig
                 && _methodInfo.GetCustomAttributes(typeof(CompilerGeneratedAttribute), true).Any()

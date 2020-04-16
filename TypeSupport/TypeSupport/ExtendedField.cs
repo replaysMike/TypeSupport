@@ -11,6 +11,11 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedField : IAttributeInspection
     {
+        /// <summary>
+        /// Inspect basics without iterating into properties/fields/methods to prevent a StackOverflow
+        /// </summary>
+        private const TypeSupportOptions InspectionOptions = TypeSupportOptions.Attributes | TypeSupportOptions.Collections | TypeSupportOptions.ConcreteTypes | TypeSupportOptions.Enums | TypeSupportOptions.Generics | TypeSupportOptions.Indexers | TypeSupportOptions.Caching;
+
         private readonly FieldInfo _fieldInfo;
 
         public FieldInfo FieldInfo
@@ -26,17 +31,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this field object
         /// </summary>
-        public ExtendedType Type => _fieldInfo.FieldType;
+        public ExtendedType Type { get; }
 
         /// <summary>
         /// Gets the base type of this field object
         /// </summary>
-        public ExtendedType BaseType => _fieldInfo.FieldType.BaseType;
+        public ExtendedType BaseType { get; }
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType => _fieldInfo.ReflectedType;
+        public ExtendedType ReflectedType { get; }
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -103,6 +108,10 @@ namespace TypeSupport
         public ExtendedField(FieldInfo fieldInfo)
         {
             _fieldInfo = fieldInfo;
+            Type = _fieldInfo.FieldType?.GetExtendedType(InspectionOptions);
+            BaseType = _fieldInfo.FieldType.BaseType?.GetExtendedType(InspectionOptions);
+            ReflectedType = _fieldInfo.ReflectedType?.GetExtendedType(InspectionOptions);
+
             IsStatic = _fieldInfo.IsStatic;
             IsPrivate = _fieldInfo.IsPrivate;
             IsPublic = _fieldInfo.IsPublic;
