@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using TypeSupport.Extensions;
@@ -23,7 +22,6 @@ namespace TypeSupport
         /// </summary>
         public ObjectFactory()
         {
-
         }
 
         /// <summary>
@@ -40,20 +38,14 @@ namespace TypeSupport
         /// </summary>
         /// <param name="type">The type of object to construct</param>
         /// <returns></returns>
-        public object CreateEmptyObject(Type type)
-        {
-            return CreateEmptyObject(type, TypeRegistry);
-        }
+        public object CreateEmptyObject(Type type) => CreateEmptyObject(type, TypeRegistry);
 
         /// <summary>
         /// Create a new, empty object of a given type
         /// </summary>
         /// <param name="type">The type of object to construct</param>
         /// <returns></returns>
-        public object CreateEmptyObject(ExtendedType type)
-        {
-            return CreateEmptyObject(type, TypeRegistry);
-        }
+        public object CreateEmptyObject(ExtendedType type) => CreateEmptyObject(type, TypeRegistry);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -61,9 +53,7 @@ namespace TypeSupport
         /// <param name="assemblyQualifiedFullName">The full name of the type to create, <see cref="Type.AssemblyQualifiedName"/></param>
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName)
-        {
-            return CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, null, 0);
-        }
+            => CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, null, 0);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -72,9 +62,7 @@ namespace TypeSupport
         /// <param name="typeRegistry">A type registry that specifies custom mappings or factories</param>
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry)
-        {
-            return CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, 0);
-        }
+            => CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, 0);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -84,9 +72,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName, TypeRegistry typeRegistry, params object[] dimensions)
-        {
-            return CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, dimensions);
-        }
+            => CreateEmptyObject(assemblyQualifiedFullName, typeRegistry, null, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -96,9 +82,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(string assemblyQualifiedFullName, Func<object> initializer, params object[] dimensions)
-        {
-            return CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, initializer, dimensions);
-        }
+            => CreateEmptyObject(assemblyQualifiedFullName, TypeRegistry, initializer, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -124,9 +108,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(Type type, Func<object> initializer, params object[] dimensions)
-        {
-            return CreateEmptyObject(type.GetExtendedType(), TypeRegistry, initializer, dimensions);
-        }
+            => CreateEmptyObject(type.GetExtendedType(), TypeRegistry, initializer, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -136,9 +118,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(Type type, TypeRegistry typeRegistry, params object[] dimensions)
-        {
-            return CreateEmptyObject(type.GetExtendedType(), typeRegistry, null, dimensions);
-        }
+            => CreateEmptyObject(type.GetExtendedType(), typeRegistry, null, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -148,9 +128,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(ExtendedType type, TypeRegistry typeRegistry, params object[] dimensions)
-        {
-            return CreateEmptyObject(type, typeRegistry, null, dimensions);
-        }
+            => CreateEmptyObject(type, typeRegistry, null, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -159,9 +137,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public object CreateEmptyObject(Type type, params object[] dimensions)
-        {
-            return CreateEmptyObject(type.GetExtendedType(), TypeRegistry, null, dimensions);
-        }
+            => CreateEmptyObject(type.GetExtendedType(), TypeRegistry, null, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -171,9 +147,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public T CreateEmptyObject<T>(params object[] dimensions)
-        {
-            return (T)CreateEmptyObject(typeof(T).GetExtendedType(), TypeRegistry, null, dimensions);
-        }
+            => (T)CreateEmptyObject(typeof(T).GetExtendedType(), TypeRegistry, null, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type
@@ -212,9 +186,7 @@ namespace TypeSupport
         /// <param name="dimensions">For array types, the dimensions of the array to create</param>
         /// <returns></returns>
         public T CreateEmptyObject<T>(TypeRegistry typeRegistry, Func<T> initializer, params object[] dimensions)
-        {
-            return (T)CreateEmptyObject(typeof(T).GetExtendedType(), typeRegistry, initializer as Func<object>, dimensions);
-        }
+            => (T)CreateEmptyObject(typeof(T).GetExtendedType(), typeRegistry, initializer as Func<object>, dimensions);
 
         /// <summary>
         /// Create a new, empty object of a given type

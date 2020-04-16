@@ -522,6 +522,9 @@ namespace TypeSupport
             return !(left == right);
         }
 
+        public static implicit operator ExtendedType(Type type) => new ExtendedType(type);
+        public static implicit operator Type(ExtendedType type) => type.Type;
+
         private bool IsEqualTo(ExtendedType type)
         {
             var isEqual = false;

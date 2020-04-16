@@ -62,6 +62,30 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void TypeSupport_Operators_NotNull()
+        {
+            Assert.IsFalse(new ExtendedType(typeof(bool)) == (ExtendedType)null);
+            Assert.IsFalse(new ExtendedType(typeof(bool)) is null);
+            Assert.IsFalse(new ExtendedType(typeof(bool)) == default(ExtendedType));
+        }
+
+        [Test]
+        public void TypeSupport_Operators_ImplicitFromType()
+        {
+            ExtendedType extendedType = typeof(bool);
+            Assert.NotNull(extendedType);
+            Assert.AreEqual(extendedType.Type, typeof(bool));
+        }
+
+        [Test]
+        public void TypeSupport_Operators_ImplicitFromExtendedType()
+        {
+            Type type = new ExtendedType(typeof(bool));
+            Assert.NotNull(type);
+            Assert.AreEqual(type, typeof(bool));
+        }
+
+        [Test]
         public void Should_All_BeNumericType()
         {
             var types = new List<Type> { typeof(char), typeof(sbyte), typeof(byte), typeof(ushort), typeof(short), typeof(uint), typeof(int), typeof(ulong), typeof(long), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger),
