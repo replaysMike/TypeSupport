@@ -26,17 +26,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this field object
         /// </summary>
-        public Type Type => _fieldInfo.FieldType;
+        public ExtendedType Type => _fieldInfo.FieldType;
 
         /// <summary>
         /// Gets the base type of this field object
         /// </summary>
-        public Type BaseType => _fieldInfo.FieldType.BaseType;
+        public ExtendedType BaseType => _fieldInfo.FieldType.BaseType;
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public Type ReflectedType => _fieldInfo.ReflectedType;
+        public ExtendedType ReflectedType => _fieldInfo.ReflectedType;
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -56,6 +56,36 @@ namespace TypeSupport
         public bool IsBackingField { get; private set; }
 
         /// <summary>
+        /// True if field is defined as static
+        /// </summary>
+        public bool IsStatic { get; set; }
+
+        /// <summary>
+        /// True if field is defined as a constant
+        /// </summary>
+        public bool IsConstant { get; set; }
+
+        /// <summary>
+        /// True if field is defined as private
+        /// </summary>
+        public bool IsPrivate { get; set; }
+
+        /// <summary>
+        /// True if field is defined as public
+        /// </summary>
+        public bool IsPublic { get; set; }
+
+        /// <summary>
+        /// True if field is defined as protected
+        /// </summary>
+        public bool IsProtected { get; set; }
+
+        /// <summary>
+        /// True if field is defined as internal
+        /// </summary>
+        public bool IsInternal { get; set; }
+
+        /// <summary>
         /// For backing fields, the property name it stores data for
         /// </summary>
         public string BackedPropertyName { get; private set; }
@@ -73,6 +103,13 @@ namespace TypeSupport
         public ExtendedField(FieldInfo fieldInfo)
         {
             _fieldInfo = fieldInfo;
+            IsStatic = _fieldInfo.IsStatic;
+            IsPrivate = _fieldInfo.IsPrivate;
+            IsPublic = _fieldInfo.IsPublic;
+            IsConstant = _fieldInfo.IsLiteral;
+            IsProtected = _fieldInfo.IsFamily;
+            IsInternal = _fieldInfo.IsAssembly;
+
             var name = fieldInfo.Name;
             if (name.Contains("k__BackingField") || name.StartsWith("<"))
             {
@@ -128,9 +165,6 @@ namespace TypeSupport
             return extendedField._fieldInfo;
         }
 
-        public override string ToString()
-        {
-            return $"{ReflectedType}.{Name}";
-        }
+        public override string ToString() => $"{ReflectedType}.{Name}";
     }
 }

@@ -219,9 +219,7 @@ namespace TypeSupport
         public static implicit operator ExtendedMethod(MethodInfo methodInfo)
         {
             if (methodInfo == null)
-            {
                 return null;
-            }
             return new ExtendedMethod(methodInfo);
         }
 
@@ -231,9 +229,7 @@ namespace TypeSupport
                 return null;
             return extendedProperty._methodInfo;
         }
-        public override string ToString()
-        {
-            return $"{Name} {_methodInfo.ToString()}";
-        }
+
+        public override string ToString() => $"{Name} {_methodInfo.ToString()}";
     }
 }

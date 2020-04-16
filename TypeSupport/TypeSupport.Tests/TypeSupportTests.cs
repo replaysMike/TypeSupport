@@ -623,5 +623,33 @@ namespace TypeSupport.Tests
             Assert.AreEqual(typeof(BaseInheritedObject), typeSupport.BaseTypes.First());
             Assert.AreEqual(typeof(object), typeSupport.BaseTypes.Skip(1).First());
         }
+
+        [Test]
+        public void Should_DiscoverStaticTypeImplementations()
+        {
+            var type = typeof(StaticTypeImplementation);
+            var typeSupport = type.GetExtendedType();
+            Assert.AreEqual(1, typeSupport.Properties.Count);
+            Assert.AreEqual(true, typeSupport.Properties.First().IsStatic);
+        }
+
+        [Test]
+        public void Should_DiscoverVisibility()
+        {
+            var type = typeof(VisibilityObject);
+            var typeSupport = type.GetExtendedType();
+            Assert.AreEqual(4, typeSupport.Properties.Count);
+            Assert.AreEqual(8, typeSupport.Fields.Count);
+
+            Assert.AreEqual(true, typeSupport.Properties.FirstOrDefault(x => x.Name == "PublicProperty").IsPublic);
+            Assert.AreEqual(true, typeSupport.Properties.FirstOrDefault(x => x.Name == "PrivateProperty").IsPrivate);
+            Assert.AreEqual(true, typeSupport.Properties.FirstOrDefault(x => x.Name == "ProtectedProperty").IsProtected);
+            Assert.AreEqual(true, typeSupport.Properties.FirstOrDefault(x => x.Name == "InternalProperty").IsInternal);
+
+            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_publicField").IsPublic);
+            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_privateField").IsPrivate);
+            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_protectedField").IsProtected);
+            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_internalField").IsInternal);
+        }
     }
 }

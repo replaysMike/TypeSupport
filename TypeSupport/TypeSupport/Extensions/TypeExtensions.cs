@@ -19,7 +19,7 @@ namespace TypeSupport.Extensions
         {
             if (type == null)
                 return new List<ExtendedProperty>();
-            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
             var allProperties = type.GetProperties(flags);
             IEnumerable<PropertyInfo> returnProperties = allProperties;
 
@@ -44,6 +44,14 @@ namespace TypeSupport.Extensions
             return returnProperties
                 .Select(x => (ExtendedProperty)x).ToList();
         }
+
+        /// <summary>
+        /// Get all of the properties of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static ICollection<ExtendedProperty> GetProperties(this ExtendedType type, PropertyOptions options)
+            => type.Type.GetProperties(options);
 
         /// <summary>
         /// Get all of the fields of an object
@@ -87,6 +95,15 @@ namespace TypeSupport.Extensions
         /// <param name="obj"></param>
         /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
         /// <returns></returns>
+        public static ICollection<ExtendedField> GetFields(this ExtendedType type, FieldOptions options)
+            => type.Type.GetFields(options);
+
+        /// <summary>
+        /// Get all of the fields of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <returns></returns>
         public static ICollection<ExtendedMethod> GetMethods(this Type type, MethodOptions options)
         {
             if (type == null)
@@ -113,15 +130,31 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get all of the fields of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <returns></returns>
+        public static ICollection<ExtendedMethod> GetMethods(this ExtendedType type, MethodOptions options)
+            => type.Type.GetMethods(options);
+
+        /// <summary>
         /// Check if a type contains a property
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="name">Property name</param>
         /// <returns></returns>
         public static bool ContainsProperty(this Type type, string name)
-        {
-            return type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null;
-        }
+            => type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null;
+
+        /// <summary>
+        /// Check if a type contains a property
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Property name</param>
+        /// <returns></returns>
+        public static bool ContainsProperty(this ExtendedType type, string name)
+            => type.Type.ContainsProperty(name);
 
         /// <summary>
         /// Check if a type contains a field
@@ -130,9 +163,16 @@ namespace TypeSupport.Extensions
         /// <param name="name">Field name</param>
         /// <returns></returns>
         public static bool ContainsField(this Type type, string name)
-        {
-            return type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null;
-        }
+            => type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) != null;
+
+        /// <summary>
+        /// Check if a type contains a field
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <returns></returns>
+        public static bool ContainsField(this ExtendedType type, string name)
+            => type.Type.ContainsField(name);
 
         /// <summary>
         /// Get a list of all constructors of a type
@@ -155,15 +195,30 @@ namespace TypeSupport.Extensions
         }
 
         /// <summary>
+        /// Get a list of all constructors of a type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static ICollection<ConstructorInfo> GetConstructors(this ExtendedType type, ConstructorOptions options)
+            => type.Type.GetConstructors(options);
+
+        /// <summary>
         /// Get an extended property object by name
         /// </summary>
         /// <param name="type"></param>
         /// <param name="name"></param>
         /// <returns></returns>
         public static ExtendedProperty GetExtendedProperty(this Type type, string name)
-        {
-            return type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        }
+            => type.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+        /// <summary>
+        /// Get an extended property object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static ExtendedProperty GetExtendedProperty(this ExtendedType type, string name)
+            => type.Type.GetExtendedProperty(name);
 
         /// <summary>
         /// Get an extended property object by name
@@ -174,9 +229,19 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static ExtendedProperty GetExtendedProperty(this Type type, string name, Type declaringType)
         {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
             return properties.Single(x => x.Name.Equals(name) && x.DeclaringType.Equals(declaringType));
         }
+
+        /// <summary>
+        /// Get an extended property object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="declaringType">The declaring type the property belongs to</param>
+        /// <returns></returns>
+        public static ExtendedProperty GetExtendedProperty(this ExtendedType type, string name, Type declaringType)
+            => type.Type.GetExtendedProperty(name, declaringType);
 
         /// <summary>
         /// Get an extended field object by name
@@ -185,9 +250,16 @@ namespace TypeSupport.Extensions
         /// <param name="name"></param>
         /// <returns></returns>
         public static ExtendedField GetExtendedField(this Type type, string name)
-        {
-            return type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        }
+            => type.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+        /// <summary>
+        /// Get an extended field object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static ExtendedField GetExtendedField(this ExtendedType type, string name)
+            => type.Type.GetExtendedField(name);
 
         /// <summary>
         /// Get an extended field object by name
@@ -198,8 +270,18 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static ExtendedField GetExtendedField(this Type type, string name, Type declaringType)
         {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
             return fields.Single(x => x.Name.Equals(name) && x.DeclaringType.Equals(declaringType));
         }
+
+        /// <summary>
+        /// Get an extended field object by name
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="declaringType">The delcaring type the field belongs to</param>
+        /// <returns></returns>
+        public static ExtendedField GetExtendedField(this ExtendedType type, string name, Type declaringType)
+            => type.Type.GetExtendedField(name, declaringType);
     }
 }
