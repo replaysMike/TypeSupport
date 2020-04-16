@@ -85,6 +85,18 @@ namespace TypeSupport.Tests
         }
 
         [Test]
+        public void Should_CreateNonGenericCustomDictionary()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject<NonGenericDictionary>();
+
+            Assert.NotNull(instance);
+            Assert.AreEqual(0, instance.Count);
+            Assert.IsTrue(instance is NonGenericDictionary);
+            Assert.IsTrue(instance is IDictionary);
+        }
+
+        [Test]
         public void Should_CreateEmptyByteArray()
         {
             var factory = new ObjectFactory();

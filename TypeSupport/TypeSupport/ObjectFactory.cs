@@ -283,7 +283,9 @@ namespace TypeSupport
                 Type listType;
                 if (genericType.Count == 0)
                 {
-                    return Activator.CreateInstance<Hashtable>() as IDictionary;
+                    if(typeSupport.IsInterface)
+                        return Activator.CreateInstance<Hashtable>() as IDictionary;
+                    return Activator.CreateInstance(typeSupport.Type) as IDictionary;
                 }
                 else if (genericType.Count != 2)
                     throw new TypeSupportException(objectType.Type, "IDictionary should contain 2 element types.");
