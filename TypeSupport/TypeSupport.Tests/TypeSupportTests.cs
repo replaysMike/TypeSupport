@@ -279,6 +279,7 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsCollection);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
             Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
         }
@@ -303,6 +304,8 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
+            Assert.AreEqual(false, typeSupport.IsHashtable);
             Assert.AreEqual(2, typeSupport.GenericArgumentTypes.Count);
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
             Assert.AreEqual(typeof(double), typeSupport.GenericArgumentTypes.Skip(1).First());
@@ -316,6 +319,8 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
+            Assert.AreEqual(false, typeSupport.IsHashtable);
             Assert.AreEqual(2, typeSupport.GenericArgumentTypes.Count);
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.First());
             Assert.AreEqual(typeof(int), typeSupport.GenericArgumentTypes.Skip(1).First());
@@ -329,9 +334,63 @@ namespace TypeSupport.Tests
 
             Assert.NotNull(typeSupport);
             Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(false, typeSupport.IsGeneric);
+            Assert.AreEqual(true, typeSupport.IsHashtable);
             Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
             Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.First());
         }
+
+        [Test]
+        public void Should_Discover_Hashtable()
+        {
+            var type = typeof(Hashtable);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(true, typeSupport.IsHashtable);
+            Assert.AreEqual(false, typeSupport.IsGeneric);
+            Assert.AreEqual(1, typeSupport.GenericArgumentTypes.Count);
+            Assert.AreEqual(typeof(object), typeSupport.GenericArgumentTypes.First());
+        }
+
+#if !NET40
+        [Test]
+        public void Should_Discover_ReadOnlyCollection()
+        {
+            var type = typeof(IReadOnlyCollection<bool>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsCollection);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
+            Assert.AreEqual(true, typeSupport.IsCollectionReadOnly);
+        }
+
+        [Test]
+        public void Should_Discover_ReadOnlyList()
+        {
+            var type = typeof(IReadOnlyList<bool>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsCollection);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
+            Assert.AreEqual(true, typeSupport.IsCollectionReadOnly);
+        }
+
+        [Test]
+        public void Should_Discover_ReadOnlyDictionary()
+        {
+            var type = typeof(IReadOnlyDictionary<int,bool>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsDictionary);
+            Assert.AreEqual(true, typeSupport.IsGeneric);
+            Assert.AreEqual(true, typeSupport.IsCollectionReadOnly);
+        }
+#endif
 
         [Test]
         public void Should_Discover_Enum()

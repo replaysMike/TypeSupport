@@ -25,6 +25,10 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static ExtendedType GetExtendedType(this Type type, TypeSupportOptions options)
         {
+            if (type is null)
+                return null;
+            if (object.ReferenceEquals(type, typeof(ExtendedType)))
+                return type;
             return new ExtendedType(type, options);
         }
 
@@ -46,6 +50,11 @@ namespace TypeSupport.Extensions
         /// <returns></returns>
         public static ExtendedType GetExtendedType(this object type, TypeSupportOptions options)
         {
+            if (type is null)
+                return null;
+            if (object.ReferenceEquals(type.GetType(), typeof(ExtendedType)))
+                return (ExtendedType)type;
+
             return new ExtendedType(type.GetType(), options);
         }
     }

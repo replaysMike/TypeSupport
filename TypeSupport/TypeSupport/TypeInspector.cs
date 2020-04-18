@@ -147,6 +147,10 @@ namespace TypeSupport
                     if (!_extendedType.Type.IsArray
                         && (typeof(ICollection).IsAssignableFrom(_extendedType.Type)
                             || typeof(IList).IsAssignableFrom(_extendedType.Type)
+#if !NET40
+                            || typeof(IReadOnlyList<>).IsAssignableFrom(_extendedType.Type)
+                            || typeof(IReadOnlyCollection<>).IsAssignableFrom(_extendedType.Type)
+#endif
                             )
                         )
                     {
@@ -155,11 +159,30 @@ namespace TypeSupport
                         _extendedType.GenericArgumentTypes.Add(typeof(object));
                     }
 
-                    if (typeof(IDictionary).IsAssignableFrom(_extendedType.Type))
+                    if (typeof(IDictionary).IsAssignableFrom(_extendedType.Type)
+#if !NET40
+                        || typeof(IReadOnlyDictionary<,>).IsAssignableFrom(_extendedType.Type)
+#endif
+                        )
                     {
                         _extendedType.IsDictionary = true;
                         _extendedType.ElementType = typeof(object);
                     }
+                    if (typeof(IDictionary).IsAssignableFrom(_extendedType.Type) && !_extendedType.Type.IsGenericType)
+                    {
+                        _extendedType.IsHashtable = true;
+                        _extendedType.ElementType = typeof(object);
+                    }
+
+#if !NET40
+                    if (typeof(IReadOnlyDictionary<,>).IsAssignableFrom(_extendedType.Type)
+                        || typeof(IReadOnlyList<>).IsAssignableFrom(_extendedType.Type)
+                        || typeof(IReadOnlyCollection<>).IsAssignableFrom(_extendedType.Type)
+                        )
+                    {
+                        _extendedType.IsCollectionReadOnly = true;
+                    }
+#endif
                 }
             }
 
@@ -247,6 +270,10 @@ namespace TypeSupport
                     || typeof(IList) == type
                     || typeof(IList).IsAssignableFrom(genericTypeDefinition)
                     || typeof(IList<>).IsAssignableFrom(genericTypeDefinition)
+#if !NET40
+                    || typeof(IReadOnlyCollection<>).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(IReadOnlyList<>).IsAssignableFrom(genericTypeDefinition)
+#endif
                     || typeof(ICollection<>).IsAssignableFrom(genericTypeDefinition)
                     || typeof(Collection<>).IsAssignableFrom(genericTypeDefinition)
                     )
@@ -259,8 +286,21 @@ namespace TypeSupport
 
                 if (genericTypeDefinition == typeof(Dictionary<,>)
                     || genericTypeDefinition == typeof(ConcurrentDictionary<,>)
-                    || genericTypeDefinition == typeof(IDictionary<,>))
+                    || genericTypeDefinition == typeof(IDictionary<,>)
+#if !NET40
+                    || genericTypeDefinition == typeof(IReadOnlyDictionary<,>)
+#endif
+                    )
                     extendedType.IsDictionary = true;
+#if !NET40
+                if (typeof(IReadOnlyDictionary<,>).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(IReadOnlyList<>).IsAssignableFrom(genericTypeDefinition)
+                    || typeof(IReadOnlyCollection<>).IsAssignableFrom(genericTypeDefinition)
+                    )
+                {
+                    _extendedType.IsCollectionReadOnly = true;
+                }
+#endif
             }
             if (genericTypeDefinition == typeof(KeyValuePair<,>))
             {

@@ -52,6 +52,16 @@ namespace TypeSupport
         public bool IsDictionary { get; internal set; }
 
         /// <summary>
+        /// True if the type is a Hashtable
+        /// </summary>
+        public bool IsHashtable { get; internal set; }
+
+        /// <summary>
+        /// True if the type of collection is read only
+        /// </summary>
+        public bool IsCollectionReadOnly { get; internal set; }
+
+        /// <summary>
         /// True if the type is a key value pair
         /// </summary>
         public bool IsKeyValuePair { get; internal set; }
@@ -262,6 +272,14 @@ namespace TypeSupport
         public ExtendedType(Type type, TypeSupportOptions options)
         {
             Type = type ?? throw new ArgumentNullException();
+
+            // prevent an extended type from enumerating another extended type
+            if (object.ReferenceEquals(type, typeof(ExtendedType)))
+            {
+                InitializeFromCache(type);
+                return;
+            }
+
             Attributes = new List<Type>();
             Interfaces = new List<Type>();
             GenericArgumentTypes = new List<Type>();
@@ -356,6 +374,8 @@ namespace TypeSupport
             IsCollection = type.IsCollection;
             IsArray = type.IsArray;
             IsDictionary = type.IsDictionary;
+            IsHashtable = type.IsHashtable;
+            IsCollectionReadOnly = type.IsCollectionReadOnly;
             IsKeyValuePair = type.IsKeyValuePair;
             IsGeneric = type.IsGeneric;
             IsDelegate = type.IsDelegate;
@@ -536,6 +556,8 @@ namespace TypeSupport
             && IsCollection == type.IsCollection
             && IsArray == type.IsArray
             && IsDictionary == type.IsDictionary
+            && IsHashtable == type.IsHashtable
+            && IsCollectionReadOnly == type.IsCollectionReadOnly
             && IsKeyValuePair == type.IsKeyValuePair
             && IsGeneric == type.IsGeneric
             && IsDelegate == type.IsDelegate
