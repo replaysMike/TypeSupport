@@ -322,6 +322,22 @@ namespace TypeSupport
         }
 
         /// <summary>
+        /// Refresh type with new options
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public ExtendedType Refresh(TypeSupportOptions options)
+        {
+            // inspect the type with the given options
+            var typeInspector = new TypeInspector(this, options);
+            typeInspector.Inspect();
+            var isCachingSupported = options.BitwiseHasFlag(TypeSupportOptions.Caching);
+            if (isCachingSupported)
+                ExtendedTypeCache.CacheType(this, options);
+            return this;
+        }
+
+        /// <summary>
         /// For interface types, you can provide an object instance to determine a concrete type for it
         /// </summary>
         /// <param name="concreteObject"></param>
