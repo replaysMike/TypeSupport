@@ -19,15 +19,16 @@ namespace TypeSupport.Tests
             Assert.AreEqual(typeof(BasicObject), instance.GetType());
         }
 
+        [Test]
         public void Should_CreateGenericList()
         {
             var factory = new ObjectFactory();
             var instance = factory.CreateEmptyObject<IEnumerable>();
-
+            // .Net Core 3+ no longer guarantees this list to be a object[], its now an internal unaccessible type of EmptyPartition
+            var isEnumerable = instance is IEnumerable<object>;
             Assert.NotNull(instance);
-            Assert.AreEqual(typeof(object[]), instance.GetType());
+            Assert.IsTrue(isEnumerable);
         }
-
 
         [Test]
         public void Should_CreateIEnumerable()
