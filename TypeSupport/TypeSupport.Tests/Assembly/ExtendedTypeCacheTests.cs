@@ -1,17 +1,19 @@
 ﻿using NUnit.Framework;
 using System;
 using TypeSupport.Tests.TestObjects;
+using TypeSupport.Extensions;
 
 namespace TypeSupport.Tests.Assembly
 {
     [TestFixture]
+    [NonParallelizable]
     public class ExtendedTypeCacheTests
     {
         [Test]
         public void Should_ClearCache()
         {
             var options = TypeSupportOptions.All;
-            var type = new ExtendedType(typeof(BasicObject), options);
+            var type = typeof(BasicObject).GetExtendedType(options);
             ExtendedTypeCache.CacheType(type, options);
             Assert.Greater(ExtendedTypeCache.Instance.CachedTypes.Count, 0);
             ExtendedTypeCache.Clear();
@@ -23,7 +25,7 @@ namespace TypeSupport.Tests.Assembly
         {
             ExtendedTypeCache.Clear();
             var options = TypeSupportOptions.All;
-            var type = new ExtendedType(typeof(BasicObject), options);
+            var type = typeof(BasicObject).GetExtendedType(options);
             // cache manually
             ExtendedTypeCache.CacheType(type, options);
             var extendedType = ExtendedTypeCache.Get(typeof(BasicObject), options);
@@ -35,15 +37,11 @@ namespace TypeSupport.Tests.Assembly
         public void Should_CacheTypeByFieldOptions()
         {
             ExtendedTypeCache.Clear();
-            var fieldOptions = TypeSupportOptions.Fields;
-            var typeWithFields = new ExtendedType(typeof(BasicObject), fieldOptions);
-            // cache manually
-            ExtendedTypeCache.CacheType(typeWithFields, fieldOptions);
+            var fieldOptions = TypeSupportOptions.Fields | TypeSupportOptions.Caching;
+            var typeWithFields = typeof(BasicObject).GetExtendedType(fieldOptions);
 
-            var propertyOptions = TypeSupportOptions.Properties;
-            var typeWithProperties = new ExtendedType(typeof(BasicObject), propertyOptions);
-            // cache manually
-            ExtendedTypeCache.CacheType(typeWithProperties, propertyOptions);
+            var propertyOptions = TypeSupportOptions.Properties | TypeSupportOptions.Caching;
+            var typeWithProperties = typeof(BasicObject).GetExtendedType(propertyOptions);
 
             var extendedTypeWithFields = ExtendedTypeCache.Get(typeof(BasicObject), fieldOptions);
             var extendedTypeWithProperties = ExtendedTypeCache.Get(typeof(BasicObject), propertyOptions);
@@ -58,10 +56,11 @@ namespace TypeSupport.Tests.Assembly
         {
             ExtendedTypeCache.Clear();
             var options = TypeSupportOptions.Properties;
-            var type = new ExtendedType(typeof(BasicObject), options);
+            var type = typeof(BasicObject).GetExtendedType(options);
             // cache manually
             ExtendedTypeCache.CacheType(type, options);
-            Assert.Throws<InvalidOperationException>(() => { ExtendedTypeCache.Get(typeof(BasicObject), TypeSupportOptions.All); });
+            var cacheResult =  ExtendedTypeCache.Get(typeof(BasicObject), TypeSupportOptions.All);
+            Assert.IsNull(cacheResult);
         }
 
         [Test]
@@ -69,10 +68,10 @@ namespace TypeSupport.Tests.Assembly
         {
             ExtendedTypeCache.Clear();
             var options = TypeSupportOptions.Properties;
-            var type = new ExtendedType(typeof(BasicObject), options);
+            var type = typeof(BasicObject).GetExtendedType(options);
             // cache manually
             ExtendedTypeCache.CacheType(type, options);
-            var allType = new ExtendedType(typeof(BasicObject), TypeSupportOptions.All);
+            _ = typeof(BasicObject).GetExtendedType(TypeSupportOptions.All);
             var extendedType = ExtendedTypeCache.Get(typeof(BasicObject), TypeSupportOptions.All);
             Assert.NotNull(extendedType);
             Assert.AreEqual(extendedType.Type, typeof(BasicObject));
@@ -84,8 +83,9 @@ namespace TypeSupport.Tests.Assembly
             ExtendedTypeCache.Clear();
             // don't supply Caching option
             var options = TypeSupportOptions.Properties;
-            var type = new ExtendedType(typeof(BasicObject), options);
-            Assert.Throws<InvalidOperationException>(() => { ExtendedTypeCache.Get(typeof(BasicObject), options); });
+            var type = typeof(BasicObject).GetExtendedType(options);
+            var cacheResult = ExtendedTypeCache.Get(typeof(BasicObject), options);
+            Assert.IsNull(cacheResult);
         }
 
         [Test]
@@ -94,9 +94,24 @@ namespace TypeSupport.Tests.Assembly
             ExtendedTypeCache.Clear();
             // supply caching option
             var options = TypeSupportOptions.Properties | TypeSupportOptions.Caching;
-            var type = new ExtendedType(typeof(BasicObject), options);
+            var type = typeof(BasicObject).GetExtendedType(options);
             var extendedType = ExtendedTypeCache.Get(typeof(BasicObject), options);
             Assert.NotNull(extendedType);
+        }
+
+        [Test]
+        public void Should_CacheTypeWithoutDuplication()
+        {
+            ExtendedTypeCache.Clear();
+            // supply caching option
+            var options = TypeSupportOptions.Properties | TypeSupportOptions.Caching;
+            var type = typeof(BasicObject).GetExtendedType(options);
+            for (var i = 0; i < 50; i++)
+            {
+                var extendedType = ExtendedTypeCache.Get(typeof(BasicObject), options);
+                Assert.NotNull(extendedType);
+            }
+            Assert.AreEqual(1, ExtendedTypeCache.Instance.CachedTypes.Count);
         }
     }
 }

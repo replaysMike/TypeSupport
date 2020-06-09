@@ -9,9 +9,9 @@
     <PackageReleaseNotes>TypeSupport provides tools to give you more information about .Net types and factories for working with objects, collections, enums and more.</PackageReleaseNotes>
     <Company>Refactor Software</Company>
     <Authors>Michael Brown</Authors>
-    <AssemblyVersion>1.0.7.0</AssemblyVersion>
-    <Version>1.0.7</Version>
-    <FileVersion>1.0.7.0</FileVersion>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <Version>1.1</Version>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net461' OR '$(TargetFramework)'=='net462' OR '$(TargetFramework)'=='net47' OR '$(TargetFramework)'=='net471' OR '$(TargetFramework)'=='net472'">

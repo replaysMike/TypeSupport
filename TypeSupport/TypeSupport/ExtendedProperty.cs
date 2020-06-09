@@ -34,17 +34,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this property object
         /// </summary>
-        public ExtendedType Type { get; }
+        public ExtendedType Type => _propertyInfo.PropertyType?.GetExtendedType(InspectionOptions);
 
         /// <summary>
         /// Gets the base type of this property object
         /// </summary>
-        public ExtendedType BaseType { get; }
+        public ExtendedType BaseType => _propertyInfo.PropertyType.BaseType?.GetExtendedType(InspectionOptions);
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType { get; }
+        public ExtendedType ReflectedType => _propertyInfo.ReflectedType?.GetExtendedType(InspectionOptions);
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -146,9 +146,6 @@ namespace TypeSupport
         public ExtendedProperty(PropertyInfo propertyInfo)
         {
             _propertyInfo = propertyInfo;
-            Type = _propertyInfo.PropertyType?.GetExtendedType(InspectionOptions);
-            BaseType = _propertyInfo.PropertyType.BaseType?.GetExtendedType(InspectionOptions);
-            ReflectedType = _propertyInfo.ReflectedType?.GetExtendedType(InspectionOptions);
 
             if (HasGetMethod)
             {

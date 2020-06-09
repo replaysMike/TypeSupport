@@ -2,15 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using TypeSupport.Extensions;
 
+[assembly: InternalsVisibleTo("TypeSupport.Tests")]
 namespace TypeSupport
 {
     /// <summary>
     /// Helper class for getting information about a <see cref="Type"/>
     /// </summary>
-    public class ExtendedType : IEquatable<ExtendedType>, IEquatable<Type>, IAttributeInspection
+    public class ExtendedType : IEquatable<ExtendedType>, IEquatable<Type>, IAttributeInspection, ICloneable
     {
+        private readonly TypeInspector _typeInspector;
+        private readonly TypeSupportOptions _options;
+        private ICollection<ExtendedProperty> _properties;
+        private ICollection<ExtendedField> _fields;
+        private ICollection<ExtendedMethod> _methods;
+        private bool? _hasIndexer;
+        private Type _indexerType;
+        private Type _indexerReturnType;
+
         /// <summary>
         /// True if type has an empty constructor defined
         /// </summary>
@@ -129,7 +140,7 @@ namespace TypeSupport
         /// <summary>
         /// True if the type contains an indexer
         /// </summary>
-        public bool HasIndexer { get; internal set; }
+        public bool HasIndexer => _hasIndexer == null ? _typeInspector.InspectHasIndexer() : _hasIndexer.Value;
 
         /// <summary>
         /// True if the type is an anonymous type
@@ -174,17 +185,17 @@ namespace TypeSupport
         /// <summary>
         /// A list of the type's properties
         /// </summary>
-        public ICollection<ExtendedProperty> Properties { get; internal set; }
+        public ICollection<ExtendedProperty> Properties => _properties ?? _typeInspector.InspectProperties();
 
         /// <summary>
         /// A list of the type's fields
         /// </summary>
-        public ICollection<ExtendedField> Fields { get; internal set; }
+        public ICollection<ExtendedField> Fields => _fields ?? _typeInspector.InspectFields();
 
         /// <summary>
         /// A list of the type's methods
         /// </summary>
-        public ICollection<ExtendedMethod> Methods { get; internal set; }
+        public ICollection<ExtendedMethod> Methods => _methods ?? _typeInspector.InspectMethods();
 
         /// <summary>
         /// List of implemented interfaces
@@ -229,12 +240,12 @@ namespace TypeSupport
         /// <summary>
         /// The declared type of an indexer key
         /// </summary>
-        public Type IndexerType { get; internal set; }
+        public Type IndexerType => _indexerType ?? _typeInspector.InspectIndexerType();
 
         /// <summary>
         /// The declared return type of an indexer key
         /// </summary>
-        public Type IndexerReturnType { get; internal set; }
+        public Type IndexerReturnType => _indexerReturnType ?? _typeInspector.InspectIndexerReturnType();
 
         /// <summary>
         /// The underlying type of the Type
@@ -260,7 +271,7 @@ namespace TypeSupport
         /// Create a new type support
         /// </summary>
         /// <param name="type">The type to analyze</param>
-        public ExtendedType(Type type) : this(type, TypeSupportOptions.All)
+        internal ExtendedType(Type type) : this(type, TypeSupportOptions.All)
         {
         }
 
@@ -269,39 +280,26 @@ namespace TypeSupport
         /// </summary>
         /// <param name="type">The type to analyze</param>
         /// <param name="options">The type support inspection options</param>
-        public ExtendedType(Type type, TypeSupportOptions options)
+        internal ExtendedType(Type type, TypeSupportOptions options)
         {
+            _options = options;
             Type = type ?? throw new ArgumentNullException();
 
             // prevent an extended type from enumerating another extended type
             if (object.ReferenceEquals(type, typeof(ExtendedType)))
-            {
-                InitializeFromCache(type);
-                return;
-            }
+                throw new InvalidCastException($"You cannot get extended information on a type that is already of ExtendedType");
 
             Attributes = new List<Type>();
             Interfaces = new List<Type>();
             GenericArgumentTypes = new List<Type>();
             KnownConcreteTypes = new List<Type>();
             EnumValues = new List<KeyValuePair<object, string>>();
-            Properties = new List<ExtendedProperty>();
-            Fields = new List<ExtendedField>();
             Constructors = new List<ConstructorInfo>();
             EmptyConstructors = new List<ConstructorInfo>();
 
-            var isCachingSupported = options.BitwiseHasFlag(TypeSupportOptions.Caching);
-            // if the type is cached, use it
-            if (isCachingSupported && ExtendedTypeCache.Contains(type, options))
-                InitializeFromCache(ExtendedTypeCache.Get(type, options));
-            else
-            {
-                // inspect the type with the given options
-                var typeInspector = new TypeInspector(this, options);
-                typeInspector.Inspect();
-                if (isCachingSupported)
-                    ExtendedTypeCache.CacheType(this, options);
-            }
+            // inspect the type with the given options
+            _typeInspector = new TypeInspector(this, options);
+            _typeInspector.Inspect();
         }
 
         /// <summary>
@@ -329,8 +327,13 @@ namespace TypeSupport
         public ExtendedType Refresh(TypeSupportOptions options)
         {
             // inspect the type with the given options
-            var typeInspector = new TypeInspector(this, options);
-            typeInspector.Inspect();
+            _properties = null;
+            _fields = null;
+            _methods = null;
+            _hasIndexer = null;
+            _indexerType = null;
+            _indexerReturnType = null;
+            _typeInspector.Inspect();
             var isCachingSupported = options.BitwiseHasFlag(TypeSupportOptions.Caching);
             if (isCachingSupported)
                 ExtendedTypeCache.CacheType(this, options);
@@ -377,60 +380,6 @@ namespace TypeSupport
         }
 
         /// <summary>
-        /// Initialize an extended type from another extended type
-        /// </summary>
-        /// <param name="type"></param>
-        private void InitializeFromCache(ExtendedType type)
-        {
-            HasEmptyConstructor = type.HasEmptyConstructor;
-            BaseHasEmptyConstructor = type.BaseHasEmptyConstructor;
-            IsAbstract = type.IsAbstract;
-            IsImmutable = type.IsImmutable;
-            IsEnumerable = type.IsEnumerable;
-            IsCollection = type.IsCollection;
-            IsArray = type.IsArray;
-            IsDictionary = type.IsDictionary;
-            IsHashtable = type.IsHashtable;
-            IsCollectionReadOnly = type.IsCollectionReadOnly;
-            IsKeyValuePair = type.IsKeyValuePair;
-            IsGeneric = type.IsGeneric;
-            IsDelegate = type.IsDelegate;
-            IsValueType = type.IsValueType;
-            IsReferenceType = type.IsReferenceType;
-            IsStruct = type.IsStruct;
-            IsPrimitive = type.IsPrimitive;
-            IsEnum = type.IsEnum;
-            IsTuple = type.IsTuple;
-            IsValueTuple = type.IsValueTuple;
-            IsNullable = type.IsNullable;
-            IsInterface = type.IsInterface;
-            IsSerializable = type.IsSerializable;
-            IsNumericType = type.IsNumericType;
-            HasIndexer = type.HasIndexer;
-            IsAnonymous = type.IsAnonymous;
-            IsConcreteType = type.IsConcreteType;
-            EnumValues = type.EnumValues;
-            KnownConcreteTypes = type.KnownConcreteTypes;
-            Attributes = type.Attributes;
-            GenericArgumentTypes = type.GenericArgumentTypes;
-            Properties = type.Properties;
-            Fields = type.Fields;
-            Methods = type.Methods;
-            Interfaces = type.Interfaces;
-            Constructors = type.Constructors;
-            EmptyConstructors = type.EmptyConstructors;
-            ConcreteType = type.ConcreteType;
-            ElementType = type.ElementType;
-            ElementNullableBaseType = type.ElementNullableBaseType;
-            EnumType = type.EnumType;
-            IndexerType = type.IndexerType;
-            IndexerReturnType = type.IndexerReturnType;
-            UnderlyingType = type.UnderlyingType;
-            NullableBaseType = type.NullableBaseType;
-            BaseTypes = type.BaseTypes;
-        }
-
-        /// <summary>
         /// Returns true if the type implements an interface
         /// </summary>
         /// <param name="interfaceType">The interface type to check</param>
@@ -445,7 +394,7 @@ namespace TypeSupport
                 var genericInterface = Interfaces.Where(x => x.IsGenericType
                     && x.Name == interfaceExtendedType.Name
                     && x.GetGenericArguments().Length.Equals(genericArguments.Length)
-                    && ( genericArguments.SequenceEqual(x.GetGenericArguments())
+                    && (genericArguments.SequenceEqual(x.GetGenericArguments())
                         || genericArguments.All(y => y.IsGenericParameter)
                     )
                 ).FirstOrDefault();
@@ -558,13 +507,16 @@ namespace TypeSupport
             return !(left == right);
         }
 
-        public static implicit operator ExtendedType(Type type) => new ExtendedType(type);
+        public static implicit operator ExtendedType(Type type)
+            => ExtendedTypeCache.GetOrCreate(type, TypeSupportOptions.All);
+        
         public static implicit operator Type(ExtendedType type) => type.Type;
 
         private bool IsEqualTo(ExtendedType type)
         {
             var isEqual = false;
-            if (HasEmptyConstructor == type.HasEmptyConstructor
+            if (_options == type._options
+            && HasEmptyConstructor == type.HasEmptyConstructor
             && BaseHasEmptyConstructor == type.BaseHasEmptyConstructor
             && IsAbstract == type.IsAbstract
             && IsImmutable == type.IsImmutable
@@ -587,7 +539,6 @@ namespace TypeSupport
             && IsNullable == type.IsNullable
             && IsInterface == type.IsInterface
             && IsSerializable == type.IsSerializable
-            && HasIndexer == type.HasIndexer
             && IsAnonymous == type.IsAnonymous
             && IsConcreteType == type.IsConcreteType
             && Enumerable.SequenceEqual(BaseTypes, type.BaseTypes)
@@ -595,9 +546,6 @@ namespace TypeSupport
             && Enumerable.SequenceEqual(KnownConcreteTypes, type.KnownConcreteTypes)
             && Enumerable.SequenceEqual(Attributes, type.Attributes)
             && Enumerable.SequenceEqual(GenericArgumentTypes, type.GenericArgumentTypes)
-            && Enumerable.SequenceEqual(Properties, type.Properties)
-            && Enumerable.SequenceEqual(Fields, type.Fields)
-            && Enumerable.SequenceEqual(Methods, type.Methods)
             && Enumerable.SequenceEqual(Interfaces, type.Interfaces)
             && Enumerable.SequenceEqual(Constructors, type.Constructors)
             && Enumerable.SequenceEqual(EmptyConstructors, type.EmptyConstructors)
@@ -605,12 +553,27 @@ namespace TypeSupport
             && ElementType == type.ElementType
             && ElementNullableBaseType == type.ElementNullableBaseType
             && EnumType == type.EnumType
-            && IndexerType == type.IndexerType
-            && IndexerReturnType == type.IndexerReturnType
             && UnderlyingType == type.UnderlyingType
-            && NullableBaseType == type.NullableBaseType)
+            && NullableBaseType == type.NullableBaseType
+
+            // compare internal values so we don't trigger an enumeration
+            && ((_properties == null && type._properties == null) || Enumerable.SequenceEqual(_properties, type._properties))
+            && ((_fields == null && type._fields == null) || Enumerable.SequenceEqual(_fields, type._fields))
+            && ((_methods == null && type._methods == null) || Enumerable.SequenceEqual(_methods, type._methods))
+            && _indexerType == type._indexerType
+            && _indexerReturnType == type._indexerReturnType
+            && _hasIndexer == type._hasIndexer)
                 isEqual = true;
             return isEqual;
+        }
+
+        /// <summary>
+        /// Clone a copy of an <see cref="ExtendedType"/>
+        /// </summary>
+        /// <returns></returns>
+        public object Clone()
+        {
+            return new ExtendedType(this);
         }
     }
 

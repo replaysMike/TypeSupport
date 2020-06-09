@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using TypeSupport.Extensions;
 
 namespace TypeSupport.Tests
@@ -9,23 +10,14 @@ namespace TypeSupport.Tests
         [Test]
         public void GetExtendedType_ShouldNot_WorkOnExtendedType()
         {
-            var type = typeof(int).GetExtendedType();
-            var newExtendedType = type.GetExtendedType(TypeSupportOptions.Enums);
-
-            // we requested to inspect enums only, but we should get back the same extended type
-            Assert.AreEqual(type, newExtendedType);
-            // sanity check
-            var type2 = typeof(long).GetExtendedType();
-            Assert.AreNotEqual(type2, newExtendedType);
-            // both should have fields if they are the same instance
-            Assert.Greater(type.Fields.Count, 0);
-            Assert.Greater(newExtendedType.Fields.Count, 0);
+            var type = typeof(int).GetExtendedType(TypeSupportOptions.AllExceptCaching);
+            Assert.Throws<InvalidCastException>(() => type.GetExtendedType(TypeSupportOptions.Enums));
         }
 
         [Test]
         public void GetExtendedType_Should_WorkOnType()
         {
-            var type = typeof(int).GetExtendedType();
+            var type = typeof(int).GetExtendedType(TypeSupportOptions.AllExceptCaching);
             var newExtendedType = typeof(int).GetExtendedType(TypeSupportOptions.Enums);
 
             // the two types should be different

@@ -76,7 +76,7 @@ namespace TypeSupport
         /// <summary>
         /// Gets the return type of this method
         /// </summary>
-        public ExtendedType ReturnType { get; }
+        public ExtendedType ReturnType => _methodInfo.ReturnType?.GetExtendedType(InspectionOptions);
 
         /// <summary>
         /// Gets the type of this method
@@ -171,7 +171,6 @@ namespace TypeSupport
         {
             _methodInfo = methodInfo;
             _parentType = parentType;
-            ReturnType = _methodInfo.ReturnType?.GetExtendedType(InspectionOptions);
             IsAutoPropertyAccessor = _methodInfo.IsSpecialName
                 && _methodInfo.IsHideBySig
                 && _methodInfo.GetCustomAttributes(typeof(CompilerGeneratedAttribute), true).Any()

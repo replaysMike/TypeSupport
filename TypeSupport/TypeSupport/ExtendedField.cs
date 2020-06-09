@@ -31,17 +31,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this field object
         /// </summary>
-        public ExtendedType Type { get; }
+        public ExtendedType Type => _fieldInfo.FieldType?.GetExtendedType(InspectionOptions);
 
         /// <summary>
         /// Gets the base type of this field object
         /// </summary>
-        public ExtendedType BaseType { get; }
+        public ExtendedType BaseType => _fieldInfo.FieldType.BaseType?.GetExtendedType(InspectionOptions);
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType { get; }
+        public ExtendedType ReflectedType => _fieldInfo.ReflectedType?.GetExtendedType(InspectionOptions);
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -108,9 +108,6 @@ namespace TypeSupport
         public ExtendedField(FieldInfo fieldInfo)
         {
             _fieldInfo = fieldInfo;
-            Type = _fieldInfo.FieldType?.GetExtendedType(InspectionOptions);
-            BaseType = _fieldInfo.FieldType.BaseType?.GetExtendedType(InspectionOptions);
-            ReflectedType = _fieldInfo.ReflectedType?.GetExtendedType(InspectionOptions);
 
             IsStatic = _fieldInfo.IsStatic;
             IsPrivate = _fieldInfo.IsPrivate;

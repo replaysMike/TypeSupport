@@ -56,5 +56,9 @@ namespace TypeSupport
         /// Uses all default options
         /// </summary>
         All = Attributes | Collections | ConcreteTypes | Constructors | Enums | Fields | Generics | Indexers | Properties | Caching | Methods,
+        /// <summary>
+        /// Uses all default options, without caching
+        /// </summary>
+        AllExceptCaching = Attributes | Collections | ConcreteTypes | Constructors | Enums | Fields | Generics | Indexers | Properties | Methods,
     }
 }

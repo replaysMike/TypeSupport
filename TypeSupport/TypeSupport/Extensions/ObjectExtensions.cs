@@ -11,6 +11,32 @@ namespace TypeSupport.Extensions
     public static class ObjectExtensions
     {
         /// <summary>
+        /// Get the extended type for a Type
+        /// </summary>
+        /// <param name="instanceOrType"></param>
+        /// <returns></returns>
+        public static ExtendedType GetExtendedType(this object instanceOrType)
+            => GetExtendedType(instanceOrType, TypeSupportOptions.All);
+
+        /// <summary>
+        /// Get the extended type for an instance
+        /// </summary>
+        /// <param name="instanceOrType"></param>
+        /// <param name="options">The type support inspection options</param>
+        /// <returns></returns>
+        public static ExtendedType GetExtendedType(this object instanceOrType, TypeSupportOptions options)
+        {
+            if (instanceOrType is null)
+                return null;
+            if (object.ReferenceEquals(instanceOrType, typeof(ExtendedType)))
+                return (ExtendedType)instanceOrType;
+            if (object.ReferenceEquals(instanceOrType, typeof(Type)))
+                return ExtendedTypeCache.GetOrCreate(instanceOrType as Type, options);
+
+            return ExtendedTypeCache.GetOrCreate(instanceOrType.GetType(), options);
+        }
+
+        /// <summary>
         /// Get all of the properties of an object
         /// </summary>
         /// <param name="obj"></param>

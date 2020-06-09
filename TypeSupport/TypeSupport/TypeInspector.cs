@@ -39,13 +39,6 @@ namespace TypeSupport
         /// </summary>
         internal void Inspect()
         {
-            if (_options.BitwiseHasFlag(TypeSupportOptions.Properties))
-                _extendedType.Properties = _extendedType.Type.GetProperties(PropertyOptions.All);
-            if (_options.BitwiseHasFlag(TypeSupportOptions.Fields))
-                _extendedType.Fields = _extendedType.Type.GetFields(FieldOptions.All);
-            if (_options.BitwiseHasFlag(TypeSupportOptions.Methods))
-                _extendedType.Methods = _extendedType.Type.GetMethods(MethodOptions.All);
-
             if (_options.BitwiseHasFlag(TypeSupportOptions.Attributes))
             {
 #if FEATURE_CUSTOM_ATTRIBUTES
@@ -189,21 +182,7 @@ namespace TypeSupport
             if (typeof(Delegate).IsAssignableFrom(_extendedType.Type))
                 _extendedType.IsDelegate = true;
 
-            if (_options.BitwiseHasFlag(TypeSupportOptions.Indexers))
-            {
-                _extendedType.HasIndexer = _extendedType.Properties.Select(x => x.PropertyInfo.GetIndexParameters())
-                .Where(x => x.Length > 0)
-                .Any();
-
-                if (_extendedType.HasIndexer)
-                {
-                    // c# only allows a single indexer
-                    var indexerProperty = _extendedType.Properties.Where(x => x.PropertyInfo.GetIndexParameters().Length > 0).ToList();
-                    var indexParameters = indexerProperty.FirstOrDefault().PropertyInfo.GetIndexParameters().FirstOrDefault();
-                    _extendedType.IndexerType = indexParameters.ParameterType;
-                    _extendedType.IndexerReturnType = indexerProperty.FirstOrDefault().PropertyInfo.PropertyType;
-                }
-            }
+            
 
             // nullable
             var nullableBaseType = GetNullableBaseType(_extendedType.Type);
@@ -222,6 +201,67 @@ namespace TypeSupport
 
             // provide a way to detect if the type requires additional concrete information in order to be serialized
             _extendedType.IsConcreteType = !(_extendedType.IsAbstract || _extendedType.IsInterface || _extendedType.IsAnonymous || _extendedType.Type == typeof(object));
+        }
+
+        internal ICollection<ExtendedProperty> InspectProperties()
+        {
+            if (_options.BitwiseHasFlag(TypeSupportOptions.Properties))
+                return _extendedType.Type.GetProperties(PropertyOptions.All);
+            return new List<ExtendedProperty>();
+        }
+
+        internal ICollection<ExtendedField> InspectFields()
+        {
+            if (_options.BitwiseHasFlag(TypeSupportOptions.Fields))
+                return _extendedType.Type.GetFields(FieldOptions.All);
+            return new List<ExtendedField>();
+        }
+
+        internal ICollection<ExtendedMethod> InspectMethods()
+        {
+            if (_options.BitwiseHasFlag(TypeSupportOptions.Methods))
+                return _extendedType.Type.GetMethods(MethodOptions.All);
+            return new List<ExtendedMethod>();
+        }
+
+        internal bool InspectHasIndexer()
+        {
+            if (_options.BitwiseHasFlag(TypeSupportOptions.Indexers))
+            {
+                return _extendedType.Properties.Select(x => x.PropertyInfo.GetIndexParameters())
+                    .Where(x => x.Length > 0)
+                    .Any();
+            }
+            return false;
+        }
+
+        internal Type InspectIndexerType()
+        {
+            if (_extendedType.HasIndexer)
+            {
+                // c# only allows a single indexer
+                var indexerProperty = _extendedType.Properties.Where(x => x.PropertyInfo.GetIndexParameters().Length > 0);
+                var indexParameters = indexerProperty
+                    .FirstOrDefault()
+                    .PropertyInfo
+                    .GetIndexParameters()
+                    .FirstOrDefault();
+                return indexParameters.ParameterType;
+            }
+            return null;
+        }
+
+        internal Type InspectIndexerReturnType()
+        {
+            if (_extendedType.HasIndexer)
+            {
+                // c# only allows a single indexer
+                var indexerProperty = _extendedType.Properties.Where(x => x.PropertyInfo.GetIndexParameters().Length > 0);
+                return indexerProperty.FirstOrDefault()
+                    .PropertyInfo
+                    .PropertyType;
+            }
+            return null;
         }
 
         private Type GetElementTypeForInterfaceType(Type type)
