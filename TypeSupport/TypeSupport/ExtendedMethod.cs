@@ -13,6 +13,7 @@ namespace TypeSupport
     public class ExtendedMethod : IAttributeInspection
     {
         private readonly MethodInfo _methodInfo;
+        private readonly TypeSupportOptions _typeSupportOptions;
         private readonly Type _parentType;
         private readonly string[] _operatorOverloadNames = new string[]
         {
@@ -56,6 +57,9 @@ namespace TypeSupport
             "op_OnesComplement"
         };
 
+        /// <summary>
+        /// Original MethodInfo of the method
+        /// </summary>
         public MethodInfo MethodInfo
         {
             get {
@@ -71,7 +75,7 @@ namespace TypeSupport
         /// <summary>
         /// Gets the return type of this method
         /// </summary>
-        public ExtendedType ReturnType => _methodInfo.ReturnType?.GetExtendedType();
+        public ExtendedType ReturnType => _methodInfo.ReturnType?.GetExtendedType(_typeSupportOptions);
 
         /// <summary>
         /// Gets the type of this method
@@ -162,10 +166,13 @@ namespace TypeSupport
         /// Create an extended property
         /// </summary>
         /// <param name="methodInfo"></param>
-        public ExtendedMethod(MethodInfo methodInfo, Type parentType)
+        /// <param name="parentType"></param>
+        /// <param name="typeSupportOptions">The type support options to use for type inspection</param>
+        public ExtendedMethod(MethodInfo methodInfo, Type parentType, TypeSupportOptions typeSupportOptions)
         {
             _methodInfo = methodInfo;
             _parentType = parentType;
+            _typeSupportOptions = typeSupportOptions;
             IsAutoPropertyAccessor = _methodInfo.IsSpecialName
                 && _methodInfo.IsHideBySig
                 && _methodInfo.GetCustomAttributes(typeof(CompilerGeneratedAttribute), true).Any()
@@ -174,9 +181,9 @@ namespace TypeSupport
                 && (_methodInfo.Name.Contains("get_"));
             IsSetter = IsAutoPropertyAccessor
                 && (_methodInfo.Name.Contains("set_"));
+            var declaringTypeMethods = _methodInfo.DeclaringType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Static);
             IsOverridden = _parentType != null && _methodInfo.GetBaseDefinition().DeclaringType == _methodInfo.DeclaringType
-            && _methodInfo.DeclaringType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Static)
-                .Any(x => x.Name == _methodInfo.Name && x.DeclaringType == _parentType);
+                && declaringTypeMethods.Any(x => x.Name == _methodInfo.Name && x.DeclaringType == _parentType);
             IsOperatorOverload = _methodInfo.IsSpecialName && _methodInfo.IsStatic && _operatorOverloadNames.Contains(_methodInfo.Name);
         }
 
@@ -184,7 +191,16 @@ namespace TypeSupport
         /// Create an extended property
         /// </summary>
         /// <param name="methodInfo"></param>
-        public ExtendedMethod(MethodInfo methodInfo) : this(methodInfo, null)
+        /// <param name="typeSupportOptions">The type support options to use for type inspection</param>
+        public ExtendedMethod(MethodInfo methodInfo, TypeSupportOptions typeSupportOptions) : this(methodInfo, null, typeSupportOptions)
+        {
+        }
+
+        /// <summary>
+        /// Create an extended property
+        /// </summary>
+        /// <param name="methodInfo"></param>
+        public ExtendedMethod(MethodInfo methodInfo) : this(methodInfo, null, TypeSupportOptions.All)
         {
         }
 

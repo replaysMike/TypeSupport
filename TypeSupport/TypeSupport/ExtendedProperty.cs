@@ -13,7 +13,11 @@ namespace TypeSupport
     public class ExtendedProperty : IAttributeInspection
     {
         private readonly PropertyInfo _propertyInfo;
+        private readonly TypeSupportOptions _typeSupportOptions;
 
+        /// <summary>
+        /// Original PropertyInfo of the property
+        /// </summary>
         public PropertyInfo PropertyInfo
         {
             get {
@@ -29,17 +33,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this property object
         /// </summary>
-        public ExtendedType Type => _propertyInfo.PropertyType?.GetExtendedType();
+        public ExtendedType Type => _propertyInfo.PropertyType?.GetExtendedType(_typeSupportOptions);
 
         /// <summary>
         /// Gets the base type of this property object
         /// </summary>
-        public ExtendedType BaseType => _propertyInfo.PropertyType.BaseType?.GetExtendedType();
+        public ExtendedType BaseType => _propertyInfo.PropertyType.BaseType?.GetExtendedType(_typeSupportOptions);
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType => _propertyInfo.ReflectedType?.GetExtendedType();
+        public ExtendedType ReflectedType => _propertyInfo.ReflectedType?.GetExtendedType(_typeSupportOptions);
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -138,9 +142,17 @@ namespace TypeSupport
         /// Create an extended property
         /// </summary>
         /// <param name="propertyInfo"></param>
-        public ExtendedProperty(PropertyInfo propertyInfo)
+        public ExtendedProperty(PropertyInfo propertyInfo) : this(propertyInfo, TypeSupportOptions.All) { }
+
+        /// <summary>
+        /// Create an extended property
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <param name="typeSupportOptions">The type support options to use for type inspection</param>
+        public ExtendedProperty(PropertyInfo propertyInfo, TypeSupportOptions typeSupportOptions)
         {
             _propertyInfo = propertyInfo;
+            _typeSupportOptions = typeSupportOptions;
 
             if (HasGetMethod)
             {

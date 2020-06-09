@@ -213,14 +213,14 @@ namespace TypeSupport
         internal ICollection<ExtendedField> InspectFields()
         {
             if (_options.BitwiseHasFlag(TypeSupportOptions.Fields))
-                return _extendedType.Type.GetFields(FieldOptions.All);
+                return _extendedType.Type.GetFields(FieldOptions.All, _options);
             return new List<ExtendedField>();
         }
 
         internal ICollection<ExtendedMethod> InspectMethods()
         {
             if (_options.BitwiseHasFlag(TypeSupportOptions.Methods))
-                return _extendedType.Type.GetMethods(MethodOptions.All);
+                return _extendedType.Type.GetMethods(MethodOptions.All, _options);
             return new List<ExtendedMethod>();
         }
 

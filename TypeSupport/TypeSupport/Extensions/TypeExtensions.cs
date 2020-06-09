@@ -39,7 +39,7 @@ namespace TypeSupport.Extensions
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static ICollection<ExtendedProperty> GetProperties(this Type type, PropertyOptions options)
+        public static ICollection<ExtendedProperty> GetProperties(this Type type, PropertyOptions options, TypeSupportOptions propogateTypeSupportOptions = TypeSupportOptions.All)
         {
             if (type == null)
                 return new List<ExtendedProperty>();
@@ -66,7 +66,7 @@ namespace TypeSupport.Extensions
                 returnProperties = returnProperties.Where(x => x.GetIndexParameters().Any());
 
             return returnProperties
-                .Select(x => (ExtendedProperty)x).ToList();
+                .Select(x => new ExtendedProperty(x, propogateTypeSupportOptions)).ToList();
         }
 
         /// <summary>
@@ -81,17 +81,18 @@ namespace TypeSupport.Extensions
         /// Get all of the fields of an object
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <param name="options"></param>
+        /// <param name="propogateTypeSupportOptions"></param>
         /// <returns></returns>
-        public static ICollection<ExtendedField> GetFields(this Type type, FieldOptions options)
+        public static ICollection<ExtendedField> GetFields(this Type type, FieldOptions options, TypeSupportOptions propogateTypeSupportOptions = TypeSupportOptions.All)
         {
             if (type == null)
                 return new List<ExtendedField>();
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
             var allFields = type.GetFields(flags)
-                .Select(x => (ExtendedField)x)
+                .Select(x => new ExtendedField(x, propogateTypeSupportOptions))
                 .Concat(GetFields(type.BaseType, options));
-            IEnumerable<ExtendedField> returnFields = allFields;
+            var returnFields = allFields;
 
             if (options.HasFlag(FieldOptions.AllWritable))
             {
@@ -110,14 +111,13 @@ namespace TypeSupport.Extensions
                 returnFields = allFields.Where(x => x.IsBackingField);
             if (options.HasFlag(FieldOptions.Constants))
                 returnFields = returnFields.Where(x => x.FieldInfo.IsLiteral);
-            return returnFields.Select(x => (ExtendedField)x).ToList();
+            return returnFields.ToList();
         }
 
         /// <summary>
         /// Get all of the fields of an object
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <param name="options"></param>
         /// <returns></returns>
         public static ICollection<ExtendedField> GetFields(this ExtendedType type, FieldOptions options)
             => type.Type.GetFields(options);
@@ -125,18 +125,18 @@ namespace TypeSupport.Extensions
         /// <summary>
         /// Get all of the fields of an object
         /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <param name="options"></param>
+        /// <param name="propogateTypeSupportOptions"></param>
         /// <returns></returns>
-        public static ICollection<ExtendedMethod> GetMethods(this Type type, MethodOptions options)
+        public static ICollection<ExtendedMethod> GetMethods(this Type type, MethodOptions options, TypeSupportOptions propogateTypeSupportOptions = TypeSupportOptions.All)
         {
             if (type == null)
                 return new List<ExtendedMethod>();
             var flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Static;
             var allMethods = type.GetMethods(flags)
-                .Select(x => new ExtendedMethod(x, type))
+                .Select(x => new ExtendedMethod(x, type, propogateTypeSupportOptions))
                 .Concat(GetMethods(type.BaseType, options));
-            IEnumerable<ExtendedMethod> returnMethods = allMethods;
+            var returnMethods = allMethods;
 
             if (options.HasFlag(MethodOptions.Public))
                 returnMethods = returnMethods.Where(x => x.IsPublic);
@@ -150,7 +150,7 @@ namespace TypeSupport.Extensions
                 returnMethods = returnMethods.Where(x => x.IsVirtual);
             if (options.HasFlag(MethodOptions.Constructor))
                 returnMethods = returnMethods.Where(x => x.IsConstructor);
-            return returnMethods.Select(x => (ExtendedMethod)x).ToList();
+            return returnMethods.ToList();
         }
 
         /// <summary>

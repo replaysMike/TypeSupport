@@ -12,7 +12,11 @@ namespace TypeSupport
     public class ExtendedField : IAttributeInspection
     {
         private readonly FieldInfo _fieldInfo;
+        private readonly TypeSupportOptions _typeSupportOptions;
 
+        /// <summary>
+        /// Original FieldInfo of the field
+        /// </summary>
         public FieldInfo FieldInfo
         {
             get { return _fieldInfo; }
@@ -26,17 +30,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this field object
         /// </summary>
-        public ExtendedType Type => _fieldInfo.FieldType?.GetExtendedType();
+        public ExtendedType Type => _fieldInfo.FieldType?.GetExtendedType(_typeSupportOptions);
 
         /// <summary>
         /// Gets the base type of this field object
         /// </summary>
-        public ExtendedType BaseType => _fieldInfo.FieldType.BaseType?.GetExtendedType();
+        public ExtendedType BaseType => _fieldInfo.FieldType.BaseType?.GetExtendedType(_typeSupportOptions);
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType => _fieldInfo.ReflectedType?.GetExtendedType();
+        public ExtendedType ReflectedType => _fieldInfo.ReflectedType?.GetExtendedType(_typeSupportOptions);
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
@@ -99,10 +103,17 @@ namespace TypeSupport
         /// Create an extended field
         /// </summary>
         /// <param name="fieldInfo"></param>
-        /// <param name="value"></param>
-        public ExtendedField(FieldInfo fieldInfo)
+        public ExtendedField(FieldInfo fieldInfo) : this(fieldInfo, TypeSupportOptions.All) { }
+
+        /// <summary>
+        /// Create an extended field
+        /// </summary>
+        /// <param name="fieldInfo"></param>
+        /// <param name="typeSupportOptions">The type support options to use for type inspection</param>
+        public ExtendedField(FieldInfo fieldInfo, TypeSupportOptions typeSupportOptions)
         {
             _fieldInfo = fieldInfo;
+            _typeSupportOptions = typeSupportOptions;
 
             IsStatic = _fieldInfo.IsStatic;
             IsPrivate = _fieldInfo.IsPrivate;
