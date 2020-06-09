@@ -12,11 +12,6 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedProperty : IAttributeInspection
     {
-        /// <summary>
-        /// Inspect basics without iterating into properties/fields/methods to prevent a StackOverflow
-        /// </summary>
-        private const TypeSupportOptions InspectionOptions = TypeSupportOptions.Attributes | TypeSupportOptions.Collections | TypeSupportOptions.ConcreteTypes | TypeSupportOptions.Enums | TypeSupportOptions.Generics | TypeSupportOptions.Indexers | TypeSupportOptions.Caching;
-
         private readonly PropertyInfo _propertyInfo;
 
         public PropertyInfo PropertyInfo
@@ -34,17 +29,17 @@ namespace TypeSupport
         /// <summary>
         /// Gets the type of this property object
         /// </summary>
-        public ExtendedType Type => _propertyInfo.PropertyType?.GetExtendedType(InspectionOptions);
+        public ExtendedType Type => _propertyInfo.PropertyType?.GetExtendedType();
 
         /// <summary>
         /// Gets the base type of this property object
         /// </summary>
-        public ExtendedType BaseType => _propertyInfo.PropertyType.BaseType?.GetExtendedType(InspectionOptions);
+        public ExtendedType BaseType => _propertyInfo.PropertyType.BaseType?.GetExtendedType();
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance of MemberInfo
         /// </summary>
-        public ExtendedType ReflectedType => _propertyInfo.ReflectedType?.GetExtendedType(InspectionOptions);
+        public ExtendedType ReflectedType => _propertyInfo.ReflectedType?.GetExtendedType();
 
 #if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>

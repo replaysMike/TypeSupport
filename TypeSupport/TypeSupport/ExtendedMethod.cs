@@ -12,11 +12,6 @@ namespace TypeSupport
     /// </summary>
     public class ExtendedMethod : IAttributeInspection
     {
-        /// <summary>
-        /// Inspect basics without iterating into properties/fields/methods to prevent a StackOverflow
-        /// </summary>
-        private const TypeSupportOptions InspectionOptions = TypeSupportOptions.Attributes | TypeSupportOptions.Collections | TypeSupportOptions.ConcreteTypes | TypeSupportOptions.Enums | TypeSupportOptions.Generics | TypeSupportOptions.Indexers | TypeSupportOptions.Caching;
-
         private readonly MethodInfo _methodInfo;
         private readonly Type _parentType;
         private readonly string[] _operatorOverloadNames = new string[]
@@ -76,7 +71,7 @@ namespace TypeSupport
         /// <summary>
         /// Gets the return type of this method
         /// </summary>
-        public ExtendedType ReturnType => _methodInfo.ReturnType?.GetExtendedType(InspectionOptions);
+        public ExtendedType ReturnType => _methodInfo.ReturnType?.GetExtendedType();
 
         /// <summary>
         /// Gets the type of this method
