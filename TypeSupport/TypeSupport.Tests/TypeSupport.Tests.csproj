@@ -4,7 +4,7 @@
 		<TargetFrameworks>netcoreapp3.1;netcoreapp2.1;net40;net45;net46;net461;net462;net47;net471;net472;net48;net5</TargetFrameworks>
 		<IsTestProject>true</IsTestProject>
 		<SignAssembly>true</SignAssembly>
-		<AssemblyOriginatorKeyFile>B:\gitrepo\personalcode\TypeSupport\TypeSupport\TypeSupportStrongNameKey.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile>..\TypeSupportStrongNameKey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.0' OR '$(TargetFramework)'=='netcoreapp3.1' OR '$(TargetFramework)'=='net45' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net461' OR '$(TargetFramework)'=='net462'">
@@ -42,10 +42,6 @@
 
 	<ItemGroup>
 		<Folder Include="Extensions\" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="..\TypeSupportStrongNameKey.snk" Link="TypeSupportStrongNameKey.snk" />
 	</ItemGroup>
 
 </Project>
