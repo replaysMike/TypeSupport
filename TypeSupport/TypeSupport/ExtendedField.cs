@@ -17,10 +17,7 @@ namespace TypeSupport
         /// <summary>
         /// Original FieldInfo of the field
         /// </summary>
-        public FieldInfo FieldInfo
-        {
-            get { return _fieldInfo; }
-        }
+        public FieldInfo FieldInfo => _fieldInfo;
 
         /// <summary>
         /// Gets the name of the current member

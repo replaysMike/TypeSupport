@@ -19,7 +19,7 @@ namespace TypeSupport
         /// <summary>
         /// List of numeric types
         /// </summary>
-        private readonly HashSet<Type> _numericTypes = new HashSet<Type> { typeof(char), typeof(sbyte), typeof(byte), typeof(ushort), typeof(short), typeof(uint), typeof(int), typeof(ulong), typeof(long), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(Int16), typeof(Int32), typeof(Int64) };
+        private readonly HashSet<Type> _numericTypes = new() { typeof(char), typeof(sbyte), typeof(byte), typeof(ushort), typeof(short), typeof(uint), typeof(int), typeof(ulong), typeof(long), typeof(float), typeof(double), typeof(decimal), typeof(BigInteger), typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(Int16), typeof(Int32), typeof(Int64) };
         internal ExtendedType _extendedType;
         internal TypeSupportOptions _options;
 
@@ -182,8 +182,6 @@ namespace TypeSupport
             if (typeof(Delegate).IsAssignableFrom(_extendedType.Type))
                 _extendedType.IsDelegate = true;
 
-            
-
             // nullable
             var nullableBaseType = GetNullableBaseType(_extendedType.Type);
             _extendedType.NullableBaseType = nullableBaseType ?? _extendedType.Type;
@@ -228,9 +226,9 @@ namespace TypeSupport
         {
             if (_options.BitwiseHasFlag(TypeSupportOptions.Indexers))
             {
-                return _extendedType.Properties.Select(x => x.PropertyInfo.GetIndexParameters())
-                    .Where(x => x.Length > 0)
-                    .Any();
+                return _extendedType.Properties
+                    .Select(x => x.PropertyInfo.GetIndexParameters())
+                    .Any(x => x.Length > 0);
             }
             return false;
         }
@@ -266,7 +264,6 @@ namespace TypeSupport
 
         private Type GetElementTypeForInterfaceType(Type type)
         {
-            var genericTypeDefinition = type.GetGenericTypeDefinition();
             var args = type.GetGenericArguments();
             var genericArgumentTypes = new List<Type>();
             if (args?.Any() == true)
@@ -284,11 +281,9 @@ namespace TypeSupport
 
         private ICollection<Type> GetBaseTypes(Type type, ICollection<Type> baseTypes)
         {
-            if (type.BaseType != null)
-            {
-                baseTypes.Add(type.BaseType);
-                baseTypes = GetBaseTypes(type.BaseType, baseTypes);
-            }
+            if (type.BaseType == null) return baseTypes;
+            baseTypes.Add(type.BaseType);
+            baseTypes = GetBaseTypes(type.BaseType, baseTypes);
             return baseTypes;
         }
 
@@ -406,10 +401,7 @@ namespace TypeSupport
             return IsAssignableToGenericType(baseType, genericType);
         }
 
-        public bool IsNumericType(Type type)
-        {
-            return _numericTypes.Contains(type);
-        }
+        public bool IsNumericType(Type type) => _numericTypes.Contains(type);
 
         /// <summary>
         /// Get the concrete type of an object instance
@@ -427,12 +419,9 @@ namespace TypeSupport
         /// <summary>
         /// Get the base type of a nullable object
         /// </summary>
-        /// <param name="type">Nullable type to analyse</param>
+        /// <param name="type">Nullable type to analyze</param>
         /// <returns>Null if the type is not nullable</returns>
-        public Type GetNullableBaseType(Type type)
-        {
-            return Nullable.GetUnderlyingType(type);
-        }
+        public Type GetNullableBaseType(Type type) => Nullable.GetUnderlyingType(type);
 
         /// <summary>
         /// Get the type of an array element

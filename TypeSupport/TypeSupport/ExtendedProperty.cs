@@ -18,12 +18,7 @@ namespace TypeSupport
         /// <summary>
         /// Original PropertyInfo of the property
         /// </summary>
-        public PropertyInfo PropertyInfo
-        {
-            get {
-                return _propertyInfo;
-            }
-        }
+        public PropertyInfo PropertyInfo => _propertyInfo;
 
         /// <summary>
         /// Gets the name of the current member
@@ -215,11 +210,7 @@ namespace TypeSupport
         }
 
         public static implicit operator PropertyInfo(ExtendedProperty extendedProperty)
-        {
-            if (extendedProperty == null)
-                return null;
-            return extendedProperty._propertyInfo;
-        }
+            => extendedProperty?._propertyInfo;
 
         public override string ToString() => $"{ReflectedType.Name}.{Name}";
     }

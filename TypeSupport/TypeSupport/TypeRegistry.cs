@@ -38,9 +38,7 @@ namespace TypeSupport
         /// <typeparam name="TSource">Source type</typeparam>
         /// <typeparam name="TDestination">Destination type</typeparam>
         public void AddMapping<TSource, TDestination>()
-        {
-            Mappings.Add(new TypeMap<TSource, TDestination>());
-        }
+            => Mappings.Add(new TypeMap<TSource, TDestination>());
 
         /// <summary>
         /// Add a type factory for creating types
@@ -49,49 +47,35 @@ namespace TypeSupport
         /// <typeparam name="TDestination">Destination type</typeparam>
         /// <param name="factory"></param>
         public void AddFactory<TSource, TDestination>(Func<TDestination> factory)
-        {
-            Factories.Add(new TypeFactory<TSource, TDestination>(factory));
-        }
+            => Factories.Add(new TypeFactory<TSource, TDestination>(factory));
 
         /// <summary>
         /// True if a mapping exists for the source type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool ContainsType(Type type)
-        {
-            return Mappings.Any(x => x.Source.Equals(type));
-        }
+        public bool ContainsType(Type type) => Mappings.Any(x => x.Source.Equals(type));
 
         /// <summary>
         /// True if a mapping exists for the source type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool ContainsType(ExtendedType type)
-        {
-            return Mappings.Any(x => x.Source.Equals(type.Type));
-        }
+        public bool ContainsType(ExtendedType type) => Mappings.Any(x => x.Source.Equals(type.Type));
 
         /// <summary>
         /// True if a factory exists for the source type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool ContainsFactoryType(Type type)
-        {
-            return Factories.Any(x => x.Source.Equals(type));
-        }
+        public bool ContainsFactoryType(Type type) => Factories.Any(x => x.Source.Equals(type));
 
         /// <summary>
         /// True if a factory exists for the source type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public bool ContainsFactoryType(ExtendedType type)
-        {
-            return ContainsFactoryType(type.Type);
-        }
+        public bool ContainsFactoryType(ExtendedType type) => ContainsFactoryType(type.Type);
 
         /// <summary>
         /// Get the destination mapping for a source type
@@ -138,10 +122,7 @@ namespace TypeSupport
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        internal Func<object> GetFactory(ExtendedType type)
-        {
-            return GetFactory(type.Type);
-        }
+        internal Func<object> GetFactory(ExtendedType type) => GetFactory(type.Type);
 
         /// <summary>
         /// Configure a new type registry
@@ -160,113 +141,6 @@ namespace TypeSupport
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static TypeConfiguration<T> For<T>()
-        {
-            return new TypeConfiguration<T>();
-        }
-    }
-
-    /// <summary>
-    /// Type factory
-    /// </summary>
-    /// <typeparam name="TSource"></typeparam>
-    /// <typeparam name="TDestination"></typeparam>
-    public class TypeFactory<TSource, TDestination> : TypeFactory
-    {
-        /// <summary>
-        /// Generic factory method
-        /// </summary>
-        public new Func<TDestination> Factory { get; }
-
-        public TypeFactory(Func<TDestination> factory) : base(typeof(TSource), factory as Func<object>)
-        {
-            Factory = factory;
-        }
-    }
-
-    /// <summary>
-    /// Type factory
-    /// </summary>
-    public class TypeFactory
-    {
-        /// <summary>
-        /// The source type
-        /// </summary>
-        public Type Source { get; }
-        /// <summary>
-        /// The factory method
-        /// </summary>
-        public Func<object> Factory { get; }
-        internal TypeFactory(Type source)
-        {
-            Source = source;
-        }
-        internal TypeFactory(Type source, Func<object> factory)
-        {
-            Source = source;
-            Factory = factory;
-        }
-    }
-
-    public class TypeConfiguration<TSource>
-    {
-        /// <summary>
-        /// Map to a destination type
-        /// </summary>
-        /// <typeparam name="TDestination"></typeparam>
-        /// <returns></returns>
-        public TypeMap Create<TDestination>()
-        {
-            return new TypeMap<TSource, TDestination>();
-        }
-
-        /// <summary>
-        /// Use a factory to create instance of type
-        /// </summary>
-        /// <typeparam name="TDestination"></typeparam>
-        /// <param name="factory"></param>
-        /// <returns></returns>
-        public TypeFactory<TSource, TDestination> CreateUsing<TDestination>(Func<TDestination> factory)
-        {
-            return new TypeFactory<TSource, TDestination>(factory);
-        }
-    }
-
-    /// <summary>
-    /// Custom type mapping
-    /// </summary>
-    /// <typeparam name="TSource"></typeparam>
-    /// <typeparam name="TDestination"></typeparam>
-    public class TypeMap<TSource, TDestination> : TypeMap
-    {
-        public TypeMap() : base(typeof(TSource), typeof(TDestination))
-        {
-        }
-    }
-
-    /// <summary>
-    /// Custom type mapping
-    /// </summary>
-    public class TypeMap
-    {
-        public Type Source { get; set; }
-        public Type Destination { get; set; }
-
-        internal TypeMap(Type source, Type destination)
-        {
-            Source = source;
-            Destination = destination;
-        }
-
-        internal TypeMap(ExtendedType source, ExtendedType destination)
-        {
-            Source = source.Type;
-            Destination = destination.Type;
-        }
-
-        public override string ToString()
-        {
-            return $"{Source.Name} => {Destination.Name}";
-        }
+        public static TypeConfiguration<T> For<T>() => new TypeConfiguration<T>();
     }
 }

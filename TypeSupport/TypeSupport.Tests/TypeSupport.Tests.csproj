@@ -24,6 +24,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Extensions\**" />
+	  <EmbeddedResource Remove="Extensions\**" />
+	  <None Remove="Extensions\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
 		<PackageReference Include="coverlet.msbuild" Version="2.9.0">
 			<PrivateAssets>all</PrivateAssets>
@@ -38,10 +44,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\TypeSupport\TypeSupport.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Extensions\" />
 	</ItemGroup>
 
 </Project>

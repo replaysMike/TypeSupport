@@ -10,6 +10,9 @@ namespace TypeSupport.Extensions
     /// </summary>
     public static class ObjectExtensions
     {
+        private const BindingFlags DefaultPropertyBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+        private const BindingFlags DefaultFieldBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+
         /// <summary>
         /// Get the extended type for a Type
         /// </summary>
@@ -42,54 +45,96 @@ namespace TypeSupport.Extensions
         /// <param name="obj"></param>
         /// <returns></returns>
         public static ICollection<ExtendedProperty> GetProperties(this object obj, PropertyOptions options)
-        {
-            return obj.GetType().GetProperties(options);
-        }
+            => obj.GetType().GetProperties(options);
 
         /// <summary>
         /// Get all of the fields of an object
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="includeAutoPropertyBackingFields">True to include the compiler generated backing fields for auto-property getters/setters</param>
+        /// <param name="options"></param>
         /// <returns></returns>
         public static ICollection<ExtendedField> GetFields(this object obj, FieldOptions options)
-        {
-            return obj.GetType().GetFields(options);
-        }
+            => obj.GetType().GetFields(options);
 
         /// <summary>
         /// Get all of the methods of an object
         /// </summary>
         /// <param name="obj"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
         public static ICollection<ExtendedMethod> GetMethods(this object obj, MethodOptions options)
-        {
-            return obj.GetType().GetMethods(options);
-        }
+            => obj.GetType().GetMethods(options);
 
         /// <summary>
         /// Get a property from an object instance
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="fieldName">Field name</param>
+        /// <param name="name">Property name</param>
         /// <returns></returns>
         public static PropertyInfo GetProperty(this object obj, string name)
+            => GetProperty(obj, name, false);
+
+        /// <summary>
+        /// Get a property from an object instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Property name</param>
+        /// <param name="searchBaseTypes">True to search for the property name in the object's base types</param>
+        /// <returns></returns>
+        public static PropertyInfo GetProperty(this object obj, string name, bool searchBaseTypes)
+            => GetProperty(obj, name, DefaultPropertyBindingFlags, searchBaseTypes);
+
+        /// <summary>
+        /// Get a property from an object instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Property name</param>
+        /// <param name="bindingFlags">A bitmask comprised of one or more BindingFlags that specify how the search is conducted.</param>
+        /// <param name="searchBaseTypes">True to search for the property name in the object's base types</param>
+        /// <returns></returns>
+        public static PropertyInfo GetProperty(this object obj, string name, BindingFlags bindingFlags, bool searchBaseTypes)
         {
             var t = obj.GetType();
-            return t.GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            var property = t.GetProperty(name, bindingFlags);
+
+            if (!searchBaseTypes)
+                return property;
+            var baseType = t.BaseType;
+            while (property == null && baseType != null)
+            {
+                property = GetPropertyFromType(baseType, name, bindingFlags);
+                if (property == null)
+                    baseType = baseType.BaseType;
+            }
+
+            return property;
         }
+
+        private static PropertyInfo GetPropertyFromType(Type type, string name, BindingFlags bindingFlags)
+            => type.GetProperty(name, bindingFlags);
 
         /// <summary>
         /// Get a property from an object instance and specify the derived type to match
         /// </summary>
         /// <param name="obj"></param>
-        /// <param name="fieldName">Field name</param>
+        /// <param name="name">Field name</param>
         /// <param name="derivedType">The type that defines the named property, or the exact type of the property</param>
         /// <returns></returns>
         public static PropertyInfo GetProperty(this object obj, string name, Type derivedType)
+            => GetProperty(obj, name, derivedType, DefaultPropertyBindingFlags);
+
+        /// <summary>
+        /// Get a property from an object instance and specify the derived type to match
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <param name="derivedType">The type that defines the named property, or the exact type of the property</param>
+        /// <param name="bindingFlags">A bitmask comprised of one or more BindingFlags that specify how the search is conducted.</param>
+        /// <returns></returns>
+        public static PropertyInfo GetProperty(this object obj, string name, Type derivedType, BindingFlags bindingFlags)
         {
             var t = obj.GetType();
-            var properties = t.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var properties = t.GetProperties(bindingFlags);
             var val = properties
                 .FirstOrDefault(p => p.Name.Equals(name) && p.PropertyType.Equals(derivedType));
             if (val == null)
@@ -107,10 +152,56 @@ namespace TypeSupport.Extensions
         /// <param name="name">Field name</param>
         /// <returns></returns>
         public static FieldInfo GetField(this object obj, string name)
+            => GetField(obj, name, false);
+
+        /// <summary>
+        /// Get a field from an object instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <param name="searchBaseTypes">True to search for the field name in the object's base types</param>
+        /// <returns></returns>
+        public static FieldInfo GetField(this object obj, string name, bool searchBaseTypes)
+            => GetField(obj, name, DefaultFieldBindingFlags, searchBaseTypes);
+
+        /// <summary>
+        /// Get a field from an object instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <param name="bindingFlags">A bitmask comprised of one or more BindingFlags that specify how the search is conducted.</param>
+        /// <returns></returns>
+        public static FieldInfo GetField(this object obj, string name, BindingFlags bindingFlags)
+            => GetField(obj, name, bindingFlags, false);
+
+        /// <summary>
+        /// Get a field from an object instance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name">Field name</param>
+        /// <param name="bindingFlags">A bitmask comprised of one or more BindingFlags that specify how the search is conducted.</param>
+        /// <param name="searchBaseTypes">True to search for the field name in the object's base types</param>
+        /// <returns></returns>
+        public static FieldInfo GetField(this object obj, string name, BindingFlags bindingFlags, bool searchBaseTypes)
         {
             var t = obj.GetType();
-            return t.GetField(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+            var field = t.GetField(name, bindingFlags);
+
+            if (!searchBaseTypes)
+                return field;
+            var baseType = t.BaseType;
+            while (field == null && baseType != null)
+            {
+                field = GetFieldFromType(baseType, name, bindingFlags);
+                if (field == null)
+                    baseType = baseType.BaseType;
+            }
+
+            return field;
         }
+
+        private static FieldInfo GetFieldFromType(Type type, string name, BindingFlags bindingFlags)
+            => type.GetField(name, bindingFlags);
 
         /// <summary>
         /// Get a field from an object instance
@@ -122,7 +213,7 @@ namespace TypeSupport.Extensions
         public static FieldInfo GetField(this object obj, string name, Type derivedType)
         {
             var t = obj.GetType();
-            var fields = t.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var fields = t.GetFields(DefaultFieldBindingFlags);
             var val = fields
                 .FirstOrDefault(p => p.Name.Equals(name) && p.FieldType.Equals(derivedType));
             if (val == null)
@@ -140,9 +231,7 @@ namespace TypeSupport.Extensions
         /// <param name="name">Property name</param>
         /// <returns></returns>
         public static bool ContainsProperty(this object obj, string name)
-        {
-            return GetProperty(obj, name) != null;
-        }
+            => GetProperty(obj, name) != null;
 
         /// <summary>
         /// Check if an object contains a property
@@ -152,9 +241,7 @@ namespace TypeSupport.Extensions
         /// <param name="derivedType">The type that defines the named property, or the exact type of the property</param>
         /// <returns></returns>
         public static bool ContainsProperty(this object obj, string name, Type derivedType)
-        {
-            return GetProperty(obj, name, derivedType) != null;
-        }
+            => GetProperty(obj, name, derivedType) != null;
 
         /// <summary>
         /// Check if an object contains a field
@@ -163,9 +250,7 @@ namespace TypeSupport.Extensions
         /// <param name="name">Field name</param>
         /// <returns></returns>
         public static bool ContainsField(this object obj, string name)
-        {
-            return GetField(obj, name) != null;
-        }
+            => GetField(obj, name) != null;
 
         /// <summary>
         /// Check if an object contains a field
@@ -175,9 +260,7 @@ namespace TypeSupport.Extensions
         /// <param name="derivedType">The type that defines the named field, or the exact type of the field</param>
         /// <returns></returns>
         public static bool ContainsField(this object obj, string name, Type derivedType)
-        {
-            return GetField(obj, name, derivedType) != null;
-        }
+            => GetField(obj, name, derivedType) != null;
 
         /// <summary>
         /// Set value of a property on an object
@@ -249,7 +332,6 @@ namespace TypeSupport.Extensions
         /// <param name="valueToSet">The value to set</param>
         public static void SetFieldValue(this object obj, string name, object valueToSet)
         {
-            var type = obj.GetType();
             var field = GetField(obj, name);
             if (field != null)
             {
@@ -268,7 +350,6 @@ namespace TypeSupport.Extensions
         /// <param name="valueToSet">The value to set</param>
         public static void SetFieldValue(this object obj, string name, Type derivedType, object valueToSet)
         {
-            var type = obj.GetType();
             var field = GetField(obj, name, derivedType);
             if (field != null)
             {
@@ -279,9 +360,7 @@ namespace TypeSupport.Extensions
         }
 
         private static void SetFieldValueInternal(object obj, FieldInfo field, object valueToSet)
-        {
-            field.SetValue(obj, valueToSet);
-        }
+            => field.SetValue(obj, valueToSet);
 
         /// <summary>
         /// Set the value of a property on an object
@@ -291,33 +370,26 @@ namespace TypeSupport.Extensions
         /// <param name="valueToSet"></param>
         public static void SetPropertyValue(this object obj, PropertyInfo property, object valueToSet)
         {
-            try
-            {
-    #if FEATURE_GETMETHOD
-                if (property.SetMethod != null)
-    #else
+#if FEATURE_GETMETHOD
+            if (property.SetMethod != null)
+#else
                 if (property.GetSetMethod(true) != null)
-    #endif
-                {
-                    var indexParameters = property.GetIndexParameters();
-                    if (!indexParameters.Any())
-    #if FEATURE_SETVALUE
-                        property.SetValue(obj, valueToSet);
-    #else
-                        property.SetValue(obj, valueToSet, null);
-    #endif
-                }
-                else
-                {
-                    // if this is an auto-property with a backing field, set it
-                    var field = obj.GetType().GetField($"<{property.Name}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
-                    if (field != null)
-                        field.SetValue(obj, valueToSet);
-                }
-            }
-            catch (Exception)
+#endif
             {
-                throw;
+                var indexParameters = property.GetIndexParameters();
+                if (!indexParameters.Any())
+#if FEATURE_SETVALUE
+                    property.SetValue(obj, valueToSet);
+#else
+                        property.SetValue(obj, valueToSet, null);
+#endif
+            }
+            else
+            {
+                // if this is an auto-property with a backing field, set it
+                var field = obj.GetType().GetField($"<{property.Name}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (field != null)
+                    field.SetValue(obj, valueToSet);
             }
         }
 
@@ -388,7 +460,6 @@ namespace TypeSupport.Extensions
         /// <param name="name">Name of property</param>
         public static object GetPropertyValue(this object obj, string name)
         {
-            var type = obj.GetType();
             var property = GetProperty(obj, name);
             return GetPropertyValueInternal(obj, name, property);
         }
@@ -401,7 +472,6 @@ namespace TypeSupport.Extensions
         /// <param name="derivedType">The type that defines the named property, or the exact type of the property</param>
         public static object GetPropertyValue(this object obj, string name, Type derivedType)
         {
-            var type = obj.GetType();
             var property = GetProperty(obj, name, derivedType);
             return GetPropertyValueInternal(obj, name, property);
         }
@@ -411,18 +481,11 @@ namespace TypeSupport.Extensions
             if (property == null)
                 throw new InvalidOperationException($"Unknown property name: {name}");
 
-            try
-            {
 #if FEATURE_SETVALUE
-                return property.GetValue(obj);
+            return property.GetValue(obj);
 #else
                 return property.GetValue(obj, null);
 #endif                
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         /// <summary>
@@ -432,7 +495,6 @@ namespace TypeSupport.Extensions
         /// <param name="name">Name of property</param>
         public static T GetPropertyValue<T>(this object obj, string name)
         {
-            var type = obj.GetType();
             var property = GetProperty(obj, name);
             return GetPropertyValueInternal<T>(obj, property, name);
         }
@@ -445,7 +507,6 @@ namespace TypeSupport.Extensions
         /// <param name="derivedType">The type that defines the named property, or the exact type of the property</param>
         public static T GetPropertyValue<T>(this object obj, string name, Type derivedType)
         {
-            var type = obj.GetType();
             var property = GetProperty(obj, name, derivedType);
             return GetPropertyValueInternal<T>(obj, property, name);
         }
@@ -453,27 +514,16 @@ namespace TypeSupport.Extensions
         private static T GetPropertyValueInternal<T>(object obj, PropertyInfo property, string name)
         {
             if (property == null)
-            {
                 throw new InvalidOperationException($"Unknown property name: '{name}'");
-            }
 
             if (property.PropertyType != typeof(T))
-            {
                 throw new InvalidOperationException($"Specified property '{name}' is of a different type '{typeof(T)}'");
-            }
 
-            try
-            {
 #if FEATURE_SETVALUE
-                return (T)property.GetValue(obj);
+            return (T)property.GetValue(obj);
 #else
                 return (T)property.GetValue(obj, null);
 #endif                
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         /// <summary>
@@ -482,16 +532,7 @@ namespace TypeSupport.Extensions
         /// <param name="obj"></param>
         /// <param name="field"></param>
         public static object GetFieldValue(this object obj, ExtendedField field)
-        {
-            try
-            {
-                return field.FieldInfo.GetValue(obj);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+            => field.FieldInfo.GetValue(obj);
 
         /// <summary>
         /// Get the value of a field on an object
@@ -499,16 +540,7 @@ namespace TypeSupport.Extensions
         /// <param name="obj"></param>
         /// <param name="field"></param>
         public static T GetFieldValue<T>(this object obj, ExtendedField field)
-        {
-            try
-            {
-                return (T)field.FieldInfo.GetValue(obj);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+            => (T)field.FieldInfo.GetValue(obj);
 
         /// <summary>
         /// Get the value of a field on an object
@@ -517,7 +549,6 @@ namespace TypeSupport.Extensions
         /// <param name="name">Name of field</param>
         public static object GetFieldValue(this object obj, string name)
         {
-            var type = obj.GetType();
             var field = GetField(obj, name);
             return GetFieldValueInternal(obj, field, name);
         }
@@ -530,7 +561,6 @@ namespace TypeSupport.Extensions
         /// <param name="derivedType">The type that defines the named field, or the exact type of the field</param>
         public static object GetFieldValue(this object obj, string name, Type derivedType)
         {
-            var type = obj.GetType();
             var field = GetField(obj, name, derivedType);
             return GetFieldValueInternal(obj, field, name);
         }
@@ -556,7 +586,6 @@ namespace TypeSupport.Extensions
         /// <param name="name">Name of field</param>
         public static T GetFieldValue<T>(this object obj, string name)
         {
-            var type = obj.GetType();
             var field = GetField(obj, name);
             return GetFieldValueInternal<T>(obj, field, name);
         }
@@ -569,7 +598,6 @@ namespace TypeSupport.Extensions
         /// <param name="derivedType">The type that defines the named field, or the exact type of the field</param>
         public static T GetFieldValue<T>(this object obj, string name, Type derivedType)
         {
-            var type = obj.GetType();
             var field = GetField(obj, name, derivedType);
             return GetFieldValueInternal<T>(obj, field, name);
         }

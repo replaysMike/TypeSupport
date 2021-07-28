@@ -15,8 +15,7 @@ namespace TypeSupport
         private readonly MethodInfo _methodInfo;
         private readonly TypeSupportOptions _typeSupportOptions;
         private readonly Type _parentType;
-        private readonly string[] _operatorOverloadNames = new string[]
-        {
+        private readonly string[] _operatorOverloadNames = {
             "op_Implicit",
             "op_Explicit",
             "op_Addition",
@@ -60,12 +59,7 @@ namespace TypeSupport
         /// <summary>
         /// Original MethodInfo of the method
         /// </summary>
-        public MethodInfo MethodInfo
-        {
-            get {
-                return _methodInfo;
-            }
-        }
+        public MethodInfo MethodInfo => _methodInfo;
 
         /// <summary>
         /// Gets the name of the current member
@@ -247,6 +241,6 @@ namespace TypeSupport
             return extendedProperty._methodInfo;
         }
 
-        public override string ToString() => $"{Name} {_methodInfo.ToString()}";
+        public override string ToString() => $"{Name} {_methodInfo}";
     }
 }

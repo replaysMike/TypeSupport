@@ -11,10 +11,7 @@ namespace TypeSupport
         /// <summary>
         /// A hashset for tracking hashcodes in use
         /// </summary>
-        public ObjectHashcodeMap()
-        {
-
-        }
+        public ObjectHashcodeMap() { }
 
         /// <summary>
         /// Add an object to the hashcode map
@@ -103,9 +100,6 @@ namespace TypeSupport
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private int GetHashcodeForObject(object obj)
-        {
-            return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
-        }
+        private int GetHashcodeForObject(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
     }
 }

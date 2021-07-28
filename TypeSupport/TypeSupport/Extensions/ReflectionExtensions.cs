@@ -12,19 +12,13 @@ namespace TypeSupport.Extensions
         /// </summary>
         /// <param name="fieldInfo"></param>
         /// <returns></returns>
-        public static ExtendedField ExtendedField(this FieldInfo fieldInfo)
-        {
-            return new ExtendedField(fieldInfo);
-        }
+        public static ExtendedField ExtendedField(this FieldInfo fieldInfo) => new (fieldInfo);
 
         /// <summary>
         /// Get the extended property
         /// </summary>
         /// <param name="propertyInfo"></param>
         /// <returns></returns>
-        public static ExtendedProperty ExtendedProperty(this PropertyInfo propertyInfo)
-        {
-            return new ExtendedProperty(propertyInfo);
-        }
+        public static ExtendedProperty ExtendedProperty(this PropertyInfo propertyInfo) => new (propertyInfo);
     }
 }

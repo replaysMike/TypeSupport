@@ -10,7 +10,7 @@ namespace TypeSupport.Assembly
 	/// </summary>
 	public static class DynamicAssemblyCache
     {
-        private static readonly ConcurrentDictionary<string, AssemblyManager> _assemblies = new ConcurrentDictionary<string, AssemblyManager>();
+        private static readonly ConcurrentDictionary<string, AssemblyManager> _assemblies = new();
 
         /// <summary>
         /// Get the cached assembly managers
@@ -34,27 +34,20 @@ namespace TypeSupport.Assembly
             else
             {
                 // Create the new assembly
-                try
-                {
-                    // Create the assembly and cache it
-                    var name = new AssemblyName(assemblyName);
-                    var domain = System.Threading.Thread.GetDomain();
+                // Create the assembly and cache it
+                var name = new AssemblyName(assemblyName);
+                var domain = System.Threading.Thread.GetDomain();
 #if FEATURE_ASSEMBLYBUILDER
-                    var assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
+                var assembly = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #else
                     var assembly = domain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
 #endif
-                    var module = assembly.DefineDynamicModule(name.Name);
-                    var assemblyManager = new AssemblyManager(name, assembly, module, domain);
+                var module = assembly.DefineDynamicModule(name.Name);
+                var assemblyManager = new AssemblyManager(name, assembly, module, domain);
 
-                    // add the assembly to the cache
-                    _assemblies.TryAdd(assemblyName, assemblyManager);
-                    manager = assemblyManager;
-                }
-                catch (ApplicationException)
-                {
-                    throw;
-                }
+                // add the assembly to the cache
+                _assemblies.TryAdd(assemblyName, assemblyManager);
+                manager = assemblyManager;
             }
             return manager.Module;
         }

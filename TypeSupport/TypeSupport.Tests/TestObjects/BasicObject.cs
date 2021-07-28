@@ -10,13 +10,7 @@ namespace TypeSupport.Tests.TestObjects
         [TestDecorated(123)]
         public int Id { get; set; }
 
-        public int Test
-        {
-            get
-            {
-                return _test;
-            }
-        }
+        public int Test => _test;
 
         public BasicObject(int id)
         {
@@ -25,15 +19,9 @@ namespace TypeSupport.Tests.TestObjects
         }
 
         [TestDecorated(456)]
-        public bool TestMethod()
-        {
-            return true;
-        }
+        public bool TestMethod() => true;
 
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-
+        // do not remove
+        public override string ToString() => base.ToString();
     }
 }

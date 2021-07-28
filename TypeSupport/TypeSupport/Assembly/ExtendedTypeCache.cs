@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using TypeSupport.Extensions;
+using TypeSupport.Assembly;
 
 namespace TypeSupport
 {
@@ -10,15 +11,15 @@ namespace TypeSupport
 	/// </summary>
 	public sealed class ExtendedTypeCache
 	{
-		private static SemaphoreSlim _cacheLock = new SemaphoreSlim(1);
-		private static readonly ExtendedTypeCache _instance = new ExtendedTypeCache();
+		private static readonly SemaphoreSlim _cacheLock = new (1);
+		private static readonly ExtendedTypeCache _instance = new ();
 
 		/// <summary>
 		/// Get an instance of the type cache
 		/// </summary>
-		public static ExtendedTypeCache Instance { get { return _instance; } }
+		public static ExtendedTypeCache Instance => _instance;
 
-		/// <summary>
+        /// <summary>
 		/// Get the cached types registry
 		/// </summary>
 		public IDictionary<CacheKey, ExtendedType> CachedTypes { get; set; }
@@ -235,41 +236,6 @@ namespace TypeSupport
 			// remove types
 			foreach (var typeToRemove in typesToRemove)
 				Instance.CachedTypes.Remove(typeToRemove);
-		}
-	}
-
-	/// <summary>
-	/// A composite cache key
-	/// </summary>
-	public struct CacheKey
-	{
-		public Type Type;
-		public TypeSupportOptions Options;
-		public CacheKey(Type type, TypeSupportOptions options)
-		{
-			Type = type;
-			Options = options;
-		}
-
-		public override int GetHashCode()
-		{
-			var hashCode = 23;
-			hashCode = hashCode * 31 + (int)Options;
-			hashCode = hashCode * 31 + Type.GetHashCode();
-			return hashCode;
-		}
-
-		public override bool Equals(object obj)
-		{
-			if (obj == null || obj.GetType() != typeof(CacheKey))
-				return false;
-			var objTyped = (CacheKey)obj;
-			return objTyped.Options == Options && objTyped.Type.Equals(Type);
-		}
-
-		public override string ToString()
-		{
-			return $"{(int)Options}-({Options.ToString()}) {Type.FullName}";
 		}
 	}
 }

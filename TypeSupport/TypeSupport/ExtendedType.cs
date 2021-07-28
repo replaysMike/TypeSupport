@@ -391,17 +391,17 @@ namespace TypeSupport
             {
                 // match interface and generic arguments
                 var genericArguments = interfaceType.GetGenericArguments();
-                var genericInterface = Interfaces.Where(x => x.IsGenericType
-                    && x.Name == interfaceExtendedType.Name
-                    && x.GetGenericArguments().Length.Equals(genericArguments.Length)
-                    && (genericArguments.SequenceEqual(x.GetGenericArguments())
-                        || genericArguments.All(y => y.IsGenericParameter)
-                    )
-                ).FirstOrDefault();
+                var genericInterface = Interfaces
+                    .FirstOrDefault(x => x.IsGenericType
+                          && x.Name == interfaceExtendedType.Name
+                          && x.GetGenericArguments().Length.Equals(genericArguments.Length)
+                          && (genericArguments.SequenceEqual(x.GetGenericArguments())
+                              || genericArguments.All(y => y.IsGenericParameter)
+                          ));
                 return genericInterface != null;
             }
             // match interface
-            var nonGenericInterface = Interfaces.Where(x => !x.IsGenericType && x.Equals(interfaceType)).FirstOrDefault();
+            var nonGenericInterface = Interfaces.FirstOrDefault(x => !x.IsGenericType && x.Equals(interfaceType));
             return nonGenericInterface != null;
         }
 
@@ -417,12 +417,7 @@ namespace TypeSupport
         /// </summary>
         /// <param name="type">The type to check</param>
         /// <returns></returns>
-        public bool InheritsFrom(Type type)
-        {
-            if (BaseTypes == null)
-                return false;
-            return BaseTypes.Contains(type);
-        }
+        public bool InheritsFrom(Type type) => BaseTypes != null && BaseTypes.Contains(type);
 
         /// <summary>
         /// Returns true if type inherits from <seealso cref="TType"/>
@@ -435,27 +430,20 @@ namespace TypeSupport
         {
             if (obj == null || (obj.GetType() != typeof(ExtendedType) && obj.GetType() != typeof(Type)))
                 return false;
-            if (obj is ExtendedType)
+            if (obj is ExtendedType objTyped)
             {
-                var objTyped = (ExtendedType)obj;
                 return Equals(objTyped);
             }
-            else if (obj is Type)
+            else if (obj is Type type)
             {
-                return Equals((Type)obj);
+                return Equals(type);
             }
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            return Type.GetHashCode();
-        }
+        public override int GetHashCode() => Type.GetHashCode();
 
-        public override string ToString()
-        {
-            return $"{Type.Name} ({UnderlyingType.Name})";
-        }
+        public override string ToString() => $"{Type.Name} ({UnderlyingType.Name})";
 
         public bool Equals(ExtendedType other)
         {
@@ -464,12 +452,7 @@ namespace TypeSupport
             return IsEqualTo(other);
         }
 
-        public bool Equals(Type other)
-        {
-            if (other is null)
-                return false;
-            return Type.Equals(other);
-        }
+        public bool Equals(Type other) => other is not null && Type.Equals(other);
 
         public static bool operator ==(ExtendedType left, ExtendedType right)
         {
@@ -478,10 +461,7 @@ namespace TypeSupport
             return left.Equals(right);
         }
 
-        public static bool operator !=(ExtendedType left, ExtendedType right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(ExtendedType left, ExtendedType right) => !(left == right);
 
         public static bool operator ==(ExtendedType left, Type right)
         {
@@ -490,10 +470,7 @@ namespace TypeSupport
             return left.Equals(right);
         }
 
-        public static bool operator !=(ExtendedType left, Type right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(ExtendedType left, Type right) => !(left == right);
 
         public static bool operator ==(Type left, ExtendedType right)
         {
@@ -502,10 +479,7 @@ namespace TypeSupport
             return left.Equals(right);
         }
 
-        public static bool operator !=(Type left, ExtendedType right)
-        {
-            return !(left == right);
-        }
+        public static bool operator !=(Type left, ExtendedType right) => !(left == right);
 
         public static implicit operator ExtendedType(Type type)
             => ExtendedTypeCache.GetOrCreate(type, TypeSupportOptions.All);
@@ -516,54 +490,54 @@ namespace TypeSupport
         {
             var isEqual = false;
             if (_options == type._options
-            && HasEmptyConstructor == type.HasEmptyConstructor
-            && BaseHasEmptyConstructor == type.BaseHasEmptyConstructor
-            && IsAbstract == type.IsAbstract
-            && IsImmutable == type.IsImmutable
-            && IsEnumerable == type.IsEnumerable
-            && IsCollection == type.IsCollection
-            && IsArray == type.IsArray
-            && IsDictionary == type.IsDictionary
-            && IsHashtable == type.IsHashtable
-            && IsCollectionReadOnly == type.IsCollectionReadOnly
-            && IsKeyValuePair == type.IsKeyValuePair
-            && IsGeneric == type.IsGeneric
-            && IsDelegate == type.IsDelegate
-            && IsValueType == type.IsValueType
-            && IsReferenceType == type.IsReferenceType
-            && IsStruct == type.IsStruct
-            && IsPrimitive == type.IsPrimitive
-            && IsEnum == type.IsEnum
-            && IsTuple == type.IsTuple
-            && IsValueTuple == type.IsValueTuple
-            && IsNullable == type.IsNullable
-            && IsInterface == type.IsInterface
-            && IsSerializable == type.IsSerializable
-            && IsAnonymous == type.IsAnonymous
-            && IsConcreteType == type.IsConcreteType
-            && Enumerable.SequenceEqual(BaseTypes, type.BaseTypes)
-            && Enumerable.SequenceEqual(EnumValues, type.EnumValues)
-            && Enumerable.SequenceEqual(KnownConcreteTypes, type.KnownConcreteTypes)
-            && Enumerable.SequenceEqual(Attributes, type.Attributes)
-            && Enumerable.SequenceEqual(GenericArgumentTypes, type.GenericArgumentTypes)
-            && Enumerable.SequenceEqual(Interfaces, type.Interfaces)
-            && Enumerable.SequenceEqual(Constructors, type.Constructors)
-            && Enumerable.SequenceEqual(EmptyConstructors, type.EmptyConstructors)
-            && ConcreteType == type.ConcreteType
-            && ElementType == type.ElementType
-            && ElementNullableBaseType == type.ElementNullableBaseType
-            && EnumType == type.EnumType
-            && UnderlyingType == type.UnderlyingType
-            && NullableBaseType == type.NullableBaseType
+                && HasEmptyConstructor == type.HasEmptyConstructor
+                && BaseHasEmptyConstructor == type.BaseHasEmptyConstructor
+                && IsAbstract == type.IsAbstract
+                && IsImmutable == type.IsImmutable
+                && IsEnumerable == type.IsEnumerable
+                && IsCollection == type.IsCollection
+                && IsArray == type.IsArray
+                && IsDictionary == type.IsDictionary
+                && IsHashtable == type.IsHashtable
+                && IsCollectionReadOnly == type.IsCollectionReadOnly
+                && IsKeyValuePair == type.IsKeyValuePair
+                && IsGeneric == type.IsGeneric
+                && IsDelegate == type.IsDelegate
+                && IsValueType == type.IsValueType
+                && IsReferenceType == type.IsReferenceType
+                && IsStruct == type.IsStruct
+                && IsPrimitive == type.IsPrimitive
+                && IsEnum == type.IsEnum
+                && IsTuple == type.IsTuple
+                && IsValueTuple == type.IsValueTuple
+                && IsNullable == type.IsNullable
+                && IsInterface == type.IsInterface
+                && IsSerializable == type.IsSerializable
+                && IsAnonymous == type.IsAnonymous
+                && IsConcreteType == type.IsConcreteType
+                && Enumerable.SequenceEqual(BaseTypes, type.BaseTypes)
+                && Enumerable.SequenceEqual(EnumValues, type.EnumValues)
+                && Enumerable.SequenceEqual(KnownConcreteTypes, type.KnownConcreteTypes)
+                && Enumerable.SequenceEqual(Attributes, type.Attributes)
+                && Enumerable.SequenceEqual(GenericArgumentTypes, type.GenericArgumentTypes)
+                && Enumerable.SequenceEqual(Interfaces, type.Interfaces)
+                && Enumerable.SequenceEqual(Constructors, type.Constructors)
+                && Enumerable.SequenceEqual(EmptyConstructors, type.EmptyConstructors)
+                && ConcreteType == type.ConcreteType
+                && ElementType == type.ElementType
+                && ElementNullableBaseType == type.ElementNullableBaseType
+                && EnumType == type.EnumType
+                && UnderlyingType == type.UnderlyingType
+                && NullableBaseType == type.NullableBaseType
 
-            // compare internal values so we don't trigger an enumeration
-            && ((_properties == null && type._properties == null) || Enumerable.SequenceEqual(_properties, type._properties))
-            && ((_fields == null && type._fields == null) || Enumerable.SequenceEqual(_fields, type._fields))
-            && ((_methods == null && type._methods == null) || Enumerable.SequenceEqual(_methods, type._methods))
-            && _indexerType == type._indexerType
-            && _indexerReturnType == type._indexerReturnType
-            && _hasIndexer == type._hasIndexer)
-                isEqual = true;
+                // compare internal values so we don't trigger an enumeration
+                && ((_properties == null && type._properties == null) || Enumerable.SequenceEqual(_properties, type._properties))
+                && ((_fields == null && type._fields == null) || Enumerable.SequenceEqual(_fields, type._fields))
+                && ((_methods == null && type._methods == null) || Enumerable.SequenceEqual(_methods, type._methods))
+                && _indexerType == type._indexerType
+                && _indexerReturnType == type._indexerReturnType
+                && _hasIndexer == type._hasIndexer)
+                    isEqual = true;
             return isEqual;
         }
 
@@ -571,10 +545,7 @@ namespace TypeSupport
         /// Clone a copy of an <see cref="ExtendedType"/>
         /// </summary>
         /// <returns></returns>
-        public object Clone()
-        {
-            return new ExtendedType(this);
-        }
+        public object Clone() => new ExtendedType(this);
     }
 
     /// <summary>
