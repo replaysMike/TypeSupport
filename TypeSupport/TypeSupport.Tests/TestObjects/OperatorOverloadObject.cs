@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TypeSupport.Tests.TestObjects
+﻿namespace TypeSupport.Tests.TestObjects
 {
     public class OperatorOverloadObject
     {
         public int Id { get; set; }
+
+        public override int GetHashCode() => Id;
 
         public override bool Equals(object obj)
         {
@@ -29,9 +27,6 @@ namespace TypeSupport.Tests.TestObjects
             return a.Id.Equals(b.Id);
         }
 
-        public static bool operator !=(OperatorOverloadObject a, OperatorOverloadObject b)
-        {
-            return !a.Equals(b);
-        }
+        public static bool operator !=(OperatorOverloadObject a, OperatorOverloadObject b) => !a.Equals(b);
     }
 }

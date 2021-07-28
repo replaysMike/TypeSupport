@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using TypeSupport.Extensions;
 
-[assembly: InternalsVisibleTo("TypeSupport.Tests")]
+[assembly: InternalsVisibleTo("TypeSupport.Tests,PublicKey=002400000480000094000000060200000024000052534131000400000100010055141d0c13b7a1c9d50db0af0a4e2fb92030df608c7fc220badbdb0177377ad31045a9692e9d4d7c948edf3c313f0618ac2a354bc4eb4330c0ef62a6382494ce0f53448e23a1f2329fa47753da7760e66f8dd630ac9c2627485c67f785a242b36536d2a1f11592e65e4ac6e31ea323f23b75a571f73f21c6d1b8d5f2fc6997d5")]
 namespace TypeSupport
 {
     /// <summary>

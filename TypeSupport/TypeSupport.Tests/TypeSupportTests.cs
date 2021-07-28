@@ -705,9 +705,9 @@ namespace TypeSupport.Tests
             Assert.AreEqual(true, typeSupport.Properties.FirstOrDefault(x => x.Name == "ProtectedProperty").IsProtected);
             Assert.AreEqual(true, typeSupport.Properties.FirstOrDefault(x => x.Name == "InternalProperty").IsInternal);
 
-            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_publicField").IsPublic);
+            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "PublicField").IsPublic);
             Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_privateField").IsPrivate);
-            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_protectedField").IsProtected);
+            Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "ProtectedField").IsProtected);
             Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_internalField").IsInternal);
         }
     }

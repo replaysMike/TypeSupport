@@ -7,9 +7,9 @@
         protected bool ProtectedProperty { get; set; }
         internal bool InternalProperty { get; set; }
 
-        public bool _publicField;
-        private bool _privateField;
-        protected bool _protectedField;
-        internal bool _internalField;
+        public bool PublicField = false;
+        private bool _privateField = false;
+        protected bool ProtectedField = false;
+        internal bool _internalField = false;
     }
 }
