@@ -17,6 +17,7 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<LangVersion>latest</LangVersion>
 		<SignAssembly>true</SignAssembly>
+		<PackageIcon>typesupport.png</PackageIcon>
 		<DelaySign>false</DelaySign>
 		<AssemblyOriginatorKeyFile>..\TypeSupportStrongNameKey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
