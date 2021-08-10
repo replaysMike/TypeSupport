@@ -73,6 +73,11 @@ namespace TypeSupport
         public bool IsCollectionReadOnly { get; internal set; }
 
         /// <summary>
+        /// True if the type is an expression
+        /// </summary>
+        public bool IsExpression { get; internal set; }
+
+        /// <summary>
         /// True if the type is a key value pair
         /// </summary>
         public bool IsKeyValuePair { get; internal set; }
@@ -500,6 +505,7 @@ namespace TypeSupport
                 && IsDictionary == type.IsDictionary
                 && IsHashtable == type.IsHashtable
                 && IsCollectionReadOnly == type.IsCollectionReadOnly
+                && IsExpression == type.IsExpression
                 && IsKeyValuePair == type.IsKeyValuePair
                 && IsGeneric == type.IsGeneric
                 && IsDelegate == type.IsDelegate

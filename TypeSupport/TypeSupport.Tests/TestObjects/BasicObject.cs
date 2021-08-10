@@ -12,9 +12,12 @@ namespace TypeSupport.Tests.TestObjects
 
         public int Test => _test;
 
+        public int FieldValue;
+
         public BasicObject(int id)
         {
             Id = id;
+            FieldValue = id;
             _test = 0;
         }
 

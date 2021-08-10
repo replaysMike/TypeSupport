@@ -48,5 +48,12 @@ namespace TypeSupport.Tests
             var property = new DifferentBasicObject(1).GetProperty("Test", true);
             Assert.IsNotNull(property);
         }
+
+        [Test]
+        public void GetFieldValue_Should_Succeed()
+        {
+            var fieldValue = new BasicObject(1).GetFieldValue("FieldValue");
+            Assert.AreEqual(1, fieldValue);
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using TypeSupport.Tests.TestObjects;
 using TypeSupport.Extensions;
 using System.Numerics;
@@ -247,6 +248,26 @@ namespace TypeSupport.Tests
             CollectionAssert.AreEqual(new List<string> { "id", "value" }, names);
         }
 #endif
+
+        [Test]
+        public void Should_Discover_Expression()
+        {
+            var type = typeof(Expression);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsExpression);
+        }
+
+        [Test]
+        public void Should_Discover_GenericExpression()
+        {
+            var type = typeof(Expression<Func<BasicObject, int>>);
+            var typeSupport = new ExtendedType(type);
+
+            Assert.NotNull(typeSupport);
+            Assert.AreEqual(true, typeSupport.IsExpression);
+        }
 
         [Test]
         public void Should_Discover_GenericIList()

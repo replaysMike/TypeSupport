@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -127,6 +128,11 @@ namespace TypeSupport
                         }
                     }
                 }
+            }
+
+            if (typeof(Expression).IsAssignableFrom(_extendedType.Type))
+            {
+                _extendedType.IsExpression = true;
             }
 
             if (_extendedType.IsGeneric)

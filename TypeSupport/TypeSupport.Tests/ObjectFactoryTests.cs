@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TypeSupport.Tests.TestObjects;
+using System.Runtime.CompilerServices;
+using TypeSupport.Extensions;
 
 namespace TypeSupport.Tests
 {
@@ -306,6 +308,29 @@ namespace TypeSupport.Tests
             Assert.NotNull(instance);
             Assert.AreEqual(
                 typeof(ObjectWithExplicitlyImplementedInterfaceDeclaredGenericProperty<int>),
+                instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreateReadOnlyCollection()
+        {
+            var factory = new ObjectFactory();
+            var collection = new List<int> { 1, 2, 3, 4, 5 }.AsReadOnly();
+            var instance = factory.CreateEmptyObject(collection.GetExtendedType());
+            Assert.NotNull(instance);
+            Assert.AreEqual(
+                collection.GetExtendedType(),
+                instance.GetType());
+        }
+
+        [Test]
+        public void Should_CreateTypeWithPrivateConstructor()
+        {
+            var factory = new ObjectFactory();
+            var instance = factory.CreateEmptyObject(typeof(PrivateConstructorObject<int>));
+            Assert.NotNull(instance);
+            Assert.AreEqual(
+                typeof(PrivateConstructorObject<int>),
                 instance.GetType());
         }
     }
