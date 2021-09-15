@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using TypeSupport.Tests.TestObjects;
 using TypeSupport.Extensions;
 using System.Numerics;
+using System.Xml.Serialization;
 
 namespace TypeSupport.Tests
 {
@@ -731,5 +732,24 @@ namespace TypeSupport.Tests
             Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "ProtectedField").IsProtected);
             Assert.AreEqual(true, typeSupport.Fields.FirstOrDefault(x => x.Name == "_internalField").IsInternal);
         }
+
+#if NET5_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER
+#else
+        [Test]
+        public void Should_DiscoverSoapTypeAttribute()
+        {
+            var appDomain = System.Threading.Thread.GetDomain();
+            var soap = new System.Runtime.Remoting.Metadata.SoapTypeAttribute{
+                XmlElementName = "Object",
+                XmlTypeName = "Object",
+                XmlFieldOrder = System.Runtime.Remoting.Metadata.XmlFieldOrderOption.All,
+                XmlNamespace = "http://schemas.microsoft.com/clr/ns/System",
+                XmlTypeNamespace = "http://schemas.microsoft.com/clr/ns/System"
+            };
+            var type = soap.GetType();
+            var typeSupport = type.GetExtendedType();
+            Assert.NotNull(typeSupport);
+        }
+#endif
     }
 }

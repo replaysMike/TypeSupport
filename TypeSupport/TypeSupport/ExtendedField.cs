@@ -13,6 +13,7 @@ namespace TypeSupport
     {
         private readonly FieldInfo _fieldInfo;
         private readonly TypeSupportOptions _typeSupportOptions;
+        private readonly Lazy<IEnumerable<CustomAttributeData>> _customAttributesCached;
 
         /// <summary>
         /// Original FieldInfo of the field
@@ -39,17 +40,15 @@ namespace TypeSupport
         /// </summary>
         public ExtendedType ReflectedType => _fieldInfo.ReflectedType?.GetExtendedType(_typeSupportOptions);
 
-#if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
         /// Gets a collection that contains this member's custom attributes
         /// </summary>
-        public IEnumerable<CustomAttributeData> CustomAttributes => _fieldInfo.CustomAttributes;
-#else
-        /// <summary>
-        /// Gets a collection that contains this member's custom attributes
-        /// </summary>
-        public IEnumerable<CustomAttributeData> CustomAttributes => _fieldInfo.GetCustomAttributesData();
-#endif
+        public IEnumerable<CustomAttributeData> CustomAttributes 
+        {
+            get {
+                return _customAttributesCached.Value;
+            }
+        }
 
         /// <summary>
         /// True if this field backs an auto-property
@@ -119,6 +118,11 @@ namespace TypeSupport
             IsProtected = _fieldInfo.IsFamily;
             IsInternal = _fieldInfo.IsAssembly;
 
+#if FEATURE_CUSTOM_ATTRIBUTES
+            _customAttributesCached = new Lazy<IEnumerable<CustomAttributeData>>(() => _fieldInfo.CustomAttributes);
+#else
+            _customAttributesCached = new Lazy<IEnumerable<CustomAttributeData>>(() => _fieldInfo.GetCustomAttributesData());
+#endif
             var name = fieldInfo.Name;
             if (name.Contains("k__BackingField") || name.StartsWith("<"))
             {

@@ -14,6 +14,8 @@ namespace TypeSupport
     {
         private readonly PropertyInfo _propertyInfo;
         private readonly TypeSupportOptions _typeSupportOptions;
+        private readonly Lazy<IEnumerable<CustomAttributeData>> _customAttributesCached;
+        private readonly Lazy<IEnumerable<Attribute>> _attributesCached;
 
         /// <summary>
         /// Original PropertyInfo of the property
@@ -40,16 +42,12 @@ namespace TypeSupport
         /// </summary>
         public ExtendedType ReflectedType => _propertyInfo.ReflectedType?.GetExtendedType(_typeSupportOptions);
 
-#if FEATURE_CUSTOM_ATTRIBUTES
         /// <summary>
         /// Gets a collection that contains this member's custom attributes
         /// </summary>
-        public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.CustomAttributes;
-#else
-        public IEnumerable<CustomAttributeData> CustomAttributes => _propertyInfo.GetCustomAttributesData();
-#endif
+        public IEnumerable<CustomAttributeData> CustomAttributes => _customAttributesCached.Value;
 
-        public IEnumerable<Attribute> Attributes => GetAttributes();
+        public IEnumerable<Attribute> Attributes => _attributesCached.Value;
 
         /// <summary>
         /// True if an auto-backed property
@@ -159,6 +157,13 @@ namespace TypeSupport
                 IsPublic = GetMethod.IsPublic;
                 IsProtected = GetMethod.IsFamily;
                 IsInternal = GetMethod.IsAssembly;
+
+#if FEATURE_CUSTOM_ATTRIBUTES
+                _customAttributesCached = new Lazy<IEnumerable<CustomAttributeData>>(() => _propertyInfo.CustomAttributes);
+#else
+                _customAttributesCached = new Lazy<IEnumerable<CustomAttributeData>>(() => _propertyInfo.GetCustomAttributesData());
+#endif
+                _attributesCached = new Lazy<IEnumerable<Attribute>>(() => GetAttributes());
 
                 if (GetMethod
                         .GetCustomAttributes(typeof(CompilerGeneratedAttribute), true)

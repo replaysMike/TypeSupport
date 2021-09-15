@@ -190,17 +190,37 @@ namespace TypeSupport
         /// <summary>
         /// A list of the type's properties
         /// </summary>
-        public ICollection<ExtendedProperty> Properties => _properties ?? _typeInspector.InspectProperties();
+        public ICollection<ExtendedProperty> Properties {
+            get {
+                if (_properties == null)
+                    _properties = _typeInspector.InspectProperties();
+                return _properties;
+            }
+        }
 
         /// <summary>
         /// A list of the type's fields
         /// </summary>
-        public ICollection<ExtendedField> Fields => _fields ?? _typeInspector.InspectFields();
+        public ICollection<ExtendedField> Fields
+        {
+            get {
+                if (_fields == null)
+                    _fields = _typeInspector.InspectFields();
+                return _fields;
+            }
+        }
 
         /// <summary>
         /// A list of the type's methods
         /// </summary>
-        public ICollection<ExtendedMethod> Methods => _methods ?? _typeInspector.InspectMethods();
+        public ICollection<ExtendedMethod> Methods
+        {
+            get {
+                if (_methods == null)
+                    _methods = _typeInspector.InspectMethods();
+                return _methods;
+            }
+        }
 
         /// <summary>
         /// List of implemented interfaces

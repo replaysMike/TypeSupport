@@ -199,32 +199,30 @@ namespace TypeSupport
         /// <returns></returns>
         public object CreateEmptyObject(ExtendedType type, TypeRegistry typeRegistry, Func<object> initializer, params object[] dimensions)
         {
-            var objectType = type;
             if (initializer != null)
             {
                 return initializer();
             }
 
             // check the type registry for a custom type mapping
-            if (typeRegistry?.ContainsType(objectType.Type) == true)
-                objectType = typeRegistry.GetMapping(objectType);
+            if (typeRegistry?.ContainsType(type.Type) == true)
+                type = typeRegistry.GetMapping(type);
             // check the type registry for a custom type factory
-            if (typeRegistry?.ContainsFactoryType(objectType.Type) == true)
-                return typeRegistry.GetFactory(objectType.Type).Invoke();
+            if (typeRegistry?.ContainsFactoryType(type.Type) == true)
+                return typeRegistry.GetFactory(type.Type).Invoke();
 
-            var typeSupport = new ExtendedType(objectType.Type);
             // if we are asked to create an instance of an interface, try to initialize using a valid concrete type
-            if (typeSupport.IsInterface && !typeSupport.IsEnumerable)
+            if (type.IsInterface && !type.IsEnumerable)
             {
                 // try a known concrete type from typeSupport
-                var concreteType = typeSupport.KnownConcreteTypes.FirstOrDefault();
+                var concreteType = type.KnownConcreteTypes.FirstOrDefault();
                 if (concreteType == null)
-                    throw new TypeSupportException(objectType.Type, $"Unable to locate a concrete type for '{typeSupport.Type.FullName}'! Cannot create instance.");
+                    throw new TypeSupportException(type.Type, $"Unable to locate a concrete type for '{type.Type.FullName}'! Cannot create instance.");
 
-                typeSupport = new ExtendedType(concreteType);
+                type = new ExtendedType(concreteType);
             }
 
-            if (typeSupport.IsArray)
+            if (type.IsArray)
             {
                 var createParameters = dimensions;
                 // we also want to allow passing of collections/lists/arrays so do some conversion first
@@ -247,53 +245,53 @@ namespace TypeSupport
                     createParameters.Reverse();
                 if (createParameters == null || createParameters.Length == 0)
                     createParameters = new object[] { 0 };
-                return Activator.CreateInstance(typeSupport.Type, createParameters);
+                return Activator.CreateInstance(type.Type, createParameters);
             }
-            else if (typeSupport.IsDictionary)
+            else if (type.IsDictionary)
             {
-                var genericType = typeSupport.Type.GetGenericArguments().ToList();
+                var genericType = type.Type.GetGenericArguments().ToList();
                 Type listType;
                 if (genericType.Count == 0)
                 {
-                    if(typeSupport.IsInterface)
+                    if(type.IsInterface)
                         return Activator.CreateInstance<Hashtable>() as IDictionary;
-                    return Activator.CreateInstance(typeSupport.Type) as IDictionary;
+                    return Activator.CreateInstance(type.Type) as IDictionary;
                 }
                 else if (genericType.Count != 2)
-                    throw new TypeSupportException(objectType.Type, "IDictionary should contain 2 element types.");
+                    throw new TypeSupportException(type.Type, "IDictionary should contain 2 element types.");
                 Type[] typeArgs = { genericType[0], genericType[1] };
 
                 listType = typeof(Dictionary<,>).MakeGenericType(typeArgs);
                 return Activator.CreateInstance(listType) as IDictionary;
             }
-            else if (typeSupport.IsEnumerable && !typeSupport.IsImmutable)
+            else if (type.IsEnumerable && !type.IsImmutable)
             {
-                var genericType = typeSupport.Type.GetGenericArguments().FirstOrDefault();
+                var genericType = type.Type.GetGenericArguments().FirstOrDefault();
                 // test specifically for ICollection and List
-                var isGenericCollection = typeSupport.Type.IsGenericType
-                            && typeSupport.Type.GetGenericTypeDefinition() == typeof(ICollection<>);
-                var isGenericList = typeSupport.Type.IsGenericType
-                            && typeSupport.Type.GetGenericTypeDefinition() == typeof(List<>);
-                var isGenericIList = typeSupport.Type.IsGenericType
-                           && typeSupport.Type.GetGenericTypeDefinition() == typeof(IList<>);
+                var isGenericCollection = type.Type.IsGenericType
+                            && type.Type.GetGenericTypeDefinition() == typeof(ICollection<>);
+                var isGenericList = type.Type.IsGenericType
+                            && type.Type.GetGenericTypeDefinition() == typeof(List<>);
+                var isGenericIList = type.Type.IsGenericType
+                           && type.Type.GetGenericTypeDefinition() == typeof(IList<>);
                 if (!isGenericList && !isGenericIList && !isGenericCollection)
                 {
-                    if (typeSupport.HasEmptyConstructor)
+                    if (type.HasEmptyConstructor)
                     {
-                        var newList = Activator.CreateInstance(typeSupport.Type);
+                        var newList = Activator.CreateInstance(type.Type);
                         return newList;
                     }
-                    else if (typeSupport.Constructors.Any())
+                    else if (type.Constructors.Any())
                     {
                         // special handling is required here as custom collections can't be properly
                         // initialized using FormatterServices.GetUninitializedObject()
-                        var constructor = typeSupport.Constructors.First();
+                        var constructor = type.Constructors.First();
                         var parameters = constructor.GetParameters();
                         var param = new List<object>();
                         // initialize using defaults for constructor parameters
                         foreach (var p in parameters)
                             param.Add(CreateEmptyObject(p.ParameterType));
-                        var newList = Activator.CreateInstance(typeSupport.Type, param.ToArray());
+                        var newList = Activator.CreateInstance(type.Type, param.ToArray());
                         return newList;
                     }
                 }
@@ -305,27 +303,27 @@ namespace TypeSupport
                 }
                 return Enumerable.Empty<object>();
             }
-            else if (typeSupport.Type.ContainsGenericParameters)
+            else if (type.Type.ContainsGenericParameters)
             {
                 // create a generic type and create an instance
                 // to accomplish this, we need to create a new generic type using the type arguments from the interface
                 // and the concrete class definition. voodoo!
-                var originalTypeSupport = new ExtendedType(objectType.Type);
+                var originalTypeSupport = new ExtendedType(type.Type);
                 var genericArguments = originalTypeSupport.Type.GetGenericArguments();
-                var newType = typeSupport.Type.MakeGenericType(genericArguments);
+                var newType = type.Type.MakeGenericType(genericArguments);
                 object newObject;
-                if (typeSupport.HasEmptyConstructor)
+                if (type.HasEmptyConstructor)
                     newObject = Activator.CreateInstance(newType);
                 else
                     newObject = FormatterServices.GetUninitializedObject(newType);
                 return newObject;
             }
-            else if (typeSupport.HasEmptyConstructor && !typeSupport.Type.ContainsGenericParameters)
-                return Activator.CreateInstance(typeSupport.Type);
-            else if (typeSupport.IsImmutable)
+            else if (type.HasEmptyConstructor && !type.Type.ContainsGenericParameters)
+                return Activator.CreateInstance(type.Type);
+            else if (type.IsImmutable)
                 return null;
 
-            return FormatterServices.GetUninitializedObject(typeSupport.Type);
+            return FormatterServices.GetUninitializedObject(type.Type);
         }
     }
 }
