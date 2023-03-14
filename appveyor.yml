@@ -15,11 +15,8 @@ environment:
 cache:
  - packages -> **\packages.config
  - '%USERPROFILE%\.nuget\packages -> **\project.json'  # project.json cache
-nuget:
-  account_feed: true
-  project_feed: true
 before_build:
-- ps: nuget restore .\TypeSupport\TypeSupport.sln
+- ps: dotnet restore .\TypeSupport\TypeSupport.sln
 build_script:
 - ps: .\scripts\build.ps1
 test_script:
