@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netcoreapp3.1;netcoreapp2.1;net40;net45;net46;net461;net462;net47;net471;net472;net48;net5</TargetFrameworks>
+		<TargetFrameworks>netcoreapp3.1;netcoreapp2.1;net40;net45;net46;net461;net462;net47;net471;net472;net48;net5;net6;net7</TargetFrameworks>
 		<IsTestProject>true</IsTestProject>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\TypeSupportStrongNameKey.snk</AssemblyOriginatorKeyFile>
@@ -11,7 +11,7 @@
 		<DefineConstants>FEATURE_CUSTOM_ATTRIBUTES;FEATURE_CUSTOM_TYPEINFO;FEATURE_GETMETHOD;FEATURE_SETVALUE;FEATURE_TASK;FEATURE_ASSEMBLYBUILDER</DefineConstants>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.0' OR '$(TargetFramework)'=='netcoreapp3.1' OR '$(TargetFramework)'=='net47' OR '$(TargetFramework)'=='net471' OR '$(TargetFramework)'=='net472' OR '$(TargetFramework)'=='net48' OR '$(TargetFramework)'=='net5'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.0' OR '$(TargetFramework)'=='netcoreapp3.1' OR '$(TargetFramework)'=='net47' OR '$(TargetFramework)'=='net471' OR '$(TargetFramework)'=='net472' OR '$(TargetFramework)'=='net48' OR '$(TargetFramework)'=='net5' OR '$(TargetFramework)'=='net6' OR '$(TargetFramework)'=='net7'">
 		<DefineConstants>FEATURE_CUSTOM_VALUETUPLE;FEATURE_CUSTOM_ATTRIBUTES;FEATURE_CUSTOM_TYPEINFO;FEATURE_GETMETHOD;FEATURE_SETVALUE;FEATURE_TASK;FEATURE_ASSEMBLYBUILDER</DefineConstants>
 	</PropertyGroup>
 
@@ -19,7 +19,7 @@
 		<NoWarn>1701;1702;0169;0649;0414;0169</NoWarn>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.0' OR '$(TargetFramework)'=='netcoreapp3.1' OR '$(TargetFramework)'=='net5'">
+	<ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.0' OR '$(TargetFramework)'=='netcoreapp3.1' OR '$(TargetFramework)'=='net5' OR '$(TargetFramework)'=='net6' OR '$(TargetFramework)'=='net7'">
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
 	</ItemGroup>
 
