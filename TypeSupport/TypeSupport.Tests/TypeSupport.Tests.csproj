@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1' OR '$(TargetFramework)'=='netcoreapp3.0' OR '$(TargetFramework)'=='netcoreapp3.1' OR '$(TargetFramework)'=='net5' OR '$(TargetFramework)'=='net6' OR '$(TargetFramework)'=='net7'">
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,7 +31,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
-		<PackageReference Include="coverlet.msbuild" Version="2.9.0">
+		<PackageReference Include="coverlet.msbuild" Version="3.2.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
