@@ -19,7 +19,7 @@ nuget:
   account_feed: true
   project_feed: true
 before_build:
-- ps: dotnet restore .\TypeSupport\TypeSupport.sln
+- ps: nuget restore .\TypeSupport\TypeSupport.sln
 build_script:
 - ps: .\scripts\build.ps1
 test_script:
